@@ -27,7 +27,7 @@ export default function Footer() {
       </div>
 
       {/* 사업자 정보 */}
-      <div className="px-4" style={{ paddingBottom: '20px' }}>
+      <div className="px-4" style={{ paddingBottom: '72px' }}>
         <p className="text-[12px] leading-[1.9]" style={{ color: '#888' }}>
           설성목장 대표이사 : 대표자명<br />
           경기도 이천시 설성면<br />

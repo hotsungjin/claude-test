@@ -36,9 +36,7 @@ export default function StoreLayout({ children }: { children: React.ReactNode })
             <Suspense><Header /></Suspense>
             <div className="flex-1">
               {children}
-              <div className="pb-[52px]" style={{ backgroundColor: '#f5f5f5' }}>
-                <Footer />
-              </div>
+              <Footer />
             </div>
             <BottomNav />
           </div>
