@@ -101,6 +101,26 @@ export default function BottomNav() {
       {NAV_ITEMS.map(item => {
         const Icon = item.icon
         const active = isActive(item.key)
+
+        // 검색 탭은 오버레이를 열도록 버튼 처리
+        if (item.key === 'search') {
+          return (
+            <button
+              key={item.key}
+              onClick={() => window.dispatchEvent(new CustomEvent('open-search'))}
+              className="flex-1 flex flex-col items-center justify-center gap-0.5"
+            >
+              <Icon active={false} />
+              <span
+                className="text-[10px] font-medium"
+                style={{ color: '#333' }}
+              >
+                {item.label}
+              </span>
+            </button>
+          )
+        }
+
         return (
           <Link
             key={item.key}
@@ -110,7 +130,7 @@ export default function BottomNav() {
             <Icon active={active} />
             <span
               className="text-[10px] font-medium"
-              style={{ color: active ? '#968774' : '#aaa' }}
+              style={{ color: active ? '#968774' : '#333' }}
             >
               {item.label}
             </span>

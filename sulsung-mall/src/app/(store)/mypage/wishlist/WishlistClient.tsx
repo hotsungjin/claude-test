@@ -5,10 +5,12 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { X } from 'lucide-react'
 import { formatPrice, calcDiscountRate } from '@/utils/format'
+import CartBottomSheet from '@/components/store/goods/CartBottomSheet'
 
 export default function WishlistClient({ items: initialItems }: { items: any[] }) {
   const router = useRouter()
   const [items, setItems] = useState(initialItems)
+  const [cartSheetGoods, setCartSheetGoods] = useState<any>(null)
 
   async function removeItem(goodsId: string) {
     const res = await fetch('/api/v1/wishlist', {
@@ -18,17 +20,6 @@ export default function WishlistClient({ items: initialItems }: { items: any[] }
     })
     if (res.ok) {
       setItems(prev => prev.filter(i => i.goods_id !== goodsId))
-    }
-  }
-
-  async function addToCart(goodsId: string) {
-    const res = await fetch('/api/v1/cart', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ goodsId, qty: 1 }),
-    })
-    if (res.ok) {
-      alert('장바구니에 담겼습니다!')
     }
   }
 
@@ -85,7 +76,7 @@ export default function WishlistClient({ items: initialItems }: { items: any[] }
 
             {/* 장바구니 담기 */}
             {!isSoldout && (
-              <button onClick={() => addToCart(item.goods_id)}
+              <button onClick={() => setCartSheetGoods(g)}
                 className="w-full mt-3 py-2 rounded-lg text-[12px] font-medium border"
                 style={{ borderColor: '#e0dbd5', color: '#968774' }}>
                 장바구니 담기
@@ -94,6 +85,10 @@ export default function WishlistClient({ items: initialItems }: { items: any[] }
           </div>
         )
       })}
+
+      {cartSheetGoods && (
+        <CartBottomSheet goods={cartSheetGoods} onClose={() => setCartSheetGoods(null)} />
+      )}
     </div>
   )
 }

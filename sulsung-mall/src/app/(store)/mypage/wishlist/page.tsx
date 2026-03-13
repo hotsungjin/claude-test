@@ -15,7 +15,7 @@ export default async function WishlistPage() {
 
   const { data: wishlists } = await supabase
     .from('wishlists')
-    .select('id, goods_id, goods(id, name, slug, price, sale_price, thumbnail_url, status)')
+    .select('id, goods_id, goods(id, name, slug, price, sale_price, thumbnail_url, stock, status)')
     .eq('member_id', member.id)
     .order('created_at', { ascending: false })
 

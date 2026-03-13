@@ -2,7 +2,8 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { Search, ShoppingCart, User, X } from 'lucide-react'
 
@@ -22,6 +23,7 @@ export default function Header() {
   const [searchQuery, setSearchQuery] = useState('')
   const [cartCount, setCartCount] = useState(0)
   const [scrolled, setScrolled] = useState(false)
+  const [trending, setTrending] = useState<{ keyword: string; count: number }[]>([])
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 0)
@@ -36,12 +38,39 @@ export default function Header() {
       .catch(() => {})
   }, [])
 
+  // BottomNav 검색 탭 클릭 이벤트 수신
+  useEffect(() => {
+    const handler = () => setSearchOpen(true)
+    window.addEventListener('open-search', handler)
+    return () => window.removeEventListener('open-search', handler)
+  }, [])
+
+  // 검색 오버레이 열릴 때 급상승 검색어 가져오기
+  useEffect(() => {
+    if (searchOpen) {
+      fetch('/api/v1/search')
+        .then(r => r.json())
+        .then(j => setTrending(j.keywords ?? []))
+        .catch(() => {})
+    }
+  }, [searchOpen])
+
+  const doSearch = (q: string) => {
+    setSearchOpen(false)
+    setSearchQuery('')
+    router.push(`/goods?q=${encodeURIComponent(q)}`)
+    // 검색 로그 기록
+    fetch('/api/v1/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ keyword: q }),
+    }).catch(() => {})
+  }
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     if (searchQuery.trim()) {
-      setSearchOpen(false)
-      router.push(`/goods?q=${encodeURIComponent(searchQuery.trim())}`)
-      setSearchQuery('')
+      doSearch(searchQuery.trim())
     }
   }
 
@@ -113,40 +142,74 @@ export default function Header() {
       </header>
       )}
 
-      {/* 전체화면 검색 오버레이 */}
-      {searchOpen && (
-        <div className="fixed inset-0 z-[60] bg-white flex flex-col">
+      {/* 검색 오버레이 — 메인 컨테이너 내부 */}
+      {searchOpen && createPortal(
+        <div className="absolute inset-0 z-[60] bg-white flex flex-col" style={{ position: 'sticky', top: 0, height: '100vh', marginTop: '-100vh' }}>
+          {/* 검색바 */}
           <form onSubmit={handleSearch}
-            className="flex items-center gap-3 px-4 border-b"
-            style={{ height: '52px', borderColor: '#ebebeb' }}>
-            <Search className="w-5 h-5 flex-shrink-0" style={{ color: '#968774' }} />
-            <input autoFocus value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-              placeholder="검색어를 입력하세요"
-              className="flex-1 text-sm outline-none bg-transparent" style={{ color: '#333' }} />
-            {searchQuery && (
-              <button type="button" onClick={() => setSearchQuery('')}>
-                <X className="w-4 h-4" style={{ color: '#aaa' }} />
-              </button>
-            )}
+            className="flex items-center gap-3 px-4 flex-shrink-0"
+            style={{ height: '52px', borderBottom: '1px solid #ebebeb' }}>
             <button type="button" onClick={() => { setSearchOpen(false); setSearchQuery('') }}
-              className="text-sm font-medium flex-shrink-0" style={{ color: '#968774' }}>
-              취소
+              className="flex-shrink-0 w-8 h-8 flex items-center justify-center">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 19l-7-7 7-7" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </button>
+            <div className="flex-1 flex items-center gap-2 h-[40px] rounded-full px-3"
+              style={{ backgroundColor: '#f5f5f5' }}>
+              <Search className="w-[18px] h-[18px] flex-shrink-0" style={{ color: '#aaa' }} />
+              <input autoFocus value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+                placeholder="검색어를 입력해 주세요"
+                className="flex-1 text-[14px] outline-none bg-transparent" style={{ color: '#333' }} />
+              {searchQuery && (
+                <button type="button" onClick={() => setSearchQuery('')}
+                  className="w-[18px] h-[18px] rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{ backgroundColor: '#ccc' }}>
+                  <X className="w-3 h-3" style={{ color: '#fff' }} />
+                </button>
+              )}
+            </div>
           </form>
-          <div className="flex-1 bg-gray-50 px-4 py-6">
-            <p className="text-xs font-semibold mb-3" style={{ color: '#999' }}>추천 검색어</p>
-            <div className="flex flex-wrap gap-2">
+
+          {/* 검색 콘텐츠 */}
+          <div className="flex-1 overflow-y-auto bg-white px-5 py-5">
+            {/* 추천 검색어 */}
+            <h3 className="text-[16px] font-bold mb-3" style={{ color: '#333' }}>추천 검색어</h3>
+            <div className="flex flex-wrap gap-2 mb-8">
               {['한우', '한돈', '간편식', '선물세트', '유제품', '베이비'].map(tag => (
                 <button key={tag}
-                  onClick={() => { setSearchQuery(tag); setSearchOpen(false); router.push(`/goods?q=${tag}`) }}
-                  className="px-3 py-1.5 rounded-full border text-sm"
-                  style={{ borderColor: '#ddd', color: '#555', background: '#fff' }}>
+                  onClick={() => doSearch(tag)}
+                  className="px-3.5 py-1.5 rounded-full text-[13px]"
+                  style={{ border: '1px solid #e0dbd5', color: '#968774', background: '#fff' }}>
                   {tag}
                 </button>
               ))}
             </div>
+
+            {/* 급상승 검색어 */}
+            <div className="flex items-center gap-1.5 mb-1">
+              <h3 className="text-[16px] font-bold" style={{ color: '#333' }}>급상승 검색어</h3>
+            </div>
+            <p className="text-[12px] mb-4" style={{ color: '#aaa' }}>최근 1시간 동안 검색 횟수가 급상승했어요</p>
+
+            {trending.length > 0 ? (
+              <div className="grid grid-cols-2 gap-x-4">
+                {trending.map((item, i) => (
+                  <button
+                    key={item.keyword}
+                    onClick={() => doSearch(item.keyword)}
+                    className="flex items-center gap-3 py-2.5 text-left"
+                    style={{ borderBottom: '1px solid #f5f5f5' }}
+                  >
+                    <span className="text-[15px] font-bold w-6 text-center" style={{ color: '#968774' }}>{i + 1}</span>
+                    <span className="text-[14px] truncate" style={{ color: '#333' }}>{item.keyword}</span>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <p className="text-[13px] py-4 text-center" style={{ color: '#bbb' }}>아직 검색 데이터가 없습니다</p>
+            )}
           </div>
-        </div>
+        </div>,
+        document.querySelector('.app-scroll-wrapper') ?? document.body
       )}
     </>
   )
