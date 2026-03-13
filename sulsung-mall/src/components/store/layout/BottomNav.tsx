@@ -74,19 +74,22 @@ function IconMypage({ active }: { active: boolean }) {
 }
 
 const NAV_ITEMS = [
-  { href: '/',               icon: IconHome,     label: '홈' },
-  { href: '/goods',          icon: IconCategory, label: '카테고리' },
-  { href: '/goods?q=',       icon: IconSearch,   label: '검색' },
-  { href: '/mypage/wishlist', icon: IconWishlist, label: '관심상품' },
-  { href: '/mypage',         icon: IconMypage,   label: '마이페이지' },
+  { key: 'home',     href: '/',                      icon: IconHome,     label: '홈' },
+  { key: 'category', href: '/goods?sort=sale_count',  icon: IconCategory, label: '카테고리' },
+  { key: 'search',   href: '/goods?q=',              icon: IconSearch,   label: '검색' },
+  { key: 'wishlist', href: '/mypage/wishlist',        icon: IconWishlist, label: '관심상품' },
+  { key: 'mypage',   href: '/mypage',                icon: IconMypage,   label: '마이페이지' },
 ]
 
 export default function BottomNav() {
   const pathname = usePathname()
 
-  const isActive = (href: string) => {
-    if (href === '/') return pathname === '/'
-    return pathname.startsWith(href.split('?')[0])
+  const isActive = (key: string) => {
+    if (key === 'home') return pathname === '/'
+    if (key === 'category') return pathname === '/goods'
+    if (key === 'wishlist') return pathname === '/mypage/wishlist'
+    if (key === 'mypage') return pathname === '/mypage'
+    return false
   }
 
   return (
@@ -97,10 +100,10 @@ export default function BottomNav() {
     >
       {NAV_ITEMS.map(item => {
         const Icon = item.icon
-        const active = isActive(item.href)
+        const active = isActive(item.key)
         return (
           <Link
-            key={item.href}
+            key={item.key}
             href={item.href}
             className="flex-1 flex flex-col items-center justify-center gap-0.5"
           >
