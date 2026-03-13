@@ -30,7 +30,7 @@ export default function GoodsCard({ goods }: GoodsCardProps) {
       <div className="block">
         <Link href={`/goods/${goods.slug}`} className="group block">
           {/* 이미지 */}
-          <div className="relative bg-gray-100 rounded-xl overflow-hidden mb-2" style={{ aspectRatio: '4 / 5' }}>
+          <div className="relative bg-gray-100 overflow-hidden mb-2" style={{ aspectRatio: '4 / 5', borderRadius: '4px' }}>
             {goods.thumbnail_url ? (
               <Image
                 src={goods.thumbnail_url}
