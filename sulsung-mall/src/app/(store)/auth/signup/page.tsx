@@ -1,16 +1,24 @@
 'use client'
 
-export const dynamic = 'force-dynamic'
-
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { SITE_NAME } from '@/constants'
 
 type Step = 'agree' | 'phone' | 'info'
 
 export default function SignupPage() {
+  return (
+    <Suspense fallback={null}>
+      <SignupContent />
+    </Suspense>
+  )
+}
+
+function SignupContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const refCode = searchParams.get('ref') ?? ''
 
   const [step, setStep] = useState<Step>('agree')
   const [agree, setAgree] = useState({ terms: false, privacy: false, marketing: false })
@@ -129,6 +137,7 @@ export default function SignupPage() {
         verificationId,
         marketingSms: agree.marketing,
         marketingKakao: agree.marketing,
+        referralCode: refCode || undefined,
       }),
     })
     const data = await res.json()
