@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/v1/cron/cart-reminder",
+      "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/v1/cron/dormant-check",
+      "schedule": "0 2 * * *"
+    }
+  ]
+}
