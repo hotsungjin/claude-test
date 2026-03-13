@@ -148,17 +148,17 @@ export default function Header() {
           {/* 검색바 */}
           <form onSubmit={handleSearch}
             className="flex items-center gap-3 px-4 flex-shrink-0"
-            style={{ height: '52px', borderBottom: '1px solid #ebebeb' }}>
+            style={{ height: '52px' }}>
             <button type="button" onClick={() => { setSearchOpen(false); setSearchQuery('') }}
               className="flex-shrink-0 w-8 h-8 flex items-center justify-center">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 19l-7-7 7-7" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </button>
-            <div className="flex-1 flex items-center gap-2 h-[40px] rounded-full px-3"
+            <div className="flex-1 flex items-center gap-2.5 h-[44px] rounded-full px-4"
               style={{ backgroundColor: '#f5f5f5' }}>
-              <Search className="w-[18px] h-[18px] flex-shrink-0" style={{ color: '#aaa' }} />
+              <Search className="w-5 h-5 flex-shrink-0" style={{ color: '#aaa' }} />
               <input autoFocus value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
                 placeholder="검색어를 입력해 주세요"
-                className="flex-1 text-[14px] outline-none bg-transparent" style={{ color: '#333' }} />
+                className="flex-1 text-[16px] outline-none bg-transparent" style={{ color: '#333' }} />
               {searchQuery && (
                 <button type="button" onClick={() => setSearchQuery('')}
                   className="w-[18px] h-[18px] rounded-full flex items-center justify-center flex-shrink-0"
@@ -170,42 +170,40 @@ export default function Header() {
           </form>
 
           {/* 검색 콘텐츠 */}
-          <div className="flex-1 overflow-y-auto bg-white px-5 py-5">
+          <div className="flex-1 overflow-y-auto bg-white px-5 py-6">
             {/* 추천 검색어 */}
-            <h3 className="text-[16px] font-bold mb-3" style={{ color: '#333' }}>추천 검색어</h3>
-            <div className="flex flex-wrap gap-2 mb-8">
+            <h3 className="text-[18px] font-bold mb-4" style={{ color: '#1a1a1a' }}>추천 검색어</h3>
+            <div className="flex flex-wrap gap-2.5 mb-10">
               {['한우', '한돈', '간편식', '선물세트', '유제품', '베이비'].map(tag => (
                 <button key={tag}
                   onClick={() => doSearch(tag)}
-                  className="px-3.5 py-1.5 rounded-full text-[13px]"
-                  style={{ border: '1px solid #e0dbd5', color: '#968774', background: '#fff' }}>
+                  className="px-4 py-2 rounded-full text-[15px]"
+                  style={{ border: '1px solid #ddd', color: '#555', background: '#fff' }}>
                   {tag}
                 </button>
               ))}
             </div>
 
             {/* 급상승 검색어 */}
-            <div className="flex items-center gap-1.5 mb-1">
-              <h3 className="text-[16px] font-bold" style={{ color: '#333' }}>급상승 검색어</h3>
-            </div>
-            <p className="text-[12px] mb-4" style={{ color: '#aaa' }}>최근 1시간 동안 검색 횟수가 급상승했어요</p>
+            <h3 className="text-[18px] font-bold mb-1" style={{ color: '#1a1a1a' }}>급상승 검색어</h3>
+            <p className="text-[13px] mb-5" style={{ color: '#999' }}>최근 1시간 동안 검색 횟수가 급상승했어요</p>
 
             {trending.length > 0 ? (
-              <div className="grid grid-cols-2 gap-x-4">
+              <div className="grid grid-cols-2 gap-x-6">
                 {trending.map((item, i) => (
                   <button
                     key={item.keyword}
                     onClick={() => doSearch(item.keyword)}
-                    className="flex items-center gap-3 py-2.5 text-left"
-                    style={{ borderBottom: '1px solid #f5f5f5' }}
+                    className="flex items-center gap-3 py-3 text-left"
+                    style={{ borderBottom: '1px solid #f0f0f0' }}
                   >
-                    <span className="text-[15px] font-bold w-6 text-center" style={{ color: '#968774' }}>{i + 1}</span>
-                    <span className="text-[14px] truncate" style={{ color: '#333' }}>{item.keyword}</span>
+                    <span className="text-[16px] font-bold w-7 text-center" style={{ color: '#968774' }}>{i + 1}</span>
+                    <span className="text-[16px] truncate" style={{ color: '#333' }}>{item.keyword}</span>
                   </button>
                 ))}
               </div>
             ) : (
-              <p className="text-[13px] py-4 text-center" style={{ color: '#bbb' }}>아직 검색 데이터가 없습니다</p>
+              <p className="text-[14px] py-4 text-center" style={{ color: '#bbb' }}>아직 검색 데이터가 없습니다</p>
             )}
           </div>
         </div>,
