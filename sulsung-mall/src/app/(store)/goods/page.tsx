@@ -95,8 +95,17 @@ export default async function GoodsListPage({ searchParams }: { searchParams: Pr
     else query = query.order('sale_count', { ascending: false })
 
     if (params.category) {
-      const { data: cat } = await supabase.from('categories').select('id').eq('slug', params.category).single()
-      if (cat) query = (query as any).eq('category_id', (cat as any).id)
+      const { data: cat } = await supabase.from('categories').select('id, parent_id').eq('slug', params.category).single()
+      if (cat) {
+        // 부모 카테고리인 경우 자식 카테고리 상품도 포함
+        if (!(cat as any).parent_id) {
+          const { data: children } = await supabase.from('categories').select('id').eq('parent_id', (cat as any).id)
+          const ids = [(cat as any).id, ...((children ?? []) as any[]).map((c: any) => c.id)]
+          query = (query as any).in('category_id', ids)
+        } else {
+          query = (query as any).eq('category_id', (cat as any).id)
+        }
+      }
     }
 
     const { data: goodsRaw, count: gCount } = await query
