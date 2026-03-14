@@ -171,7 +171,7 @@ export default async function HomePage() {
 
 
       {/* ⑧ 실시간 랭킹 */}
-      <section style={{ paddingTop: '24px' }}>
+      <section style={{ paddingTop: '22px' }}>
         <div className="flex items-center justify-between" style={{ padding: '0 16px 12px' }}>
           <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#000', lineHeight: 1.3 }}>
             <span style={{ marginRight: '4px' }}>🏆</span>실시간 랭킹
@@ -241,7 +241,7 @@ function Divider() {
 function HorizontalSection({ emoji, title, subtitle, href, goods }: { emoji?: string; title: string; subtitle?: string; href: string; goods: any[] }) {
   if (goods.length === 0) return null
   return (
-    <section style={{ paddingTop: '24px' }}>
+    <section style={{ paddingTop: '22px' }}>
       <div className="flex items-start justify-between" style={{ padding: '0 16px 12px' }}>
         <div>
           <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#000', lineHeight: 1.3 }}>
@@ -257,7 +257,7 @@ function HorizontalSection({ emoji, title, subtitle, href, goods }: { emoji?: st
         </Link>
       </div>
       <div style={{ overflow: 'hidden' }}>
-        <div className="scrollbar-hide" style={{ display: 'flex', gap: '10px', paddingLeft: '16px', paddingRight: '16px', paddingBottom: '20px', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+        <div className="scrollbar-hide" style={{ display: 'flex', gap: '10px', paddingLeft: '16px', paddingRight: '16px', paddingBottom: '26px', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
           {goods.map((item: any) => (
             <MobileGoodsCard key={item.id} goods={item} />
           ))}
