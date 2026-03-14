@@ -122,7 +122,7 @@ export default async function GoodsListPage({ searchParams }: { searchParams: Pr
     arr.push(c.id)
     childrenMap.set(c.parent_id, arr)
   }
-  const { data: goodsCounts } = await (supabase as any).from('goods').select('category_id').eq('status', 'active')
+  const { data: goodsCounts } = await (supabase as any).from('goods').select('category_id').eq('status', 'active').limit(5000)
   const catIdSet = new Set((goodsCounts ?? []).map((g: any) => g.category_id))
   const categories = allCats.filter(cat => {
     if (catIdSet.has(cat.id)) return true

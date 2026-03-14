@@ -90,20 +90,14 @@ export default function Header() {
             <Image src="/images/logo.png" alt="설성목장" width={90} height={26} priority style={{ width: 90, height: 26 }} />
           </Link>
           <div className="flex items-center">
-            <button onClick={() => setSearchOpen(true)} className="w-10 h-10 flex items-center justify-center">
-              <Search className="w-[22px] h-[22px]" style={{ color: '#444' }} />
-            </button>
             <Link href="/cart" className="w-10 h-10 flex items-center justify-center relative">
-              <ShoppingCart className="w-[22px] h-[22px]" style={{ color: '#444' }} />
+              <ShoppingCart className="w-[24px] h-[24px]" strokeWidth={2.2} style={{ color: '#222' }} />
               {cartCount > 0 && (
                 <span className="absolute top-1.5 right-1 w-[18px] h-[18px] flex items-center justify-center rounded-full text-white font-bold"
                   style={{ backgroundColor: '#968774', fontSize: '10px' }}>
                   {cartCount > 9 ? '9+' : cartCount}
                 </span>
               )}
-            </Link>
-            <Link href="/mypage" className="w-10 h-10 flex items-center justify-center">
-              <User className="w-[22px] h-[22px]" style={{ color: '#444' }} />
             </Link>
           </div>
         </div>
@@ -112,11 +106,16 @@ export default function Header() {
         {!pathname.startsWith('/mypage') && (
           <nav className="flex overflow-x-auto scrollbar-hide shadow-[0_1px_6px_rgba(0,0,0,0.06)]" style={{ paddingLeft: '18px', clipPath: 'inset(0 0 -10px 0)' }}>
             {NAV_TABS.map(tab => {
-              const sp = searchParams.toString()
-              const currentUrl = pathname + (sp ? `?${sp}` : '')
+              const tabUrl = new URL(tab.href, 'http://x')
+              const tabSort = tabUrl.searchParams.get('sort')
+              const tabCuration = tabUrl.searchParams.get('curation')
+              const curSort = searchParams.get('sort')
+              const curCuration = searchParams.get('curation')
               const isActive = tab.href === '/'
                 ? pathname === '/'
-                : currentUrl === tab.href
+                : pathname === tabUrl.pathname &&
+                  (tabSort ? curSort === tabSort : !curSort) &&
+                  (tabCuration ? curCuration === tabCuration : !curCuration)
               return (
                 <Link
                   key={tab.label}
