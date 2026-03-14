@@ -173,10 +173,10 @@ export default async function HomePage() {
       {/* ⑧ 실시간 랭킹 */}
       <section style={{ paddingTop: '22px' }}>
         <div className="flex items-center justify-between" style={{ padding: '0 16px 12px' }}>
-          <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#000', lineHeight: 1.3 }}>
+          <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#000', lineHeight: 1.3 }}>
             <span style={{ marginRight: '4px' }}>🏆</span>실시간 랭킹
           </h2>
-          <Link href="/goods?sort=sale_count" className="flex-shrink-0" style={{ fontSize: '15px', fontWeight: 400, color: '#5B9BD5' }}>
+          <Link href="/goods?sort=sale_count" className="flex-shrink-0" style={{ fontSize: '14px', fontWeight: 600, color: '#968774' }}>
             전체보기 &gt;
           </Link>
         </div>
@@ -244,7 +244,7 @@ function HorizontalSection({ emoji, title, subtitle, href, goods }: { emoji?: st
     <section style={{ paddingTop: '22px' }}>
       <div className="flex items-start justify-between" style={{ padding: '0 16px 12px' }}>
         <div>
-          <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#000', lineHeight: 1.3 }}>
+          <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#000', lineHeight: 1.3 }}>
             {emoji && <span style={{ marginRight: '4px' }}>{emoji}</span>}
             {title}
           </h2>
@@ -252,7 +252,7 @@ function HorizontalSection({ emoji, title, subtitle, href, goods }: { emoji?: st
             <p style={{ fontSize: '14px', color: '#999', marginTop: '2px' }}>{subtitle}</p>
           )}
         </div>
-        <Link href={href} className="flex-shrink-0" style={{ fontSize: '15px', fontWeight: 400, color: '#5B9BD5', marginTop: '2px' }}>
+        <Link href={href} className="flex-shrink-0" style={{ fontSize: '14px', fontWeight: 600, color: '#968774', marginTop: '2px' }}>
           전체보기 &gt;
         </Link>
       </div>
