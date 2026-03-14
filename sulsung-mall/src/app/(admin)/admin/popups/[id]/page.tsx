@@ -1,10 +1,10 @@
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import PopupFormClient from '../PopupFormClient'
 
 export default async function EditPopupPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const supabase = await createClient() as any
+  const supabase = await createAdminClient() as any
   const { data } = await supabase.from('popups').select('*').eq('id', id).single()
   if (!data) notFound()
 

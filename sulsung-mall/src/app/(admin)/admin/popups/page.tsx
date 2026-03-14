@@ -1,9 +1,18 @@
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { formatDateTime } from '@/utils/format'
 
+const PAGE_LABELS: Record<string, string> = {
+  '/': '홈',
+  '/goods': '상품목록',
+  '/categories': '카테고리',
+  '/auth/signup': '회원가입',
+  '/mypage': '마이페이지',
+  'all': '전체',
+}
+
 export default async function PopupsPage() {
-  const supabase = await createClient() as any
+  const supabase = await createAdminClient() as any
   const { data } = await supabase.from('popups').select('*').order('sort_order')
   const items = (data ?? []) as any[]
   const now = new Date()
@@ -21,6 +30,7 @@ export default async function PopupsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {items.map((item: any) => {
           const isLive = item.is_active && (!item.starts_at || new Date(item.starts_at) <= now) && (!item.ends_at || new Date(item.ends_at) >= now)
+          const pages = (item.target_pages ?? ['/']).map((p: string) => PAGE_LABELS[p] ?? p).join(', ')
           return (
             <Link key={item.id} href={`/admin/popups/${item.id}`}
               className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
@@ -35,8 +45,8 @@ export default async function PopupsPage() {
               <div className="p-4">
                 <p className="font-medium text-gray-900 text-sm">{item.name}</p>
                 <p className="text-xs text-gray-400 mt-1">
-                  {item.position === 'center' ? '중앙' : item.position === 'bottom' ? '하단' : '전체화면'}
-                  {item.starts_at && ` | ${formatDateTime(item.starts_at)} ~`}
+                  {pages}
+                  {item.starts_at && ` · ${formatDateTime(item.starts_at)} ~`}
                 </p>
               </div>
             </Link>
