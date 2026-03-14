@@ -47,7 +47,7 @@ export default function ReviewFormClient({ items }: { items: OrderItem[] }) {
 
     if (data.error) { alert(data.error); return }
     setDone(prev => new Set([...prev, item.id]))
-    alert('리뷰가 등록되었습니다! 100P 마일리지가 적립됩니다.')
+    alert('리뷰가 등록되었습니다! 100P 포인트가 적립됩니다.')
   }
 
   const pendingItems = items.filter(i => !i.reviewed)
@@ -87,7 +87,7 @@ export default function ReviewFormClient({ items }: { items: OrderItem[] }) {
           {done.has(item.id) ? (
             <div className="text-center py-4">
               <p className="text-[13px] font-medium" style={{ color: '#968774' }}>✅ 리뷰 작성 완료!</p>
-              <p className="text-[11px] mt-1" style={{ color: '#aaa' }}>100P 마일리지가 적립됩니다</p>
+              <p className="text-[11px] mt-1" style={{ color: '#aaa' }}>100P 포인트가 적립됩니다</p>
             </div>
           ) : (
             <>

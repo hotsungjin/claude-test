@@ -40,6 +40,7 @@ export default function SortDropdown({ currentSort, currentParams }: Props) {
     if (currentParams.max_price) qs.set('max_price', currentParams.max_price)
     if (currentParams.tag) qs.set('tag', currentParams.tag)
     if (currentParams.curation) qs.set('curation', currentParams.curation)
+    if (currentParams.title) qs.set('title', currentParams.title)
     const str = qs.toString()
     router.push(`/goods${str ? `?${str}` : ''}`)
     setOpen(false)

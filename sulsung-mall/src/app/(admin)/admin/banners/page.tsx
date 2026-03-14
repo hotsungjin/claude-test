@@ -3,15 +3,33 @@ import Link from 'next/link'
 
 const POSITION_LABEL: Record<string, string> = {
   main_top: '메인 상단',
+  main_ad: '광고 배너',
   main_middle: '메인 중간',
   main_bottom: '메인 하단',
   popup: '팝업',
   aside: '사이드',
 }
 
-export default async function AdminBannersPage() {
+const TABS = [
+  { key: 'all', label: '전체' },
+  { key: 'main_top', label: '상단 배너' },
+  { key: 'main_ad', label: '광고 배너' },
+]
+
+export default async function AdminBannersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | undefined }>
+}) {
+  const params = await searchParams
+  const tab = params.tab ?? 'all'
+
   const supabase = await createAdminClient() as any
-  const { data: banners } = await supabase.from('banners').select('*').order('sort_order')
+  let query = supabase.from('banners').select('*').order('sort_order')
+  if (tab !== 'all') {
+    query = query.eq('position', tab)
+  }
+  const { data: banners } = await query
 
   return (
     <div>
@@ -22,6 +40,29 @@ export default async function AdminBannersPage() {
           + 배너 등록
         </Link>
       </div>
+
+      {/* 탭 필터 */}
+      <div className="flex gap-1 mb-4">
+        {TABS.map(t => (
+          <Link
+            key={t.key}
+            href={t.key === 'all' ? '/admin/banners' : `/admin/banners?tab=${t.key}`}
+            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+              tab === t.key
+                ? 'bg-gray-900 text-white'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
+          >
+            {t.label}
+          </Link>
+        ))}
+      </div>
+
+      {tab === 'main_ad' && (
+        <div className="bg-blue-50 border border-blue-100 rounded-lg px-4 py-3 mb-4 text-sm text-blue-700">
+          광고 배너는 메인 페이지 콘텐츠 섹션 사이에 노출됩니다. 순서 1·2·3이 각각 영역 1·2·3에 배치됩니다.
+        </div>
+      )}
 
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
         <table className="w-full text-sm">
@@ -49,7 +90,11 @@ export default async function AdminBannersPage() {
                 </td>
                 <td className="px-4 py-3 font-medium text-gray-800">{banner.name}</td>
                 <td className="px-4 py-3">
-                  <span className="text-xs px-2 py-1 bg-blue-50 text-blue-700 rounded-full">
+                  <span className={`text-xs px-2 py-1 rounded-full ${
+                    banner.position === 'main_ad'
+                      ? 'bg-orange-50 text-orange-700'
+                      : 'bg-blue-50 text-blue-700'
+                  }`}>
                     {POSITION_LABEL[banner.position] ?? banner.position}
                   </span>
                 </td>

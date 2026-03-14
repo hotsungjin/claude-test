@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>MyTodo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+  <style>
+    /* ── Light mode (default) ── */
+    :root {
+      --primary: #135bec;
+      --primary-hover: #0f4dd4;
+      --bg: #f4f6fb;
+      --card: #ffffff;
+      --card2: #edf0f7;
+      --border: #dde3f0;
+      --text: #111827;
+      --text2: #6b7280;
+      --text3: #b0b9cc;
+      --green: #10b981;
+      --red: #ef4444;
+      --yellow: #f59e0b;
+      --purple: #8b5cf6;
+    }
+
+    /* ── Dark mode ── */
+    [data-theme="dark"] {
+      --bg: #101622;
+      --card: #1a2236;
+      --card2: #1d2844;
+      --border: #263352;
+      --text: #f0f4ff;
+      --text2: #8899bb;
+      --text3: #4a5a7a;
+    }
+
+    /* Cat badge: light */
+    .cat-기본  { background: rgba(19,91,236,0.1);  color: #135bec; }
+    .cat-업무  { background: rgba(139,92,246,0.1); color: #7c3aed; }
+    .cat-개인  { background: rgba(16,185,129,0.1); color: #059669; }
+    .cat-쇼핑  { background: rgba(245,158,11,0.1); color: #b45309; }
+    .cat-건강  { background: rgba(239,68,68,0.1);  color: #dc2626; }
+
+    /* Cat badge: dark */
+    [data-theme="dark"] .cat-기본  { background: rgba(19,91,236,0.15);  color: #6ba3ff; }
+    [data-theme="dark"] .cat-업무  { background: rgba(139,92,246,0.15); color: #a78bfa; }
+    [data-theme="dark"] .cat-개인  { background: rgba(16,185,129,0.15); color: #34d399; }
+    [data-theme="dark"] .cat-쇼핑  { background: rgba(245,158,11,0.15); color: #fbbf24; }
+    [data-theme="dark"] .cat-건강  { background: rgba(239,68,68,0.15);  color: #f87171; }
+
+    *, *::before, *::after {
+      margin: 0; padding: 0; box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .view {
+      width: 100%;
+      max-width: 430px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .hidden { display: none !important; }
+
+    /* ─── Material Icons ─── */
+    .icon {
+      font-family: 'Material Symbols Outlined';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 24px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-feature-settings: 'liga';
+      font-feature-settings: 'liga';
+      -webkit-font-smoothing: antialiased;
+      vertical-align: middle;
+    }
+
+    /* ═══════════════════════════════════════
+       HOME VIEW
+    ═══════════════════════════════════════ */
+
+    /* Header */
+    .home-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 56px 24px 16px;
+    }
+
+    .home-greeting h2 {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.5px;
+    }
+
+    .home-greeting p {
+      font-size: 13px;
+      color: var(--text2);
+      margin-top: 2px;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    /* Progress Card */
+    .progress-card {
+      margin: 8px 20px 20px;
+      background: var(--primary);
+      border-radius: 20px;
+      padding: 22px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(135deg, #135bec 0%, #0c3fa8 100%);
+      box-shadow: 0 8px 32px rgba(19, 91, 236, 0.3);
+    }
+
+    .progress-info h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 4px;
+    }
+
+    .progress-info p {
+      font-size: 13px;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 16px;
+    }
+
+    .progress-stats {
+      display: flex;
+      gap: 16px;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-num {
+      font-size: 22px;
+      font-weight: 800;
+      color: white;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: rgba(255,255,255,0.6);
+      margin-top: 2px;
+    }
+
+    .stat-divider {
+      width: 1px;
+      background: rgba(255,255,255,0.2);
+      align-self: stretch;
+    }
+
+    /* Circular progress */
+    .progress-ring-wrap {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      flex-shrink: 0;
+    }
+
+    .progress-ring-wrap svg {
+      transform: rotate(-90deg);
+    }
+
+    .progress-ring-track {
+      fill: none;
+      stroke: rgba(255,255,255,0.15);
+      stroke-width: 6;
+    }
+
+    .progress-ring-bar {
+      fill: none;
+      stroke: white;
+      stroke-width: 6;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.6s ease;
+    }
+
+    .progress-ring-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .progress-ring-pct {
+      font-size: 18px;
+      font-weight: 800;
+      color: white;
+      line-height: 1;
+    }
+
+    .progress-ring-done {
+      font-size: 10px;
+      color: rgba(255,255,255,0.65);
+      margin-top: 2px;
+    }
+
+    /* Section */
+    .section {
+      padding: 0 20px;
+      margin-bottom: 12px;
+    }
+
+    .section-hd {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .section-cnt {
+      font-size: 13px;
+      color: var(--text2);
+      background: var(--card2);
+      padding: 2px 10px;
+      border-radius: 20px;
+    }
+
+    /* Category Tabs */
+    .cat-tabs {
+      display: flex;
+      gap: 8px;
+      padding: 0 20px 16px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .cat-tabs::-webkit-scrollbar { display: none; }
+
+    .cat-tab {
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 7px 16px;
+      border-radius: 20px;
+      white-space: nowrap;
+      transition: all 0.15s;
+      background: var(--card);
+      color: var(--text2);
+      border: 1px solid var(--border);
+    }
+
+    .cat-tab.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* Task list scroll area */
+    .task-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: 120px;
+    }
+
+    /* Task Card */
+    .task-card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+      transition: all 0.15s;
+      position: relative;
+    }
+
+    .task-card:hover {
+      border-color: var(--primary);
+      background: var(--card2);
+    }
+
+    .task-card.done-card {
+      opacity: 0.5;
+    }
+
+    /* Checkbox */
+    .task-check {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      margin-top: 1px;
+      background: transparent;
+    }
+
+    .task-check:hover {
+      border-color: var(--primary);
+    }
+
+    .task-check.checked {
+      background: var(--green);
+      border-color: var(--green);
+    }
+
+    .task-check.checked::after {
+      content: '';
+      width: 5px;
+      height: 9px;
+      border: 2px solid white;
+      border-top: none;
+      border-left: none;
+      transform: rotate(45deg) translateY(-1px);
+    }
+
+    .task-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .task-title-text {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      word-break: keep-all;
+      line-height: 1.4;
+    }
+
+    .task-title-text.done-text {
+      text-decoration: line-through;
+      color: var(--text3);
+    }
+
+    .task-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .cat-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+
+    .time-badge {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 11px;
+      color: var(--text3);
+    }
+
+    .time-badge .icon { font-size: 13px; }
+
+    /* Task actions (delete) */
+    .task-del {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      color: var(--text3);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+
+    .task-card:hover .task-del {
+      opacity: 1;
+    }
+
+    .task-del:hover {
+      color: var(--red);
+      background: rgba(239,68,68,0.1);
+    }
+
+    .task-del .icon { font-size: 18px; }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 48px 20px;
+    }
+
+    .empty-icon { font-size: 48px; margin-bottom: 12px; display: block; }
+    .empty-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .empty-desc { font-size: 13px; color: var(--text2); }
+
+    /* Done section toggle */
+    .done-toggle-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      padding: 10px 4px;
+      border: none;
+      background: none;
+      font-family: inherit;
+      color: var(--text2);
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .done-toggle-btn .icon {
+      font-size: 18px;
+      transition: transform 0.2s;
+    }
+
+    .done-toggle-btn .icon.rotated { transform: rotate(180deg); }
+
+    .done-section-count {
+      background: var(--card2);
+      color: var(--text2);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+
+    .done-section { display: none; }
+    .done-section.open { display: block; }
+
+    /* FAB */
+    .fab {
+      position: fixed;
+      bottom: 90px;
+      right: calc(50% - 215px + 20px);
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      background: var(--primary);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(19,91,236,0.4);
+      transition: all 0.15s;
+      z-index: 30;
+    }
+
+    .fab:hover {
+      background: var(--primary-hover);
+      transform: scale(1.05);
+      box-shadow: 0 12px 32px rgba(19,91,236,0.5);
+    }
+
+    .fab:active { transform: scale(0.97); }
+
+    .fab .icon {
+      font-size: 28px;
+      color: white;
+    }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 430px;
+      background: var(--card);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding-bottom: env(safe-area-inset-bottom);
+      z-index: 20;
+    }
+
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 12px 0;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--text3);
+      font-size: 11px;
+      font-weight: 600;
+      font-family: inherit;
+      transition: color 0.15s;
+    }
+
+    .nav-item .icon { font-size: 22px; }
+    .nav-item.active { color: var(--primary); }
+    .nav-item:hover:not(.active) { color: var(--text2); }
+
+    /* ═══════════════════════════════════════
+       NEW TASK VIEW
+    ═══════════════════════════════════════ */
+
+    .new-task-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 56px 20px 20px;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s;
+      color: var(--text);
+    }
+
+    .icon-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .new-task-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .save-btn {
+      padding: 8px 20px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .save-btn:hover { background: var(--primary-hover); }
+    .save-btn:active { opacity: 0.85; }
+
+    .new-task-form {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 20px 100px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .task-input {
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+      resize: none;
+    }
+
+    .task-input::placeholder { color: var(--text3); font-weight: 400; }
+    .task-input:focus { border-color: var(--primary); }
+
+    /* Category pills */
+    .cat-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .cat-pill {
+      padding: 9px 18px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      background: var(--card);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text2);
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .cat-pill.selected {
+      border-color: var(--primary);
+      background: rgba(19,91,236,0.12);
+      color: var(--primary);
+    }
+
+    .cat-pill .icon { font-size: 18px; }
+
+    /* Create task button */
+    .create-btn-wrap {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 430px;
+      padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
+      background: linear-gradient(to top, var(--bg) 60%, transparent);
+      z-index: 20;
+    }
+
+    .create-btn {
+      width: 100%;
+      padding: 16px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 16px;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.15s;
+      box-shadow: 0 8px 24px rgba(19,91,236,0.35);
+    }
+
+    .create-btn:hover { background: var(--primary-hover); }
+    .create-btn:active { opacity: 0.85; transform: scale(0.99); }
+    .create-btn .icon { font-size: 20px; }
+
+    /* ─── Responsive for wider screens ─── */
+    @media (min-width: 430px) {
+      .fab {
+        right: calc(50% - 215px + 20px);
+      }
+    }
+
+    @media (max-width: 430px) {
+      .fab {
+        right: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════ HOME VIEW ══════════ -->
+  <div id="view-home" class="view">
+
+    <!-- Header -->
+    <div class="home-header">
+      <div class="home-greeting">
+        <h2 id="greeting-text">안녕하세요 👋</h2>
+        <p id="today-date"></p>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button id="theme-btn" onclick="toggleTheme()"
+          style="width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;
+                 background:var(--card2);display:flex;align-items:center;justify-content:center;
+                 transition:background 0.2s;flex-shrink:0;">
+          <span class="icon" id="theme-icon" style="font-size:20px;color:var(--text2)">dark_mode</span>
+        </button>
+        <div class="avatar" id="home-avatar">M</div>
+      </div>
+    </div>
+
+    <!-- Progress Card -->
+    <div class="progress-card">
+      <div class="progress-info">
+        <h3>오늘의 진행 상황</h3>
+        <p id="progress-sub">할 일을 완료해 보세요!</p>
+        <div class="progress-stats">
+          <div class="stat">
+            <div class="stat-num" id="stat-done">0</div>
+            <div class="stat-label">완료</div>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
+            <div class="stat-num" id="stat-remaining">0</div>
+            <div class="stat-label">남은 것</div>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
+            <div class="stat-num" id="stat-total">0</div>
+            <div class="stat-label">전체</div>
+          </div>
+        </div>
+      </div>
+      <div class="progress-ring-wrap">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle class="progress-ring-track" cx="40" cy="40" r="34"/>
+          <circle class="progress-ring-bar" id="progress-ring-bar" cx="40" cy="40" r="34"
+            stroke-dasharray="213.6"
+            stroke-dashoffset="213.6"/>
+        </svg>
+        <div class="progress-ring-text">
+          <div class="progress-ring-pct" id="progress-pct">0%</div>
+          <div class="progress-ring-done">완료</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Tabs -->
+    <div class="cat-tabs" id="cat-tabs"></div>
+
+    <!-- Task Scroll Area -->
+    <div class="task-scroll">
+
+      <!-- Active Tasks -->
+      <div class="section" id="active-section">
+        <div class="section-hd">
+          <span class="section-title">할 일</span>
+          <span class="section-cnt" id="active-cnt">0</span>
+        </div>
+        <div id="active-list"></div>
+      </div>
+
+      <!-- Done Tasks -->
+      <div class="section" id="done-section" style="display:none">
+        <button class="done-toggle-btn" onclick="toggleDoneSection()">
+          <span class="icon" id="done-toggle-icon">expand_more</span>
+          <span>완료된 항목</span>
+          <span class="done-section-count" id="done-cnt">0</span>
+        </button>
+        <div class="done-section" id="done-list-wrap"></div>
+      </div>
+
+    </div>
+
+    <!-- FAB -->
+    <button class="fab" onclick="showNewTask()">
+      <span class="icon">add</span>
+    </button>
+
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+      <button class="nav-item active">
+        <span class="icon">check_circle</span>
+        <span>할 일</span>
+      </button>
+      <button class="nav-item">
+        <span class="icon">calendar_month</span>
+        <span>캘린더</span>
+      </button>
+      <button class="nav-item">
+        <span class="icon">self_improvement</span>
+        <span>집중</span>
+      </button>
+      <button class="nav-item">
+        <span class="icon">person</span>
+        <span>프로필</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- ══════════ NEW TASK VIEW ══════════ -->
+  <div id="view-new" class="view hidden">
+
+    <!-- Top Bar -->
+    <div class="new-task-header">
+      <button class="icon-btn" onclick="showHome()">
+        <span class="icon">close</span>
+      </button>
+      <span class="new-task-title">새 할 일</span>
+      <button class="save-btn" onclick="saveTask()">저장</button>
+    </div>
+
+    <!-- Form -->
+    <div class="new-task-form">
+
+      <div class="form-group">
+        <label class="form-label">할 일</label>
+        <input
+          type="text"
+          id="new-title"
+          class="task-input"
+          placeholder="무엇을 해야 하나요?"
+          onkeydown="if(event.key==='Enter') saveTask()">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">메모</label>
+        <textarea
+          id="new-notes"
+          class="task-input"
+          placeholder="메모를 입력하세요 (선택)"
+          rows="4"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">카테고리</label>
+        <div class="cat-pills" id="cat-pills"></div>
+      </div>
+
+    </div>
+
+    <!-- Create Button -->
+    <div class="create-btn-wrap">
+      <button class="create-btn" onclick="saveTask()">
+        <span class="icon">add_circle</span>
+        할 일 추가
+      </button>
+    </div>
+
+  </div>
+
+  <script>
+    /* ─── State ─── */
+    let todos = [];
+    let activeCategory = '전체';
+    let doneOpen = false;
+    let selectedCategory = '기본';
+    let submitting = false;
+
+    const CATEGORIES = [
+      { name: '기본',  icon: 'home',       colorClass: 'cat-기본' },
+      { name: '업무',  icon: 'work',       colorClass: 'cat-업무' },
+      { name: '개인',  icon: 'person',     colorClass: 'cat-개인' },
+      { name: '쇼핑',  icon: 'shopping_cart', colorClass: 'cat-쇼핑' },
+      { name: '건강',  icon: 'favorite',   colorClass: 'cat-건강' },
+    ];
+
+    /* ─── View Switching ─── */
+    function showNewTask() {
+      document.getElementById('view-home').classList.add('hidden');
+      document.getElementById('view-new').classList.remove('hidden');
+      document.getElementById('new-title').focus();
+    }
+
+    function showHome() {
+      document.getElementById('view-new').classList.add('hidden');
+      document.getElementById('view-home').classList.remove('hidden');
+      clearForm();
+    }
+
+    function clearForm() {
+      document.getElementById('new-title').value = '';
+      document.getElementById('new-notes').value = '';
+      selectedCategory = '기본';
+      renderCatPills();
+    }
+
+    /* ─── API ─── */
+    async function fetchTodos() {
+      const res = await fetch('/api/todos');
+      todos = await res.json();
+      render();
+    }
+
+    async function saveTask() {
+      if (submitting) return;
+      const titleEl = document.getElementById('new-title');
+      const content = titleEl.value.trim();
+      if (!content) {
+        titleEl.focus();
+        titleEl.style.borderColor = '#ef4444';
+        setTimeout(() => titleEl.style.borderColor = '', 1500);
+        return;
+      }
+
+      submitting = true;
+      const btnText = document.querySelector('.create-btn');
+      btnText.style.opacity = '0.6';
+
+      await fetch('/api/todos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content, category: selectedCategory })
+      });
+
+      submitting = false;
+      showHome();
+      await fetchTodos();
+    }
+
+    async function toggleTodo(id) {
+      const todo = todos.find(t => t.id === id);
+      if (!todo) return;
+      await fetch(`/api/todos/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ done: todo.done ? 0 : 1 })
+      });
+      await fetchTodos();
+    }
+
+    async function deleteTodo(id) {
+      await fetch(`/api/todos/${id}`, { method: 'DELETE' });
+      await fetchTodos();
+    }
+
+    /* ─── Rendering ─── */
+    function esc(s) {
+      return String(s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function getDateStr() {
+      const d = new Date();
+      const days = ['일','월','화','수','목','금','토'];
+      return `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 (${days[d.getDay()]})`;
+    }
+
+    function getGreeting() {
+      const h = new Date().getHours();
+      if (h < 12) return '좋은 아침이에요 ☀️';
+      if (h < 18) return '좋은 오후예요 👋';
+      return '좋은 저녁이에요 🌙';
+    }
+
+    function updateProgress(total, done) {
+      const pct = total === 0 ? 0 : Math.round((done / total) * 100);
+      const circumference = 2 * Math.PI * 34; // r=34 → ~213.6
+      const offset = circumference - (pct / 100) * circumference;
+
+      document.getElementById('progress-ring-bar').style.strokeDashoffset = offset;
+      document.getElementById('progress-pct').textContent = pct + '%';
+      document.getElementById('stat-done').textContent = done;
+      document.getElementById('stat-remaining').textContent = total - done;
+      document.getElementById('stat-total').textContent = total;
+
+      const sub = document.getElementById('progress-sub');
+      if (total === 0) sub.textContent = '할 일을 추가해 보세요!';
+      else if (pct === 100) sub.textContent = '모두 완료했어요! 🎉';
+      else sub.textContent = `${total - done}개 남았어요`;
+    }
+
+    function renderCatTabs() {
+      const tabs = document.getElementById('cat-tabs');
+      const activeTodos = todos;
+      const usedCats = [...new Set(activeTodos.map(t => t.category).filter(Boolean))];
+      const availCats = CATEGORIES.filter(c => usedCats.includes(c.name) || c.name === '기본');
+
+      let html = `<button class="cat-tab ${activeCategory==='전체'?'active':''}" onclick="setCategory('전체')">전체</button>`;
+      html += availCats.map(c =>
+        `<button class="cat-tab ${activeCategory===c.name?'active':''}" onclick="setCategory('${esc(c.name)}')">${esc(c.name)}</button>`
+      ).join('');
+
+      // Also add categories present in todos but not in CATEGORIES
+      const extraCats = usedCats.filter(n => !CATEGORIES.find(c => c.name === n));
+      html += extraCats.map(n =>
+        `<button class="cat-tab ${activeCategory===n?'active':''}" onclick="setCategory('${esc(n)}')">${esc(n)}</button>`
+      ).join('');
+
+      tabs.innerHTML = html;
+    }
+
+    function renderCatPills() {
+      const pills = document.getElementById('cat-pills');
+      pills.innerHTML = CATEGORIES.map(c => `
+        <button
+          class="cat-pill ${selectedCategory===c.name?'selected':''}"
+          onclick="selectCat('${esc(c.name)}')">
+          <span class="icon">${c.icon}</span>
+          ${esc(c.name)}
+        </button>
+      `).join('');
+    }
+
+    function getCatColorClass(cat) {
+      const found = CATEGORIES.find(c => c.name === cat);
+      return found ? found.colorClass : 'cat-기본';
+    }
+
+    function taskCardHTML(todo) {
+      const catClass = getCatColorClass(todo.category || '기본');
+      const isDone = !!todo.done;
+      return `
+        <div class="task-card ${isDone ? 'done-card' : ''}">
+          <div class="task-check ${isDone ? 'checked' : ''}" onclick="toggleTodo(${todo.id})"></div>
+          <div class="task-body">
+            <div class="task-title-text ${isDone ? 'done-text' : ''}">${esc(todo.content)}</div>
+            <div class="task-meta">
+              <span class="cat-badge ${catClass}">${esc(todo.category || '기본')}</span>
+              <span class="time-badge">
+                <span class="icon">schedule</span>
+                ${formatDate(todo.created_at)}
+              </span>
+            </div>
+          </div>
+          <button class="task-del" onclick="deleteTodo(${todo.id})" title="삭제">
+            <span class="icon">delete</span>
+          </button>
+        </div>`;
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      const d = new Date(dateStr);
+      const now = new Date();
+      const diff = now - d;
+      const mins = Math.floor(diff / 60000);
+      if (mins < 1) return '방금 전';
+      if (mins < 60) return `${mins}분 전`;
+      const hours = Math.floor(mins / 60);
+      if (hours < 24) return `${hours}시간 전`;
+      const days = Math.floor(hours / 24);
+      return `${days}일 전`;
+    }
+
+    function render() {
+      // Init header
+      document.getElementById('greeting-text').textContent = getGreeting();
+      document.getElementById('today-date').textContent = getDateStr();
+
+      // Tabs
+      renderCatTabs();
+      renderCatPills();
+
+      // Filter
+      const filtered = activeCategory === '전체'
+        ? todos
+        : todos.filter(t => t.category === activeCategory);
+
+      const active = filtered.filter(t => !t.done);
+      const done   = filtered.filter(t =>  t.done);
+      const total  = todos.length;
+      const doneTotal = todos.filter(t => t.done).length;
+
+      updateProgress(total, doneTotal);
+
+      // Active list
+      const activeList = document.getElementById('active-list');
+      const activeCnt  = document.getElementById('active-cnt');
+      activeCnt.textContent = active.length;
+
+      if (active.length === 0) {
+        activeList.innerHTML = `
+          <div class="empty-state">
+            <span class="empty-icon">🎉</span>
+            <p class="empty-title">모두 완료했어요!</p>
+            <p class="empty-desc">새 할 일을 추가해 보세요</p>
+          </div>`;
+      } else {
+        activeList.innerHTML = active.map(taskCardHTML).join('');
+      }
+
+      // Done section
+      const doneSection = document.getElementById('done-section');
+      const doneCnt     = document.getElementById('done-cnt');
+      const doneListWrap = document.getElementById('done-list-wrap');
+
+      if (done.length > 0) {
+        doneSection.style.display = 'block';
+        doneCnt.textContent = done.length;
+        doneListWrap.innerHTML = done.map(taskCardHTML).join('');
+        doneListWrap.className = `done-section ${doneOpen ? 'open' : ''}`;
+        const icon = document.getElementById('done-toggle-icon');
+        icon.textContent = doneOpen ? 'expand_less' : 'expand_more';
+      } else {
+        doneSection.style.display = 'none';
+      }
+    }
+
+    function setCategory(cat) {
+      activeCategory = cat;
+      render();
+    }
+
+    function selectCat(name) {
+      selectedCategory = name;
+      renderCatPills();
+    }
+
+    function toggleDoneSection() {
+      doneOpen = !doneOpen;
+      const wrap = document.getElementById('done-list-wrap');
+      wrap.className = `done-section ${doneOpen ? 'open' : ''}`;
+      const icon = document.getElementById('done-toggle-icon');
+      icon.textContent = doneOpen ? 'expand_less' : 'expand_more';
+    }
+
+    /* ─── Theme ─── */
+    function toggleTheme() {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const next = isDark ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      document.getElementById('theme-icon').textContent = next === 'dark' ? 'light_mode' : 'dark_mode';
+      localStorage.setItem('mytodo-theme', next);
+    }
+
+    (function initTheme() {
+      const saved = localStorage.getItem('mytodo-theme') || 'light';
+      document.documentElement.setAttribute('data-theme', saved);
+      const icon = document.getElementById('theme-icon');
+      if (icon) icon.textContent = saved === 'dark' ? 'light_mode' : 'dark_mode';
+    })();
+
+    /* ─── Init ─── */
+    renderCatPills();
+    fetchTodos();
+  </script>
+
+</body>
+</html>

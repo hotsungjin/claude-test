@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}사용자 관리 - 무료 게시판 관리자{% endblock %}
+
+{% block content %}
+<div class="max-w-screen-xl mx-auto px-4 py-6">
+
+  <!-- 헤더 -->
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-900">사용자 관리</h1>
+      <p class="text-sm text-slate-500 mt-1">전체 사용자 권한 및 활성화 상태 관리</p>
+    </div>
+    <a href="/admin/boards"
+       class="text-sm px-3 py-1.5 border border-slate-200 rounded-md text-slate-600 hover:bg-slate-50 transition-colors">
+      게시판 관리
+    </a>
+  </div>
+
+  <!-- 사용자 목록 -->
+  <div class="bg-white border border-slate-200 rounded-lg p-6">
+    <div id="user-list">
+      {% include "partials/user_list_admin.html" %}
+    </div>
+  </div>
+
+</div>
+
+<!-- 사용자 수정 모달 -->
+<div id="user-modal" class="fixed inset-0 z-50 hidden">
+  <div class="absolute inset-0 bg-black/40" onclick="closeUserModal()"></div>
+  <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-80 bg-white rounded-lg shadow-xl p-6">
+    <h2 class="text-base font-semibold text-slate-900 mb-4">사용자 권한 수정</h2>
+    <p class="text-sm text-slate-600 mb-4">
+      대상: <strong id="modal-username" class="text-slate-900"></strong>
+    </p>
+
+    <form id="user-edit-form">
+      <input type="hidden" id="modal-user-id"/>
+
+      <div class="space-y-3 mb-5">
+        <label class="flex items-center gap-3 cursor-pointer">
+          <input type="checkbox" id="modal-is-admin"
+                 class="w-4 h-4 rounded border-slate-300 text-primary-DEFAULT focus:ring-primary-DEFAULT"/>
+          <span class="text-sm text-slate-700">관리자 권한 부여</span>
+        </label>
+        <label class="flex items-center gap-3 cursor-pointer">
+          <input type="checkbox" id="modal-is-active" checked
+                 class="w-4 h-4 rounded border-slate-300 text-primary-DEFAULT focus:ring-primary-DEFAULT"/>
+          <span class="text-sm text-slate-700">계정 활성화</span>
+        </label>
+      </div>
+
+      <div class="flex justify-end gap-2">
+        <button type="button" onclick="closeUserModal()"
+                class="px-3 py-1.5 text-sm border border-slate-200 rounded-md text-slate-600 hover:bg-slate-50 transition-colors">
+          취소
+        </button>
+        <button type="button" onclick="submitUserEdit()"
+                class="px-3 py-1.5 text-sm bg-slate-900 text-white rounded-md hover:bg-slate-700 transition-colors font-medium">
+          저장
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function openUserModal(id, username, isAdmin, isActive) {
+  document.getElementById('modal-user-id').value = id;
+  document.getElementById('modal-username').textContent = username;
+  document.getElementById('modal-is-admin').checked = isAdmin;
+  document.getElementById('modal-is-active').checked = isActive;
+  document.getElementById('user-modal').classList.remove('hidden');
+}
+
+function closeUserModal() {
+  document.getElementById('user-modal').classList.add('hidden');
+}
+
+async function submitUserEdit() {
+  const uid = document.getElementById('modal-user-id').value;
+  const isAdmin = document.getElementById('modal-is-admin').checked;
+  const isActive = document.getElementById('modal-is-active').checked;
+  const tok = getCsrfToken();
+
+  const data = new FormData();
+  data.append('is_admin', isAdmin.toString());
+  data.append('is_active', isActive.toString());
+
+  const resp = await fetch(`/admin/users/${uid}`, {
+    method: 'PUT',
+    headers: { 'X-CSRF-Token': tok },
+    body: data,
+  });
+
+  if (resp.ok) {
+    const html = await resp.text();
+    document.getElementById('user-list').innerHTML = html;
+    closeUserModal();
+  } else {
+    alert('수정 중 오류가 발생했습니다.');
+  }
+}
+</script>
+{% endblock %}

@@ -1,8 +1,10 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
+import { X } from 'lucide-react'
 
 interface Category {
   id: number
@@ -30,6 +32,7 @@ export default function CategoryClient({
   parents: Category[]
   children: Category[]
 }) {
+  const router = useRouter()
   const [activeId, setActiveId] = useState<number | null>(parents[0]?.id ?? null)
   const rightRef = useRef<HTMLDivElement>(null)
   const sectionRefs = useRef<Map<number, HTMLDivElement>>(new Map())
@@ -86,14 +89,17 @@ export default function CategoryClient({
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#fff' }}>
-      <style>{`[data-store-footer] { display: none !important; }`}</style>
+    <div className="absolute inset-0 flex flex-col" style={{ backgroundColor: '#fff', zIndex: 40 }}>
+      <style>{`[data-store-header], [data-store-footer] { display: none !important; } .app-scroll-wrapper { overflow: hidden !important; }`}</style>
       {/* 헤더 */}
-      <div className="px-4 py-3 border-b" style={{ borderColor: '#eee' }}>
+      <div className="px-4 py-3 border-b flex-shrink-0 flex items-center justify-between" style={{ borderColor: '#eee' }}>
         <h1 className="text-[18px] font-bold" style={{ color: '#333' }}>카테고리</h1>
+        <button onClick={() => router.back()} className="w-8 h-8 flex items-center justify-center">
+          <X className="w-5 h-5" style={{ color: '#333' }} />
+        </button>
       </div>
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 min-h-0" style={{ paddingBottom: '52px' }}>
         {/* 좌측: 대분류 */}
         <div
           ref={leftRef}

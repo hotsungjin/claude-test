@@ -15,11 +15,6 @@ export default function PcBrandingSidebar() {
   return (
     <aside className="sticky top-0 hidden h-screen w-[360px] flex-col items-center justify-center gap-[80px] md:flex">
       <div className="w-full">
-        {/* 로고 */}
-        <Link href="/">
-          <span className="text-[36px] font-extrabold tracking-tight" style={{ color: '#968774' }}>설성목장</span>
-        </Link>
-
         {/* 슬로건 */}
         <p className="py-[24px] text-[34px] font-bold leading-tight" style={{ color: '#333' }}>
           설성목장의 신선함으로<br />

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import GoodsFilterClient from './GoodsFilterClient'
 import GoodsInfiniteGrid from './GoodsInfiniteGrid'
 import SortDropdown from './SortDropdown'
+import GoodsListHeader from './GoodsListHeader'
 
 interface SearchParams {
   category?: string
@@ -14,6 +15,7 @@ interface SearchParams {
   max_price?: string
   tag?: string
   curation?: string
+  title?: string
 }
 
 function buildQuery(params: SearchParams) {
@@ -25,6 +27,7 @@ function buildQuery(params: SearchParams) {
   if (params.max_price) qs.set('max_price', params.max_price)
   if (params.tag) qs.set('tag', params.tag)
   if (params.curation) qs.set('curation', params.curation)
+  if (params.title) qs.set('title', params.title)
   return qs.toString()
 }
 
@@ -134,10 +137,15 @@ export default async function GoodsListPage({ searchParams }: { searchParams: Pr
   const activeFilters = [params.min_price, params.max_price, params.tag].filter(Boolean).length
   const queryString = buildQuery(params)
 
+  const hasTitle = !!params.title
+
   return (
     <div>
-      {/* 카테고리 탭 (수평 스크롤) */}
-      <div className="overflow-x-auto scrollbar-hide bg-white" style={{ marginTop: '2px' }}>
+      {/* 커스텀 헤더 (전체보기에서 진입 시) */}
+      {hasTitle && <GoodsListHeader title={params.title!} />}
+
+      {/* 카테고리 탭 (수평 스크롤) — 전체보기 진입 시 숨김 */}
+      {!hasTitle && <div className="overflow-x-auto scrollbar-hide bg-white" style={{ marginTop: '2px' }}>
         <div className="flex px-4 py-2 gap-2 whitespace-nowrap">
           <Link
             href={buildLink(params, { category: undefined })}
@@ -157,7 +165,7 @@ export default async function GoodsListPage({ searchParams }: { searchParams: Pr
             </Link>
           ))}
         </div>
-      </div>
+      </div>}
 
       {/* 상품수 + 정렬 + 필터 (한 줄) */}
       <div className="flex items-center justify-between px-4 py-2.5 bg-white">

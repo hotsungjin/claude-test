@@ -20,7 +20,7 @@ export default function AdminHeader({ name, role }: AdminHeaderProps) {
   }
 
   return (
-    <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between flex-shrink-0">
+    <header className="bg-white border-b border-gray-200 px-6 py-2 flex items-center justify-between flex-shrink-0">
       <div />
       <div className="flex items-center gap-3">
         <button className="relative p-2 hover:bg-gray-100 rounded-lg">

@@ -1,0 +1,13 @@
+memo.txt
+
+# 민감한 파일
+Github key.txt
+
+# macOS
+.DS_Store
+
+# 로그 파일
+*.log
+
+# Claude 로그
+.playwright-mcp/

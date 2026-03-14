@@ -176,7 +176,7 @@ export default async function HomePage() {
           <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#000', lineHeight: 1.3 }}>
             <span style={{ marginRight: '4px' }}>🏆</span>실시간 랭킹
           </h2>
-          <Link href="/goods?sort=sale_count" className="flex-shrink-0" style={{ fontSize: '14px', fontWeight: 600, color: '#968774' }}>
+          <Link href={`/goods?sort=sale_count&title=${encodeURIComponent('🏆 실시간 랭킹')}`} className="flex-shrink-0" style={{ fontSize: '14px', fontWeight: 600, color: '#968774' }}>
             전체보기 &gt;
           </Link>
         </div>
@@ -240,6 +240,8 @@ function Divider() {
 
 function HorizontalSection({ emoji, title, subtitle, href, goods }: { emoji?: string; title: string; subtitle?: string; href: string; goods: any[] }) {
   if (goods.length === 0) return null
+  const displayTitle = emoji ? `${emoji} ${title}` : title
+  const fullHref = `${href}${href.includes('?') ? '&' : '?'}title=${encodeURIComponent(displayTitle)}`
   return (
     <section style={{ paddingTop: '22px' }}>
       <div className="flex items-start justify-between" style={{ padding: '0 16px 12px' }}>
@@ -252,7 +254,7 @@ function HorizontalSection({ emoji, title, subtitle, href, goods }: { emoji?: st
             <p style={{ fontSize: '14px', color: '#999', marginTop: '2px' }}>{subtitle}</p>
           )}
         </div>
-        <Link href={href} className="flex-shrink-0" style={{ fontSize: '14px', fontWeight: 600, color: '#968774', marginTop: '2px' }}>
+        <Link href={fullHref} className="flex-shrink-0" style={{ fontSize: '14px', fontWeight: 600, color: '#968774', marginTop: '2px' }}>
           전체보기 &gt;
         </Link>
       </div>

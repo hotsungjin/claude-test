@@ -65,7 +65,7 @@ export default async function AdminMemberDetailPage({ params }: { params: Promis
                 </dd>
               </div>
               <div>
-                <dt className="text-gray-500 text-xs mb-0.5">마일리지</dt>
+                <dt className="text-gray-500 text-xs mb-0.5">포인트</dt>
                 <dd className="font-medium text-green-700">{(member.mileage ?? 0).toLocaleString()}P</dd>
               </div>
               <div>
@@ -118,7 +118,7 @@ export default async function AdminMemberDetailPage({ params }: { params: Promis
 
           {/* 마일리지 이력 */}
           <section className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className="text-base font-semibold text-gray-900 mb-4">마일리지 이력</h2>
+            <h2 className="text-base font-semibold text-gray-900 mb-4">포인트 이력</h2>
             {(mileageLogs ?? []).length > 0 ? (
               <table className="w-full text-sm">
                 <thead>
@@ -143,7 +143,7 @@ export default async function AdminMemberDetailPage({ params }: { params: Promis
                 </tbody>
               </table>
             ) : (
-              <p className="text-sm text-gray-400">마일리지 이력이 없습니다.</p>
+              <p className="text-sm text-gray-400">포인트 이력이 없습니다.</p>
             )}
           </section>
         </div>

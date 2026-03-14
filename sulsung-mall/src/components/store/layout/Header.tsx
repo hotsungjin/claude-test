@@ -75,11 +75,12 @@ export default function Header() {
   }
 
   const isMypage = pathname.startsWith('/mypage') || pathname.startsWith('/notice') || pathname.startsWith('/faq')
+  const isGoodsWithTitle = pathname === '/goods' && searchParams.get('title')
 
   return (
     <>
-      {/* 상단 헤더 — 마이페이지에서는 숨김 */}
-      {!isMypage && (
+      {/* 상단 헤더 — 마이페이지 및 타이틀이 있는 상품 목록에서는 숨김 */}
+      {!isMypage && !isGoodsWithTitle && (
       <header
         data-store-header
         className="sticky top-0 z-50 w-full bg-white"

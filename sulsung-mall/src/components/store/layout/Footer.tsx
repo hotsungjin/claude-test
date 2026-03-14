@@ -1,4 +1,7 @@
+'use client'
+
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 const FOOTER_LINKS = [
   { href: '/policy/business', label: '사업자 정보' },
@@ -10,6 +13,9 @@ const FOOTER_LINKS = [
 ]
 
 export default function Footer() {
+  const pathname = usePathname()
+  if (pathname !== '/') return null
+
   return (
     <footer data-store-footer style={{ backgroundColor: '#f5f5f5' }}>
       {/* 링크 */}
@@ -27,7 +33,7 @@ export default function Footer() {
       </div>
 
       {/* 사업자 정보 */}
-      <div className="px-4" style={{ paddingBottom: '72px' }}>
+      <div className="px-4" style={{ paddingBottom: '20px' }}>
         <p className="text-[12px] leading-[1.9]" style={{ color: '#888' }}>
           설성목장 대표이사 : 대표자명<br />
           경기도 이천시 설성면<br />

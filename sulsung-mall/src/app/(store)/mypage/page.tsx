@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { Package, Ticket, Heart, MessageSquare, ChevronRight } from 'lucide-react'
+import { Package, Ticket, Heart, MessageSquare, ChevronRight, Home } from 'lucide-react'
+import CartBadgeLink from '@/components/store/mypage/CartBadgeLink'
 
 const GRADE_LABEL: Record<string, string> = {
   bronze: '브론즈',
@@ -17,10 +18,21 @@ export default async function MypagePage() {
 
   return (
     <div style={{ backgroundColor: '#fff' }}>
+      {/* 마이홈 헤더 */}
+      <div className="sticky top-0 z-40 bg-white flex items-center justify-between h-[52px] px-6">
+        <h1 className="text-[20px] font-bold" style={{ color: '#222' }}>마이설성</h1>
+        <div className="flex items-center">
+          <Link href="/" className="w-10 h-10 flex items-center justify-center">
+            <Home className="w-[24px] h-[24px]" strokeWidth={2.2} style={{ color: '#222' }} />
+          </Link>
+          <CartBadgeLink />
+        </div>
+      </div>
+
       {/* 인사 + 등급 */}
       <div className="px-6 pt-6 pb-4">
-        <p className="text-[13px]" style={{ color: '#968774' }}>
-          반가워요! <span className="text-[18px] font-bold" style={{ color: '#222' }}>{member?.name ?? '회원'}님</span>
+        <p className="text-[14px]" style={{ color: '#968774' }}>
+          반가워요! <span className="text-[19px] font-bold" style={{ color: '#222' }}>{member?.name ?? '회원'}님</span>
         </p>
       </div>
 
@@ -28,16 +40,16 @@ export default async function MypagePage() {
       <div className="mx-6 rounded-xl overflow-hidden" style={{ border: '1px solid #e8e4df' }}>
         <Link href="/mypage/mileage" className="flex items-center justify-between px-4 py-3.5"
           style={{ borderBottom: '1px solid #f0ece7' }}>
-          <span className="text-[14px]" style={{ color: '#555' }}>적립금</span>
+          <span className="text-[18px]" style={{ color: '#555' }}>포인트</span>
           <span className="flex items-center gap-1">
-            <span className="text-[15px] font-bold" style={{ color: '#222' }}>{(member?.mileage ?? 0).toLocaleString()}원</span>
+            <span className="text-[18px] font-bold" style={{ color: '#222' }}>{(member?.mileage ?? 0).toLocaleString()}원</span>
             <ChevronRight className="w-4 h-4" style={{ color: '#bbb' }} />
           </span>
         </Link>
         <Link href="/mypage/coupons" className="flex items-center justify-between px-4 py-3.5">
-          <span className="text-[14px]" style={{ color: '#555' }}>쿠폰</span>
+          <span className="text-[18px]" style={{ color: '#555' }}>쿠폰</span>
           <span className="flex items-center gap-1">
-            <span className="text-[15px] font-bold" style={{ color: '#222' }}>{member?.coupon_count ?? 0}장</span>
+            <span className="text-[18px] font-bold" style={{ color: '#222' }}>{member?.coupon_count ?? 0}장</span>
             <ChevronRight className="w-4 h-4" style={{ color: '#bbb' }} />
           </span>
         </Link>
@@ -51,12 +63,9 @@ export default async function MypagePage() {
           { href: '/mypage/wishlist', icon: Heart, label: '찜' },
           { href: '/mypage/reviews', icon: MessageSquare, label: '후기' },
         ].map(({ href, icon: Icon, label }) => (
-          <Link key={href} href={href} className="flex flex-col items-center gap-1.5">
-            <div className="w-12 h-12 rounded-full flex items-center justify-center"
-              style={{ backgroundColor: '#f5f2ef' }}>
-              <Icon className="w-5 h-5" style={{ color: '#968774' }} />
-            </div>
-            <span className="text-[12px]" style={{ color: '#555' }}>{label}</span>
+          <Link key={href} href={href} className="flex flex-col items-center gap-2">
+            <Icon className="w-8 h-8" strokeWidth={1.8} style={{ color: '#333' }} />
+            <span className="text-[14px]" style={{ color: '#555' }}>{label}</span>
           </Link>
         ))}
       </div>
@@ -66,8 +75,8 @@ export default async function MypagePage() {
 
       {/* 혜택 섹션 */}
       <Section title="혜택">
-        <MenuRow href="/mypage/referral" label="친구초대" sub="리워드 받기" />
-        <MenuRow href="/mypage/mileage" label="마일리지" sub="적립금 확인" />
+        <MenuRow href="/mypage/membership" label="오늘도설성" sub="멤버십혜택" />
+        <MenuRow href="/mypage/referral" label="친구초대하고 리워드받기" />
       </Section>
 
       <Divider />
@@ -92,7 +101,7 @@ export default async function MypagePage() {
       {/* 로그아웃 */}
       <div className="px-6 py-6">
         <form action="/api/v1/auth/signout" method="POST">
-          <button type="submit" className="text-[15px] font-bold" style={{ color: '#333' }}>
+          <button type="submit" className="text-[18px]" style={{ color: '#333' }}>
             로그아웃
           </button>
         </form>
@@ -110,7 +119,7 @@ function Divider() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="px-6 py-5">
-      <p className="text-[12px] font-medium mb-3" style={{ color: '#aaa' }}>{title}</p>
+      <p className="text-[14px] font-medium mb-3" style={{ color: '#aaa' }}>{title}</p>
       <div className="grid grid-cols-2 gap-y-4">{children}</div>
     </div>
   )
@@ -119,8 +128,8 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function MenuRow({ href, label, sub }: { href: string; label: string; sub?: string }) {
   return (
     <Link href={href} className="block">
-      <p className="text-[15px] font-medium" style={{ color: '#333' }}>{label}</p>
-      {sub && <p className="text-[12px] mt-0.5" style={{ color: '#968774' }}>{sub}</p>}
+      <p className="text-[18px] font-medium" style={{ color: '#333' }}>{label}</p>
+      {sub && <p className="text-[14px] mt-0.5" style={{ color: '#968774' }}>{sub}</p>}
     </Link>
   )
 }

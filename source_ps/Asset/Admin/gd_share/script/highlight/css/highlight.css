@@ -1,0 +1,41 @@
+pre {
+  width: 100%;
+  padding: 0;
+  font-family: 'Monaco', 'Source Code Pro', monospace;
+  font-size: 1em;
+  margin-bottom: 20px;
+  white-space: nowrap;
+}
+
+pre code{
+  width: 100%;
+  white-space: pre;
+}
+
+pre code.hljs {
+  padding: 0;
+}
+
+.hljs-ln {
+  width: 100%;
+}
+
+.hljs-ln .hljs-ln-numbers {
+  text-align: right;
+  background-color: #1b2022;
+  padding-left: 0.8em;
+  padding-right: 0.8em;
+}
+
+.hljs-ln .hljs-ln-line:hover .hljs-ln-numbers {
+  background-color: #101313;
+}
+
+.hljs-ln .hljs-ln-code {
+  padding-left: 1em;
+  width: 100%;
+}
+
+.hljs-ln .hljs-ln-line:hover .hljs-ln-code {
+  background-color: #171b1c;
+}

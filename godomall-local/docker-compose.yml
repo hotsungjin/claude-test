@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:1.24-alpine
+    container_name: godomall_nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./www:/var/www/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+    networks:
+      - godomall_net
+
+  php:
+    build:
+      context: ./php
+      dockerfile: Dockerfile
+    container_name: godomall_php
+    volumes:
+      - ./www:/var/www/html
+      - ./php/php.ini:/usr/local/etc/php/conf.d/custom.ini
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=${DB_NAME:-godomall}
+      - DB_USER=${DB_USER:-godomall}
+      - DB_PASS=${DB_PASS:-godomall123}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - godomall_net
+
+  mysql:
+    image: biarms/mysql:5.7
+    platform: linux/amd64
+    container_name: godomall_mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASS:-rootpass123}
+      MYSQL_DATABASE: ${DB_NAME:-godomall}
+      MYSQL_USER: ${DB_USER:-godomall}
+      MYSQL_PASSWORD: ${DB_PASS:-godomall123}
+    volumes:
+      - godomall_mysql_data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d
+      - ./mysql/my.cnf:/etc/mysql/conf.d/custom.cnf
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASS:-rootpass123}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - godomall_net
+
+  redis:
+    image: redis:6-alpine
+    container_name: godomall_redis
+    ports:
+      - "6380:6379"
+    networks:
+      - godomall_net
+
+  phpmyadmin:
+    image: phpmyadmin:5
+    container_name: godomall_phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: ${DB_ROOT_PASS:-rootpass123}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - godomall_net
+
+volumes:
+  godomall_mysql_data:
+
+networks:
+  godomall_net:
+    driver: bridge

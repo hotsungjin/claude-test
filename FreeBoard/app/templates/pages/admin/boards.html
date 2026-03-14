@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}게시판 관리 — 무료 게시판{% endblock %}
+
+{% block content %}
+<div class="max-w-screen-lg mx-auto px-4 py-8">
+
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-xl font-bold text-slate-900">게시판 관리</h1>
+      <p class="text-sm text-slate-500 mt-0.5">게시판을 추가, 수정, 삭제합니다.</p>
+    </div>
+    <button onclick="document.getElementById('create-modal').classList.remove('hidden')"
+      class="text-sm px-4 py-2 bg-slate-900 text-white rounded-md hover:bg-slate-700 transition-colors font-medium">
+      + 게시판 추가
+    </button>
+  </div>
+
+  <!-- 에러 영역 -->
+  <div id="admin-error" class="mb-4"></div>
+
+  <!-- 게시판 목록 -->
+  {% include "partials/board_list_admin.html" %}
+
+</div>
+
+<!-- ── 게시판 생성 모달 ──────────────────────────────────────── -->
+<div id="create-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-md">
+    <div class="flex items-center justify-between p-5 border-b border-slate-200">
+      <h2 class="font-semibold text-slate-900">게시판 추가</h2>
+      <button onclick="document.getElementById('create-modal').classList.add('hidden')"
+        class="text-slate-400 hover:text-slate-600 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <form hx-post="/admin/boards"
+          hx-target="#board-list-admin"
+          hx-swap="outerHTML"
+          hx-on::after-request="if(event.detail.successful) document.getElementById('create-modal').classList.add('hidden')"
+          class="p-5 space-y-4">
+      {% include "partials/board_form_fields.html" %}
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button"
+          onclick="document.getElementById('create-modal').classList.add('hidden')"
+          class="text-sm px-4 py-2 border border-slate-200 rounded-md hover:bg-slate-50 transition-colors">
+          취소
+        </button>
+        <button type="submit"
+          class="text-sm px-4 py-2 bg-slate-900 text-white rounded-md hover:bg-slate-700 transition-colors font-medium">
+          생성
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ── 게시판 수정 모달 ──────────────────────────────────────── -->
+<div id="edit-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-md">
+    <div class="flex items-center justify-between p-5 border-b border-slate-200">
+      <h2 class="font-semibold text-slate-900">게시판 수정</h2>
+      <button onclick="document.getElementById('edit-modal').classList.add('hidden')"
+        class="text-slate-400 hover:text-slate-600 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <form id="edit-form"
+          hx-target="#board-list-admin"
+          hx-swap="outerHTML"
+          hx-on::after-request="if(event.detail.successful) document.getElementById('edit-modal').classList.add('hidden')"
+          class="p-5 space-y-4">
+      {% include "partials/board_form_fields.html" %}
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button"
+          onclick="document.getElementById('edit-modal').classList.add('hidden')"
+          class="text-sm px-4 py-2 border border-slate-200 rounded-md hover:bg-slate-50 transition-colors">
+          취소
+        </button>
+        <button type="submit"
+          class="text-sm px-4 py-2 bg-slate-900 text-white rounded-md hover:bg-slate-700 transition-colors font-medium">
+          저장
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function openEditModal(board) {
+  const form = document.getElementById('edit-form');
+  form.setAttribute('hx-put', `/admin/boards/${board.id}`);
+  htmx.process(form);  // re-process HTMX attributes
+
+  form.querySelector('[name="name"]').value = board.name || '';
+  form.querySelector('[name="description"]').value = board.description || '';
+  form.querySelector('[name="read_perm"]').value = board.read_perm || 'all';
+  form.querySelector('[name="write_perm"]').value = board.write_perm || 'member';
+  form.querySelector('[name="comment_perm"]').value = board.comment_perm || 'member';
+  form.querySelector('[name="display_order"]').value = board.display_order ?? 0;
+  const activeEl = form.querySelector('[name="is_active"]');
+  if (activeEl) activeEl.checked = board.is_active;
+
+  document.getElementById('edit-modal').classList.remove('hidden');
+}
+</script>
+{% endblock %}

@@ -16,12 +16,12 @@ export default async function MileagePage() {
 
   return (
     <div style={{ backgroundColor: '#fff', minHeight: '100vh' }}>
-      <MypageHeader title="적립금" />
+      <MypageHeader title="포인트" />
 
       {/* 적립금 카드 */}
       <div className="mx-4 mt-4 rounded-xl overflow-hidden" style={{ backgroundColor: '#faf8f5' }}>
         <div className="px-5 pt-5 pb-4">
-          <p className="text-[13px]" style={{ color: '#888' }}>적립금</p>
+          <p className="text-[13px]" style={{ color: '#888' }}>포인트</p>
           <p className="text-[28px] font-bold mt-1" style={{ color: '#222' }}>
             {(member?.mileage ?? 0).toLocaleString()}<span className="text-[18px]">원</span>
           </p>

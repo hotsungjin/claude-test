@@ -43,6 +43,7 @@ export default function GoodsFilterClient({ currentMinPrice, currentMaxPrice, cu
     if (minPrice) qs.set('min_price', minPrice)
     if (maxPrice) qs.set('max_price', maxPrice)
     if (tag) qs.set('tag', tag)
+    if (currentParams.title) qs.set('title', currentParams.title)
     router.push(`/goods?${qs.toString()}`)
     setOpen(false)
   }
@@ -55,6 +56,7 @@ export default function GoodsFilterClient({ currentMinPrice, currentMaxPrice, cu
     if (currentParams.category) qs.set('category', currentParams.category)
     if (currentParams.sort) qs.set('sort', currentParams.sort)
     if (currentParams.q) qs.set('q', currentParams.q)
+    if (currentParams.title) qs.set('title', currentParams.title)
     router.push(`/goods?${qs.toString()}`)
     setOpen(false)
   }

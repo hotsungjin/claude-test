@@ -297,7 +297,7 @@ export default function CartPage() {
 
         {/* 적립금 안내 */}
         <div className="mt-4 py-3 rounded-lg text-center" style={{ backgroundColor: '#f5f5f5' }}>
-          <p className="text-[13px]" style={{ color: '#999' }}>적립금은 주문서에서 적용할 수 있어요</p>
+          <p className="text-[13px]" style={{ color: '#999' }}>포인트는 주문서에서 적용할 수 있어요</p>
         </div>
       </div>
 

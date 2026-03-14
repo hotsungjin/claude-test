@@ -145,7 +145,7 @@ export async function sendWelcomeEmail(params: {
         설성목장에서 직접 키운 신선한 제품을 만나보세요.
       </p>
       <div style="background:#f0ebe4;border-radius:8px;padding:20px;text-align:center;margin-bottom:24px">
-        <p style="color:#968774;font-size:14px;margin:0 0 4px">가입 축하 마일리지</p>
+        <p style="color:#968774;font-size:14px;margin:0 0 4px">가입 축하 포인트</p>
         <p style="color:#968774;font-size:28px;font-weight:700;margin:0">1,000P</p>
       </div>
       <a href="${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sulsung.co.kr'}" style="display:block;text-align:center;background:#968774;color:#fff;padding:14px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px">

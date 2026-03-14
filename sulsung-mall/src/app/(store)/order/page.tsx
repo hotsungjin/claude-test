@@ -166,7 +166,7 @@ export default function OrderPage() {
       {/* 마일리지 */}
       {member && member.mileage > 0 && (
         <div className="mt-2 bg-white px-4 py-4">
-          <h2 className="text-[14px] font-bold mb-3" style={{ color: '#333' }}>마일리지 사용</h2>
+          <h2 className="text-[14px] font-bold mb-3" style={{ color: '#333' }}>포인트 사용</h2>
           <div className="flex items-center gap-2">
             <span className="text-[12px] flex-shrink-0" style={{ color: '#888' }}>보유 {member.mileage.toLocaleString()}P</span>
             <input type="number" min={0} max={Math.min(member.mileage, goodsTotal + shippingFee)}
@@ -195,7 +195,7 @@ export default function OrderPage() {
           </div>
           {mileageUse > 0 && (
             <div className="flex justify-between" style={{ color: '#968774' }}>
-              <span>마일리지 할인</span>
+              <span>포인트 할인</span>
               <span>-{formatPrice(mileageUse)}</span>
             </div>
           )}

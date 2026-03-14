@@ -6,6 +6,7 @@ import { Upload, X } from 'lucide-react'
 
 const POSITION_LABEL: Record<string, string> = {
   main_top: '메인 상단',
+  main_ad: '광고 배너',
   main_middle: '메인 중간',
   main_bottom: '메인 하단',
   popup: '팝업',
@@ -22,7 +23,6 @@ export default function BannerFormClient({ banner }: Props) {
     name: banner?.name ?? '',
     position: banner?.position ?? 'main_top',
     image_url: banner?.image_url ?? '',
-    mobile_image_url: banner?.mobile_image_url ?? '',
     link_url: banner?.link_url ?? '',
     alt: banner?.alt ?? '',
     sort_order: banner?.sort_order ?? 0,
@@ -33,7 +33,6 @@ export default function BannerFormClient({ banner }: Props) {
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
   const pcInputRef = useRef<HTMLInputElement>(null)
-  const moInputRef = useRef<HTMLInputElement>(null)
 
   function set(key: string, value: any) {
     setForm(f => ({ ...f, [key]: value }))
@@ -58,16 +57,6 @@ export default function BannerFormClient({ banner }: Props) {
     e.target.value = ''
   }
 
-  async function handleMoUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
-    setUploading(true)
-    const url = await uploadImage(file)
-    setUploading(false)
-    if (url) set('mobile_image_url', url)
-    e.target.value = ''
-  }
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!form.image_url) { alert('PC 배너 이미지를 등록하세요'); return }
@@ -75,7 +64,6 @@ export default function BannerFormClient({ banner }: Props) {
     const payload = {
       ...form,
       sort_order: Number(form.sort_order),
-      mobile_image_url: form.mobile_image_url || null,
       link_url: form.link_url || null,
       alt: form.alt || null,
       starts_at: form.starts_at || null,
@@ -179,31 +167,6 @@ export default function BannerFormClient({ banner }: Props) {
           </div>
         </div>
 
-        {/* 모바일 이미지 */}
-        <div>
-          <label className="text-xs font-medium text-gray-600 mb-2 block">모바일 배너 이미지 <span className="text-gray-400">(권장: 750×400px, 없으면 PC 이미지 사용)</span></label>
-          <div className="flex items-start gap-4">
-            <button type="button" onClick={() => moInputRef.current?.click()} disabled={uploading}
-              className="flex-shrink-0 w-32 h-20 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center gap-1 hover:border-green-400 hover:bg-green-50 disabled:opacity-50">
-              <Upload className="w-5 h-5 text-gray-400" />
-              <span className="text-xs text-gray-400">업로드</span>
-            </button>
-            <input ref={moInputRef} type="file" accept="image/*" className="hidden" onChange={handleMoUpload} />
-            {form.mobile_image_url && (
-              <div className="relative flex-1">
-                <img src={form.mobile_image_url} alt="모바일 배너" className="w-full h-24 object-cover rounded-xl border border-gray-200" />
-                <button type="button" onClick={() => set('mobile_image_url', '')}
-                  className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center">
-                  <X className="w-3 h-3" />
-                </button>
-              </div>
-            )}
-            {!form.mobile_image_url && (
-              <input value={form.mobile_image_url} onChange={e => set('mobile_image_url', e.target.value)}
-                placeholder="또는 URL 직접 입력" className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none" />
-            )}
-          </div>
-        </div>
         {uploading && <p className="text-xs text-green-600">업로드 중...</p>}
       </div>
 

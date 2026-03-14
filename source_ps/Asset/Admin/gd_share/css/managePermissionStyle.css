@@ -1,0 +1,69 @@
+/* 메뉴 권한 설정> 드롭다운 */
+.manager-dropdown .dropdown-menu {padding:0}
+.manager-dropdown .dropdown-menu ol {
+    height: 300px;
+    overflow: scroll;
+    overflow-x: hidden;
+}
+.manager-dropdown .dropdown-header, .manager-dropdown .dropdown-footer {
+    display: block;
+    padding: .65rem 1.5rem !important;
+    background: #d4d4d4;
+    font-size: 12px;
+    color: #666666;
+}
+.manager-dropdown .dropdown-footer {text-align: center;}
+.manager-dropdown .dropdown-item {padding: .25rem 1.5rem !important;}
+.dropdown-divider {
+    height: 0;
+    overflow: hidden;
+    border-top: 1px dashed #d4d4d4;
+}
+
+/* 메뉴 권한 설정> 노출 메뉴 선택 드롭다운 */
+.exposure-menu-top-selection .dropdown-toggle::after {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: .255em;
+    vertical-align: .255em;
+    content: "";
+    border-top: .3em solid;
+    border-right: .3em solid transparent;
+    border-bottom: 0;
+    border-left: .3em solid transparent;
+}
+
+/* 메뉴 권한 설정> 추가설정 드롭다운 */
+.function-auth-selection .dropdown-menu {
+    left: -160px;
+    min-width: 210px;
+}
+
+/* 메뉴 권한 설정> 메뉴 권한설정 목록 */
+.menu-list-head {padding:0 18px 0 0; background-color:#BCBCBC;}
+.menu-list-body {height: 420px; overflow-y: scroll; border-bottom:solid 1px #E6E6E6;}
+.menu-list-body tr.permission-top .menu-name label {font-weight:bold;}
+.menu-list-body tr.permission-mid .menu-name {padding-left:40px;}
+.menu-list-body tr.permission-last .menu-name {padding-left:80px;}
+.menu-list-body tr.permission-top select, tr.permission-mid select, tr.permission-last select {width:130px}
+.menu-list-body tr .menu-name .ui-icon {vertical-align: middle;}
+.menu-list-body tr .menu-name .menu-roll {cursor:pointer;}
+
+/* 운영자 권한 설정> 컨테이너 */
+#frmManagerPermission .container-batch-permission {
+    width: 100%;
+    padding: 0px 0 0 0px;
+    background: url('../img/dotted_vertical.gif') center repeat-y;
+}
+
+/* 운영자 권한 설정> 운영자 검색 */
+#frmManagerPermission #managerSearch {float:left;width:50%;padding-right:20px;}
+
+/* 운영자 권한 설정> 운영자 검색> 운영자 목록 */
+.manager-list-head {padding:0 18px 0 0; background-color:#BCBCBC;}
+.manager-list-body {height: 420px; overflow-y: scroll; border-bottom:solid 1px #E6E6E6;}
+.manager-list-body .permission-view-on {background-color:#FCF8E3;}
+
+/* 운영자 권한 설정> 메뉴 권한 설정 */
+#frmManagerPermission #managerPermission {float:left;width:50%;padding-left:20px}

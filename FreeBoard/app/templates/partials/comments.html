@@ -1,0 +1,114 @@
+{% macro render_comment(c, depth) %}
+<div class="{% if depth > 0 %}ml-8 border-l-2 border-slate-100 pl-4{% endif %} py-3
+            {% if c.is_deleted %}opacity-50{% endif %}"
+     id="comment-{{ c.id }}">
+  <div class="flex items-start justify-between gap-2">
+    <div class="flex-1 min-w-0">
+      {% if depth > 0 %}
+      <span class="text-xs text-slate-400 mr-1">↳</span>
+      {% endif %}
+      <span class="text-xs font-medium text-slate-700">
+        {{ c.author.username if c.author else "탈퇴한 사용자" }}
+      </span>
+      <span class="text-xs text-slate-400 ml-1.5">{{ c.created_at[:10] }}</span>
+    </div>
+
+    <!-- 삭제 버튼 (작성자 or 관리자) -->
+    {% if not c.is_deleted and current_user and (current_user.is_admin or (c.author and c.author.id == current_user.id)) %}
+    <button
+      hx-delete="/api/comments/{{ c.id }}"
+      hx-target="#comments-section"
+      hx-swap="innerHTML"
+      hx-confirm="댓글을 삭제하시겠습니까?"
+      class="text-xs text-slate-400 hover:text-red-500 transition-colors flex-shrink-0">
+      삭제
+    </button>
+    {% endif %}
+  </div>
+
+  <p class="text-sm text-slate-700 mt-1 leading-relaxed">
+    {% if c.is_deleted %}
+    <span class="italic text-slate-400">삭제된 댓글입니다.</span>
+    {% else %}
+    {{ c.content }}
+    {% endif %}
+  </p>
+
+  <!-- 대댓글 작성 버튼 (depth=0만) -->
+  {% if depth == 0 and not c.is_deleted and current_user %}
+  <button onclick="toggleReplyForm('{{ c.id }}')"
+          class="text-xs text-slate-400 hover:text-slate-600 mt-1 transition-colors">
+    답글
+  </button>
+  <div id="reply-form-{{ c.id }}" class="hidden mt-2">
+    <form hx-post="/api/posts/{{ post.id }}/comments"
+          hx-target="#comments-section"
+          hx-swap="innerHTML">
+      <input type="hidden" name="parent_id" value="{{ c.id }}"/>
+      <textarea name="content" rows="2" placeholder="답글을 입력해주세요..."
+                class="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-DEFAULT resize-none"
+                required></textarea>
+      <div class="flex justify-end gap-2 mt-1">
+        <button type="button" onclick="toggleReplyForm('{{ c.id }}')"
+                class="text-xs px-2.5 py-1 text-slate-500 hover:text-slate-700">취소</button>
+        <button type="submit"
+                class="text-xs px-2.5 py-1 bg-slate-800 text-white rounded hover:bg-slate-700">답글 달기</button>
+      </div>
+    </form>
+  </div>
+  {% endif %}
+
+  <!-- 대댓글 렌더링 -->
+  {% if c.replies %}
+  {% for reply in c.replies %}
+  {{ render_comment(reply, depth + 1) }}
+  {% endfor %}
+  {% endif %}
+</div>
+{% endmacro %}
+
+<!-- 댓글 목록 -->
+<h2 class="text-sm font-semibold text-slate-700 mb-4">
+  댓글 <span class="text-slate-400 font-normal">{{ post.comment_count }}</span>
+</h2>
+
+{% if comments %}
+<div class="divide-y divide-slate-100">
+  {% for c in comments %}
+  {{ render_comment(c, 0) }}
+  {% endfor %}
+</div>
+{% else %}
+<p class="text-sm text-slate-400 py-4">아직 댓글이 없습니다.</p>
+{% endif %}
+
+<!-- 댓글 작성 폼 -->
+{% if current_user %}
+{% if comment_service is defined %}{% set can_comment = comment_service.check_comment_permission(board, current_user) %}{% else %}{% set can_comment = true %}{% endif %}
+<div class="mt-6 pt-4 border-t border-slate-100">
+  <form hx-post="/api/posts/{{ post.id }}/comments"
+        hx-target="#comments-section"
+        hx-swap="innerHTML">
+    <textarea name="content" rows="3" placeholder="댓글을 입력해주세요..."
+              class="w-full px-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-DEFAULT resize-none"
+              required></textarea>
+    <div class="flex justify-end mt-2">
+      <button type="submit"
+              class="px-4 py-1.5 text-sm bg-slate-900 text-white rounded-md hover:bg-slate-700 transition-colors font-medium">
+        댓글 작성
+      </button>
+    </div>
+  </form>
+</div>
+{% else %}
+<p class="text-sm text-slate-400 mt-4">
+  <a href="/login" class="text-primary-DEFAULT hover:underline">로그인</a>하면 댓글을 달 수 있습니다.
+</p>
+{% endif %}
+
+<script>
+function toggleReplyForm(id) {
+  const el = document.getElementById('reply-form-' + id);
+  el.classList.toggle('hidden');
+}
+</script>

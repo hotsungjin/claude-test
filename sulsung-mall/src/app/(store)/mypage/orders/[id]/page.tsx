@@ -133,7 +133,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
           <div className="flex justify-between"><span style={{ color: '#888' }}>상품금액</span><span style={{ color: '#333' }}>{formatPrice(order.goods_amount)}</span></div>
           <div className="flex justify-between"><span style={{ color: '#888' }}>배송비</span><span style={{ color: '#333' }}>{order.shipping_amount === 0 ? '무료' : formatPrice(order.shipping_amount)}</span></div>
           {order.coupon_amount > 0 && <div className="flex justify-between" style={{ color: '#968774' }}><span>쿠폰 할인</span><span>-{formatPrice(order.coupon_amount)}</span></div>}
-          {order.mileage_used > 0 && <div className="flex justify-between" style={{ color: '#968774' }}><span>마일리지 할인</span><span>-{formatPrice(order.mileage_used)}</span></div>}
+          {order.mileage_used > 0 && <div className="flex justify-between" style={{ color: '#968774' }}><span>포인트 할인</span><span>-{formatPrice(order.mileage_used)}</span></div>}
         </div>
         <div className="flex justify-between items-center mt-3 pt-3 border-t" style={{ borderColor: '#f0ece8' }}>
           <span className="text-[14px] font-bold" style={{ color: '#333' }}>최종 결제금액</span>

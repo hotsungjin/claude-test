@@ -85,7 +85,7 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
               )}
               {order.mileage_used > 0 && (
                 <div className="flex justify-between text-red-600">
-                  <span>마일리지 사용</span><span>-{formatPrice(order.mileage_used)}</span>
+                  <span>포인트 사용</span><span>-{formatPrice(order.mileage_used)}</span>
                 </div>
               )}
               <div className="flex justify-between text-gray-600">

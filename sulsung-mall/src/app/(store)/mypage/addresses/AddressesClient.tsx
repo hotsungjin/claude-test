@@ -67,7 +67,7 @@ export default function AddressesClient({ memberId, initialAddresses }: {
   }
 
   return (
-    <div>
+    <div className="px-4">
       <div className="flex justify-end mb-4">
         <button onClick={openNew}
           className="flex items-center gap-2 text-white text-sm px-4 py-2 rounded-xl hover:opacity-90 transition-opacity"

@@ -12,75 +12,86 @@ export default async function AdminReferralPage({
   const params = await searchParams
   const page = Number(params.page ?? '1')
   const search = params.search ?? ''
-  const grade = params.grade ?? ''
   const tab = params.tab ?? 'overview'
 
   const supabase = await createClient() as any
-  const now = new Date()
-  const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
 
-  // 통계 데이터 병렬 조회
-  const [
-    { count: totalReferrals },
-    { count: thisMonthReferrals },
-    { data: allRewards },
-    { data: thisMonthRewards },
-    { data: gradeStats },
-  ] = await Promise.all([
-    supabase.from('referral_members').select('id', { count: 'exact', head: true }),
-    supabase.from('referral_members').select('id', { count: 'exact', head: true }).gte('created_at', thisMonthStart),
-    supabase.from('referral_rewards').select('final_points, status'),
-    supabase.from('referral_rewards').select('final_points, status').gte('created_at', thisMonthStart),
-    supabase.from('referral_members').select('grade'),
-  ])
-
-  const totalRewardPoints = (allRewards ?? [])
-    .filter((r: any) => r.status === '지급완료')
-    .reduce((sum: number, r: any) => sum + r.final_points, 0)
-
-  const thisMonthRewardPoints = (thisMonthRewards ?? [])
-    .filter((r: any) => r.status === '지급완료')
-    .reduce((sum: number, r: any) => sum + r.final_points, 0)
-
-  // 등급별 회원 수
-  const gradeCounts: Record<string, number> = {}
-  for (const g of (gradeStats ?? [])) {
-    gradeCounts[g.grade] = (gradeCounts[g.grade] ?? 0) + 1
-  }
-
-  // 탭별 데이터 조회
+  // 탭별로 필요한 데이터만 조회
+  let totalReferrals = 0
+  let thisMonthReferrals = 0
+  let totalRewardPoints = 0
+  let thisMonthRewardPoints = 0
+  let gradeCounts: Record<string, number> = {}
   let members: any[] = []
   let rewards: any[] = []
   let totalCount = 0
 
-  if (tab === 'members') {
-    // 추천 회원 목록
-    let query = supabase
-      .from('members')
-      .select('id, name, phone, referral_code, referred_by, mileage, created_at, referral_members!referral_members_member_id_fkey(grade, grade_multiplier)', { count: 'exact' })
-      .not('referral_code', 'is', null)
-      .order('created_at', { ascending: false })
+  if (tab === 'overview') {
+    const now = new Date()
+    const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
 
-    if (search) {
-      query = query.or(`name.ilike.%${search}%,phone.ilike.%${search}%,referral_code.ilike.%${search}%`)
+    // DB에서 합계를 직접 계산하는 RPC 대신, count만 사용하고 합계는 SQL로
+    const [
+      { count: _totalReferrals },
+      { count: _thisMonthReferrals },
+      { data: gradeStats },
+    ] = await Promise.all([
+      supabase.from('referral_members').select('id', { count: 'exact', head: true }),
+      supabase.from('referral_members').select('id', { count: 'exact', head: true }).gte('created_at', thisMonthStart),
+      supabase.from('referral_members').select('grade'),
+    ])
+
+    totalReferrals = _totalReferrals ?? 0
+    thisMonthReferrals = _thisMonthReferrals ?? 0
+
+    // 등급별 회원 수
+    for (const g of (gradeStats ?? [])) {
+      gradeCounts[g.grade] = (gradeCounts[g.grade] ?? 0) + 1
     }
 
-    const { data, count } = await query
-      .range((page - 1) * ADMIN_ITEMS_PER_PAGE, page * ADMIN_ITEMS_PER_PAGE - 1)
+    // 리워드 합계는 SQL RPC로 조회 (전체 데이터를 가져오지 않음)
+    const [{ data: totalRewardData }, { data: monthRewardData }] = await Promise.all([
+      supabase.rpc('sum_referral_rewards', { p_status: '지급완료' }),
+      supabase.rpc('sum_referral_rewards_since', { p_status: '지급완료', p_since: thisMonthStart }),
+    ]).catch(() => [{ data: null }, { data: null }])
 
-    members = data ?? []
-    totalCount = count ?? 0
+    totalRewardPoints = totalRewardData ?? 0
+    thisMonthRewardPoints = monthRewardData ?? 0
 
-    // 각 회원의 직접 추천 수 조회
-    for (const m of members) {
-      const { count: invCount } = await supabase
-        .from('referral_members')
-        .select('id', { count: 'exact', head: true })
-        .eq('referrer_id', m.id)
-      m._invitedCount = invCount ?? 0
+  } else if (tab === 'members') {
+    // 실제로 추천한 회원만 조회 (RPC)
+    const { data: referrers } = await supabase.rpc('get_referrers', {
+      p_search: search,
+      p_limit: ADMIN_ITEMS_PER_PAGE,
+      p_offset: (page - 1) * ADMIN_ITEMS_PER_PAGE,
+    })
+
+    const rows = referrers ?? []
+    totalCount = rows.length > 0 ? Number(rows[0].total_count) : 0
+
+    // 등급 일괄 조회
+    const memberIds = rows.map((r: any) => r.id)
+    const { data: gradeData } = memberIds.length > 0
+      ? await supabase.from('referral_members').select('member_id, grade').in('member_id', memberIds)
+      : { data: [] }
+
+    const gradeMap: Record<string, string> = {}
+    for (const g of (gradeData ?? [])) {
+      gradeMap[g.member_id] = g.grade
     }
+
+    members = rows.map((r: any) => ({
+      id: r.id,
+      name: r.name,
+      phone: r.phone,
+      referral_code: r.referral_code,
+      mileage: r.mileage,
+      created_at: r.created_at,
+      grade: gradeMap[r.id] ?? '씨앗',
+      _invitedCount: Number(r.invite_count),
+    }))
+
   } else if (tab === 'rewards') {
-    // 리워드 이력
     const { data, count } = await supabase
       .from('referral_rewards')
       .select('*, receiver:receiver_id(name, phone, referral_code), buyer:buyer_id(name, phone)', { count: 'exact' })
@@ -97,7 +108,6 @@ export default async function AdminReferralPage({
     const p = new URLSearchParams()
     if (params.tab) p.set('tab', params.tab)
     if (params.search) p.set('search', params.search)
-    if (params.grade) p.set('grade', params.grade)
     if (params.page) p.set('page', params.page)
     for (const [k, v] of Object.entries(overrides)) {
       p.set(k, String(v))
@@ -107,7 +117,7 @@ export default async function AdminReferralPage({
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">추천 관리</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">친구추천 관리</h1>
 
       {/* 탭 네비게이션 */}
       <div className="flex gap-1 mb-6 border-b border-gray-200">
@@ -131,8 +141,8 @@ export default async function AdminReferralPage({
           {/* KPI 카드 */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             {[
-              { label: '총 추천 건수', value: `${(totalReferrals ?? 0).toLocaleString()}건` },
-              { label: '이번 달 추천', value: `${(thisMonthReferrals ?? 0).toLocaleString()}건` },
+              { label: '총 추천 건수', value: `${totalReferrals.toLocaleString()}건` },
+              { label: '이번 달 추천', value: `${thisMonthReferrals.toLocaleString()}건` },
               { label: '총 지급 리워드', value: `${totalRewardPoints.toLocaleString()}P` },
               { label: '이번 달 리워드', value: `${thisMonthRewardPoints.toLocaleString()}P` },
             ].map((kpi, i) => (
@@ -207,31 +217,28 @@ export default async function AdminReferralPage({
                   <th className="px-4 py-3 text-left text-xs text-gray-500 font-medium">추천코드</th>
                   <th className="px-4 py-3 text-center text-xs text-gray-500 font-medium">등급</th>
                   <th className="px-4 py-3 text-center text-xs text-gray-500 font-medium">추천수</th>
-                  <th className="px-4 py-3 text-right text-xs text-gray-500 font-medium">마일리지</th>
+                  <th className="px-4 py-3 text-right text-xs text-gray-500 font-medium">포인트</th>
                   <th className="px-4 py-3 text-right text-xs text-gray-500 font-medium">가입일</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {members.map((m: any) => {
-                  const refInfo = Array.isArray(m.referral_members) ? m.referral_members[0] : m.referral_members
-                  return (
-                    <tr key={m.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 font-medium text-gray-900">
-                        <Link href={`/admin/members/${m.id}`} className="hover:underline">{m.name}</Link>
-                      </td>
-                      <td className="px-4 py-3 text-gray-500">{m.phone}</td>
-                      <td className="px-4 py-3 font-mono text-xs text-gray-700">{m.referral_code}</td>
-                      <td className="px-4 py-3 text-center">
-                        <span className="inline-block px-2 py-0.5 text-xs rounded-full bg-green-50 text-green-700">
-                          {refInfo?.grade ?? '씨앗'}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-center text-gray-700">{m._invitedCount}</td>
-                      <td className="px-4 py-3 text-right text-gray-700">{m.mileage?.toLocaleString() ?? 0}P</td>
-                      <td className="px-4 py-3 text-right text-xs text-gray-400">{formatDateTime(m.created_at)}</td>
-                    </tr>
-                  )
-                })}
+                {members.map((m: any) => (
+                  <tr key={m.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3 font-medium text-gray-900">
+                      <Link href={`/admin/members/${m.id}`} className="hover:underline">{m.name}</Link>
+                    </td>
+                    <td className="px-4 py-3 text-gray-500">{m.phone}</td>
+                    <td className="px-4 py-3 font-mono text-xs text-gray-700">{m.referral_code}</td>
+                    <td className="px-4 py-3 text-center">
+                      <span className="inline-block px-2 py-0.5 text-xs rounded-full bg-green-50 text-green-700">
+                        {m.grade}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-center text-gray-700">{m._invitedCount}</td>
+                    <td className="px-4 py-3 text-right text-gray-700">{m.mileage?.toLocaleString() ?? 0}P</td>
+                    <td className="px-4 py-3 text-right text-xs text-gray-400">{formatDateTime(m.created_at)}</td>
+                  </tr>
+                ))}
                 {members.length === 0 && (
                   <tr><td colSpan={7} className="px-4 py-8 text-center text-gray-400">데이터가 없습니다.</td></tr>
                 )}

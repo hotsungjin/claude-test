@@ -66,7 +66,7 @@ export default function MembersTableClient({ members, count, page, pageSize }: P
       ? members.filter(m => selected.has(m.id))
       : members
 
-    const headers = ['번호', '회원번호', '이름', '이메일', '연락처', '등급', '마일리지', '상태', '가입일']
+    const headers = ['번호', '회원번호', '이름', '이메일', '연락처', '등급', '포인트', '상태', '가입일']
     const rows = target.map((m, i) => [
       count - ((page - 1) * pageSize) - i,
       m.member_no,
@@ -115,7 +115,7 @@ export default function MembersTableClient({ members, count, page, pageSize }: P
               <th className="px-4 py-3 text-left text-xs text-gray-500 font-medium">이메일</th>
               <th className="px-4 py-3 text-left text-xs text-gray-500 font-medium">연락처</th>
               <th className="px-4 py-3 text-center text-xs text-gray-500 font-medium">등급</th>
-              <th className="px-4 py-3 text-right text-xs text-gray-500 font-medium">마일리지</th>
+              <th className="px-4 py-3 text-right text-xs text-gray-500 font-medium">포인트</th>
               <th className="px-4 py-3 text-center text-xs text-gray-500 font-medium">상태</th>
               <th className="px-4 py-3 text-left text-xs text-gray-500 font-medium">가입일</th>
               <th className="px-4 py-3 text-center text-xs text-gray-500 font-medium">관리</th>

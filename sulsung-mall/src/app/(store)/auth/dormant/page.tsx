@@ -64,7 +64,7 @@ export default function DormantPage() {
           </button>
 
           <p className="text-xs text-gray-400">
-            기존 마일리지와 쿠폰은 유효기간 내 그대로 유지됩니다.
+            기존 포인트와 쿠폰은 유효기간 내 그대로 유지됩니다.
           </p>
         </div>
       </div>

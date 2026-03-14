@@ -278,7 +278,7 @@ export default function GoodsFormClient({ categories, brands = [], initialData }
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">마일리지 적립률 (%)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">포인트 적립률 (%)</label>
             <input type="number" value={form.mileage_rate} onChange={e => set('mileage_rate', Number(e.target.value))} min={0} max={100} step={0.1}
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
           </div>

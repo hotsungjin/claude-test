@@ -4,6 +4,8 @@ import Header from '@/components/store/layout/Header'
 import Footer from '@/components/store/layout/Footer'
 import BottomNav from '@/components/store/layout/BottomNav'
 import PcBrandingSidebar from '@/components/store/layout/PcBrandingSidebar'
+import PopupModal from '@/components/store/home/PopupModal'
+import { createClient } from '@/lib/supabase/server'
 import { SITE_NAME, SITE_DESCRIPTION } from '@/constants'
 
 export const metadata: Metadata = {
@@ -23,7 +25,18 @@ export const viewport: Viewport = {
   userScalable: false,
 }
 
-export default function StoreLayout({ children }: { children: React.ReactNode }) {
+export default async function StoreLayout({ children }: { children: React.ReactNode }) {
+  const db = await createClient() as any
+  const now = new Date().toISOString()
+  const { data: popups } = await db
+    .from('popups')
+    .select('*')
+    .eq('is_active', true)
+    .or(`starts_at.is.null,starts_at.lte.${now}`)
+    .or(`ends_at.is.null,ends_at.gte.${now}`)
+    .order('sort_order')
+    .limit(5)
+
   return (
     <div className="fixed inset-0 overflow-hidden bg-[#F9F9F9]">
       <main className="mx-auto h-full max-w-[480px] md:flex md:max-w-[960px] md:gap-[120px]">
@@ -40,6 +53,8 @@ export default function StoreLayout({ children }: { children: React.ReactNode })
             </div>
             <BottomNav />
           </div>
+          {/* 팝업 (바텀시트) */}
+          {(popups ?? []).length > 0 && <PopupModal popups={popups ?? []} />}
         </div>
       </main>
     </div>

@@ -143,7 +143,7 @@ function dormantWarningHtml(name: string) {
       <strong style="color:#e84a3b">10일 후</strong> 장기 미접속으로 계정이 휴면 처리됩니다.
     </p>
     <div style="background:#fef3cd;border-radius:8px;padding:16px;margin-bottom:24px;font-size:14px;color:#856404">
-      휴면 처리되면 적립된 마일리지와 쿠폰을 사용할 수 없습니다.<br>
+      휴면 처리되면 적립된 포인트와 쿠폰을 사용할 수 없습니다.<br>
       로그인하시면 계정이 유지됩니다.
     </div>
     <a href="${siteUrl}/auth/login" style="display:block;text-align:center;background:#968774;color:#fff;padding:14px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px">

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>설성목장 추천 리워드 — 마이페이지 미리보기</title>
+</head>
+<body style="background:#f3f4f6; margin:0; padding:20px; font-family:'Apple SD Gothic Neo',sans-serif;">
+
+<div style="max-width:640px; margin:0 auto; padding:16px;">
+
+  <!-- 탭 네비게이션 -->
+  <div style="display:flex; gap:4px; background:#f0f0f0; border-radius:12px; padding:4px; margin-bottom:16px;">
+    <button id="tab-status" onclick="switchTab('status')"
+      style="flex:1; padding:10px; border:none; border-radius:9px; font-size:14px; font-weight:600; cursor:pointer; background:#fff; color:#16a34a; box-shadow:0 1px 4px rgba(0,0,0,.1);">
+      내 현황
+    </button>
+    <button id="tab-guide" onclick="switchTab('guide')"
+      style="flex:1; padding:10px; border:none; border-radius:9px; font-size:14px; font-weight:600; cursor:pointer; background:transparent; color:#aaa;">
+      혜택 안내
+    </button>
+  </div>
+
+  <!-- ===== 내 현황 탭 ===== -->
+  <div id="pane-status">
+
+    <!-- 등급 카드 -->
+    <div style="background:#fff; border-radius:16px; padding:24px; box-shadow:0 1px 6px rgba(0,0,0,.08); margin-bottom:16px;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;">
+        <div>
+          <span style="background:#dcfce7; color:#16a34a; font-size:13px; font-weight:600; padding:4px 12px; border-radius:20px;">🌳 나무</span>
+          <div style="font-size:12px; color:#aaa; margin-top:6px;">리워드 배율 ×1.5</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:12px; color:#aaa;">내 추천 코드</div>
+          <div style="font-size:26px; font-weight:700; color:#16a34a; letter-spacing:5px;">A3KP7X</div>
+        </div>
+      </div>
+
+      <!-- 등급 진행률 -->
+      <div style="margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; font-size:12px; color:#aaa; margin-bottom:4px;">
+          <span>다음 등급: 🌲 숲</span>
+          <span>60%</span>
+        </div>
+        <div style="background:#f0fdf4; border-radius:99px; height:8px; overflow:hidden;">
+          <div style="background:#22c55e; height:8px; border-radius:99px; width:60%;"></div>
+        </div>
+      </div>
+
+      <button onclick="alert('추천 링크가 복사되었습니다!\nhttps://sulsungmall.com/member/join.php?referralCode=A3KP7X')"
+        style="width:100%; background:#22c55e; color:#fff; border:none; border-radius:12px; padding:13px; font-size:14px; font-weight:600; cursor:pointer;">
+        친구에게 추천 링크 공유하기
+      </button>
+    </div>
+
+    <!-- 포인트 현황 -->
+    <div style="background:#fff; border-radius:16px; padding:24px; box-shadow:0 1px 6px rgba(0,0,0,.08); margin-bottom:16px;">
+      <div style="font-size:15px; font-weight:600; color:#333; margin-bottom:16px;">포인트 현황</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+        <div style="background:#f0fdf4; border-radius:12px; padding:16px;">
+          <div style="font-size:12px; color:#666; margin-bottom:4px;">사용 가능 마일리지</div>
+          <div style="font-size:22px; font-weight:700; color:#16a34a;">45,000P</div>
+        </div>
+        <div style="background:#f9fafb; border-radius:12px; padding:16px;">
+          <div style="font-size:12px; color:#666; margin-bottom:4px;">이번 달 적립</div>
+          <div style="font-size:22px; font-weight:700; color:#333;">12,500P</div>
+        </div>
+        <div style="border:1px solid #f0f0f0; border-radius:12px; padding:12px;">
+          <div style="font-size:12px; color:#aaa;">누적 적립</div>
+          <div style="font-size:16px; font-weight:600; color:#555;">80,000P</div>
+        </div>
+        <div style="border:1px solid #f0f0f0; border-radius:12px; padding:12px;">
+          <div style="font-size:12px; color:#aaa;">네트워크 총 인원</div>
+          <div style="font-size:16px; font-weight:600; color:#555;">8명</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 네트워크 현황 -->
+    <div style="background:#fff; border-radius:16px; padding:24px; box-shadow:0 1px 6px rgba(0,0,0,.08); margin-bottom:16px;">
+      <div style="font-size:15px; font-weight:600; color:#333; margin-bottom:16px;">내 추천 네트워크</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;"><span style="font-size:12px;color:#aaa;width:70px;">L1 (5%)</span><div style="flex:1;background:#f0f0f0;border-radius:99px;height:8px;overflow:hidden;"><div style="background:#86efac;height:8px;border-radius:99px;width:25%;"></div></div><span style="font-size:13px;font-weight:600;color:#555;width:30px;text-align:right;">5명</span></div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;"><span style="font-size:12px;color:#aaa;width:70px;">L2 (2%)</span><div style="flex:1;background:#f0f0f0;border-radius:99px;height:8px;overflow:hidden;"><div style="background:#86efac;height:8px;border-radius:99px;width:10%;"></div></div><span style="font-size:13px;font-weight:600;color:#555;width:30px;text-align:right;">2명</span></div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;"><span style="font-size:12px;color:#aaa;width:70px;">L3 (1%)</span><div style="flex:1;background:#f0f0f0;border-radius:99px;height:8px;overflow:hidden;"><div style="background:#86efac;height:8px;border-radius:99px;width:5%;"></div></div><span style="font-size:13px;font-weight:600;color:#555;width:30px;text-align:right;">1명</span></div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;"><span style="font-size:12px;color:#aaa;width:70px;">L4 (0.5%)</span><div style="flex:1;background:#f0f0f0;border-radius:99px;height:8px;overflow:hidden;"><div style="background:#86efac;height:8px;border-radius:99px;width:0%;"></div></div><span style="font-size:13px;font-weight:600;color:#555;width:30px;text-align:right;">0명</span></div>
+      <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:12px;color:#aaa;width:70px;">L5 (0.2%)</span><div style="flex:1;background:#f0f0f0;border-radius:99px;height:8px;overflow:hidden;"><div style="background:#86efac;height:8px;border-radius:99px;width:0%;"></div></div><span style="font-size:13px;font-weight:600;color:#555;width:30px;text-align:right;">0명</span></div>
+    </div>
+
+    <!-- 마일스톤 -->
+    <div style="background:#fff; border-radius:16px; padding:24px; box-shadow:0 1px 6px rgba(0,0,0,.08);">
+      <div style="font-size:15px; font-weight:600; color:#333; margin-bottom:16px;">마일스톤</div>
+
+      <div style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;margin-bottom:8px;background:#f0fdf4;border:1px solid #bbf7d0;">
+        <div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;background:#22c55e;color:#fff;">✓</div>
+        <div style="flex:1;"><div style="font-size:13px;font-weight:500;color:#15803d;">첫 추천 성공</div></div>
+        <span style="font-size:13px;font-weight:700;color:#16a34a;">+5,000P</span>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;margin-bottom:8px;background:#f0fdf4;border:1px solid #bbf7d0;">
+        <div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;background:#22c55e;color:#fff;">✓</div>
+        <div style="flex:1;"><div style="font-size:13px;font-weight:500;color:#15803d;">직접 추천 5명</div></div>
+        <span style="font-size:13px;font-weight:700;color:#16a34a;">+20,000P</span>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;background:#f9fafb;border:1px solid #f0f0f0;">
+        <div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;background:#e5e7eb;color:#9ca3af;">○</div>
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:500;color:#9ca3af;">네트워크 10명</div>
+          <div style="margin-top:4px;">
+            <div style="background:#e5e7eb;border-radius:99px;height:4px;overflow:hidden;">
+              <div style="background:#86efac;height:4px;width:80%;"></div>
+            </div>
+            <div style="font-size:11px;color:#aaa;margin-top:2px;">8 / 10</div>
+          </div>
+        </div>
+        <span style="font-size:13px;font-weight:700;color:#9ca3af;">+30,000P</span>
+      </div>
+    </div>
+
+  </div><!-- /pane-status -->
+
+  <!-- ===== 혜택 안내 탭 ===== -->
+  <div id="pane-guide" style="display:none;">
+
+    <!-- 시스템 3대 축 -->
+    <div style="background:#fff; border-radius:16px; padding:24px; box-shadow:0 1px 6px rgba(0,0,0,.08); margin-bottom:16px;">
+      <div style="font-size:15px; font-weight:600; color:#333; margin-bottom:16px;">추천 리워드 시스템</div>
+      <p style="font-size:13px; color:#555; line-height:1.7; margin:0 0 16px;">
+        친구에게 설성목장을 소개하고 구매가 발생하면 마일리지를 적립해 드립니다.<br>
+        추천이 이어질수록 더 많은 혜택을 누릴 수 있어요.
+      </p>
+
+      <div style="border-radius:12px; padding:16px; background:#f0fdf4; border:1px solid #bbf7d0; margin-bottom:12px;">
+        <div style="font-size:14px; font-weight:700; color:#15803d; margin-bottom:8px;">🌿 5단계 추천 리워드</div>
+        <p style="font-size:13px; color:#555; line-height:1.6; margin:0 0 10px;">
+          내가 추천한 친구가 구매하면 리워드를 받고, 그 친구가 또 다른 친구를 추천해 구매가 발생하면 추가 리워드를 받습니다.
+        </p>
+        <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:6px; text-align:center;">
+          <div style="background:#fff; border-radius:8px; padding:8px 4px;">
+            <div style="font-size:11px; color:#aaa;">L1</div>
+            <div style="font-size:15px; font-weight:700; color:#16a34a;">5%</div>
+          </div>
+          <div style="background:#fff; border-radius:8px; padding:8px 4px;">
+            <div style="font-size:11px; color:#aaa;">L2</div>
+            <div style="font-size:15px; font-weight:700; color:#16a34a;">2%</div>
+          </div>
+          <div style="background:#fff; border-radius:8px; padding:8px 4px;">
+            <div style="font-size:11px; color:#aaa;">L3</div>
+            <div style="font-size:15px; font-weight:700; color:#16a34a;">1%</div>
+          </div>
+          <div style="background:#fff; border-radius:8px; padding:8px 4px;">
+            <div style="font-size:11px; color:#aaa;">L4</div>
+            <div style="font-size:15px; font-weight:700; color:#16a34a;">0.5%</div>
+          </div>
+          <div style="background:#fff; border-radius:8px; padding:8px 4px;">
+            <div style="font-size:11px; color:#aaa;">L5</div>
+            <div style="font-size:15px; font-weight:700; color:#16a34a;">0.2%</div>
+          </div>
+        </div>
+        <div style="font-size:11px; color:#aaa; margin-top:8px;">※ 추천 관계는 가입 후 1년간 유효합니다.</div>
+      </div>
+
+      <div style="border-radius:12px; padding:16px; background:#f0fdf4; border:1px solid #bbf7d0; margin-bottom:12px;">
+        <div style="font-size:14px; font-weight:700; color:#15803d; margin-bottom:8px;">⭐ 등급 가속 보너스</div>
+        <p style="font-size:13px; color:#555; line-height:1.6; margin:0;">
+          추천 네트워크가 커질수록 등급이 올라가고, 모든 리워드에 배율이 적용됩니다.
+        </p>
+      </div>
+
+      <div style="border-radius:12px; padding:16px; background:#f0fdf4; border:1px solid #bbf7d0;">
+        <div style="font-size:14px; font-weight:700; color:#15803d; margin-bottom:8px;">🎯 마일스톤 보너스</div>
+        <p style="font-size:13px; color:#555; line-height:1.6; margin:0;">
+          특정 목표를 달성하면 일회성 보너스 포인트가 즉시 지급됩니다.
+        </p>
+      </div>
+    </div>
+
+    <!-- 등급 기준표 -->
+    <div style="background:#fff; border-radius:16px; padding:24px; box-shadow:0 1px 6px rgba(0,0,0,.08); margin-bottom:16px;">
+      <div style="font-size:15px; font-weight:600; color:#333; margin-bottom:16px;">등급 기준</div>
+      <table style="width:100%; border-collapse:collapse; font-size:13px;">
+        <thead>
+          <tr style="background:#f9fafb;">
+            <th style="padding:10px 8px; text-align:left; color:#555; font-weight:600; border-bottom:2px solid #e5e7eb;">등급</th>
+            <th style="padding:10px 8px; text-align:center; color:#555; font-weight:600; border-bottom:2px solid #e5e7eb;">조건 (네트워크)</th>
+            <th style="padding:10px 8px; text-align:center; color:#555; font-weight:600; border-bottom:2px solid #e5e7eb;">리워드 배율</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid #f0f0f0;">
+            <td style="padding:10px 8px;">🌱 씨앗</td>
+            <td style="padding:10px 8px; text-align:center; color:#888;">0명</td>
+            <td style="padding:10px 8px; text-align:center; font-weight:600; color:#16a34a;">×1.0</td>
+          </tr>
+          <tr style="border-bottom:1px solid #f0f0f0;">
+            <td style="padding:10px 8px;">🌿 새싹</td>
+            <td style="padding:10px 8px; text-align:center; color:#888;">3명 이상</td>
+            <td style="padding:10px 8px; text-align:center; font-weight:600; color:#16a34a;">×1.25</td>
+          </tr>
+          <tr style="border-bottom:1px solid #f0f0f0;">
+            <td style="padding:10px 8px;">🌳 나무</td>
+            <td style="padding:10px 8px; text-align:center; color:#888;">10명 이상</td>
+            <td style="padding:10px 8px; text-align:center; font-weight:600; color:#16a34a;">×1.5</td>
+          </tr>
+          <tr style="border-bottom:1px solid #f0f0f0;">
+            <td style="padding:10px 8px;">🌲 숲</td>
+            <td style="padding:10px 8px; text-align:center; color:#888;">30명 이상</td>
+            <td style="padding:10px 8px; text-align:center; font-weight:600; color:#16a34a;">×1.75</td>
+          </tr>
+          <tr>
+            <td style="padding:10px 8px;">🐄 목장</td>
+            <td style="padding:10px 8px; text-align:center; color:#888;">100명 이상</td>
+            <td style="padding:10px 8px; text-align:center; font-weight:600; color:#16a34a;">×2.0</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="font-size:11px; color:#aaa; margin-top:8px;">※ 네트워크 인원은 L1~L5 전체 합산 기준입니다.</div>
+    </div>
+
+    <!-- 마일스톤 목록 -->
+    <div style="background:#fff; border-radius:16px; padding:24px; box-shadow:0 1px 6px rgba(0,0,0,.08);">
+      <div style="font-size:15px; font-weight:600; color:#333; margin-bottom:16px;">마일스톤 보너스 목록</div>
+
+      <div style="display:flex; align-items:center; gap:12px; padding:14px; border-radius:12px; background:#f0fdf4; border:1px solid #bbf7d0; margin-bottom:10px;">
+        <div style="font-size:20px;">🎉</div>
+        <div style="flex:1;">
+          <div style="font-size:13px; font-weight:600; color:#15803d;">첫 추천 성공</div>
+          <div style="font-size:12px; color:#888; margin-top:2px;">추천 코드로 첫 번째 친구가 가입하면 지급</div>
+        </div>
+        <span style="font-size:14px; font-weight:700; color:#16a34a; white-space:nowrap;">+5,000P</span>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:12px; padding:14px; border-radius:12px; background:#f0fdf4; border:1px solid #bbf7d0; margin-bottom:10px;">
+        <div style="font-size:20px;">👥</div>
+        <div style="flex:1;">
+          <div style="font-size:13px; font-weight:600; color:#15803d;">직접 추천 5명</div>
+          <div style="font-size:12px; color:#888; margin-top:2px;">L1 추천인이 5명이 되면 지급</div>
+        </div>
+        <span style="font-size:14px; font-weight:700; color:#16a34a; white-space:nowrap;">+20,000P</span>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:12px; padding:14px; border-radius:12px; background:#f9fafb; border:1px solid #f0f0f0;">
+        <div style="font-size:20px;">🌐</div>
+        <div style="flex:1;">
+          <div style="font-size:13px; font-weight:600; color:#555;">네트워크 10명</div>
+          <div style="font-size:12px; color:#888; margin-top:2px;">L1~L5 전체 합산 10명이 되면 지급</div>
+        </div>
+        <span style="font-size:14px; font-weight:700; color:#555; white-space:nowrap;">+30,000P</span>
+      </div>
+    </div>
+
+  </div><!-- /pane-guide -->
+
+</div>
+
+<script>
+function switchTab(tab) {
+  var isStatus = tab === 'status';
+  document.getElementById('pane-status').style.display = isStatus ? 'block' : 'none';
+  document.getElementById('pane-guide').style.display  = isStatus ? 'none'  : 'block';
+
+  var btnStatus = document.getElementById('tab-status');
+  var btnGuide  = document.getElementById('tab-guide');
+
+  btnStatus.style.background  = isStatus ? '#fff' : 'transparent';
+  btnStatus.style.color       = isStatus ? '#16a34a' : '#aaa';
+  btnStatus.style.boxShadow   = isStatus ? '0 1px 4px rgba(0,0,0,.1)' : 'none';
+
+  btnGuide.style.background   = isStatus ? 'transparent' : '#fff';
+  btnGuide.style.color        = isStatus ? '#aaa' : '#16a34a';
+  btnGuide.style.boxShadow    = isStatus ? 'none' : '0 1px 4px rgba(0,0,0,.1)';
+}
+</script>
+
+</body>
+</html>

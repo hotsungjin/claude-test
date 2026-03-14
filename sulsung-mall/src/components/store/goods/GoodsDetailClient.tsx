@@ -212,7 +212,7 @@ export default function GoodsDetailClient({ goods, relatedGoods = [] }: { goods:
                   </div>
                 )}
                 <p className="text-[12px] mt-1" style={{ color: '#999' }}>
-                  마일리지 {Math.floor(basePrice * (goods.mileage_rate ?? 1) / 100)}P 적립
+                  포인트 {Math.floor(basePrice * (goods.mileage_rate ?? 1) / 100)}P 적립
                 </p>
               </div>
 

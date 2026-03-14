@@ -4,7 +4,7 @@ import { z } from 'zod'
 
 const Schema = z.object({
   name: z.string().min(1).optional(),
-  position: z.enum(['main_top', 'main_middle', 'main_bottom', 'popup', 'aside']).optional(),
+  position: z.enum(['main_top', 'main_middle', 'main_bottom', 'main_ad', 'popup', 'aside']).optional(),
   image_url: z.string().min(1).optional(),
   mobile_image_url: z.string().nullable().optional(),
   link_url: z.string().nullable().optional(),

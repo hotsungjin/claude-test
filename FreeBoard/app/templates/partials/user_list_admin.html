@@ -1,0 +1,57 @@
+<div class="overflow-x-auto">
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="border-b border-slate-200 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
+        <th class="pb-3 pr-4">사용자명</th>
+        <th class="pb-3 pr-4">이메일</th>
+        <th class="pb-3 pr-4 text-center">관리자</th>
+        <th class="pb-3 pr-4 text-center">활성</th>
+        <th class="pb-3 pr-4">가입일</th>
+        <th class="pb-3">관리</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-100">
+      {% for u in users %}
+      <tr class="hover:bg-slate-50 transition-colors" id="user-row-{{ u.id }}">
+        <td class="py-3 pr-4 font-medium text-slate-800">
+          {{ u.username }}
+          {% if u.id == current_user.id %}
+          <span class="ml-1 text-xs text-slate-400">(나)</span>
+          {% endif %}
+        </td>
+        <td class="py-3 pr-4 text-slate-600">{{ u.email }}</td>
+        <td class="py-3 pr-4 text-center">
+          {% if u.is_admin %}
+          <span class="inline-block px-2 py-0.5 text-xs bg-blue-100 text-blue-700 rounded-full font-medium">관리자</span>
+          {% else %}
+          <span class="inline-block px-2 py-0.5 text-xs bg-slate-100 text-slate-500 rounded-full">일반</span>
+          {% endif %}
+        </td>
+        <td class="py-3 pr-4 text-center">
+          {% if u.is_active %}
+          <span class="inline-block w-2 h-2 rounded-full bg-green-400"></span>
+          {% else %}
+          <span class="inline-block w-2 h-2 rounded-full bg-red-400"></span>
+          {% endif %}
+        </td>
+        <td class="py-3 pr-4 text-slate-500">{{ u.created_at[:10] }}</td>
+        <td class="py-3">
+          {% if u.id != current_user.id %}
+          <button
+            onclick="openUserModal('{{ u.id }}', '{{ u.username }}', {{ 'true' if u.is_admin else 'false' }}, {{ 'true' if u.is_active else 'false' }})"
+            class="text-xs px-2.5 py-1 border border-slate-200 rounded text-slate-600 hover:bg-slate-50 transition-colors">
+            수정
+          </button>
+          {% else %}
+          <span class="text-xs text-slate-300">—</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="6" class="py-8 text-center text-slate-400 text-sm">사용자가 없습니다.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
     const mileageUse = body.mileageUse
     const depositUse = body.depositUse
     if (member && mileageUse > member.mileage) {
-      return NextResponse.json({ error: '마일리지가 부족합니다.' }, { status: 400 })
+      return NextResponse.json({ error: '포인트가 부족합니다.' }, { status: 400 })
     }
     if (member && depositUse > member.deposit) {
       return NextResponse.json({ error: '예치금이 부족합니다.' }, { status: 400 })

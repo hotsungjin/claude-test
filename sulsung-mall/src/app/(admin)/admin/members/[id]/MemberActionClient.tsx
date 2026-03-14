@@ -49,7 +49,7 @@ export default function MemberActionClient({ memberId, currentGrade, currentMile
       body: JSON.stringify({ delta: Number(mileageDelta), reason: mileageReason }),
     })
     const json = await res.json()
-    setMessage(res.ok ? `마일리지가 ${Number(mileageDelta) > 0 ? '지급' : '차감'}되었습니다.` : json.error ?? '오류')
+    setMessage(res.ok ? `포인트가 ${Number(mileageDelta) > 0 ? '지급' : '차감'}되었습니다.` : json.error ?? '오류')
     setMileageDelta('')
     setMileageReason('')
     setLoading(false)
@@ -89,7 +89,7 @@ export default function MemberActionClient({ memberId, currentGrade, currentMile
 
       {/* 마일리지 지급/차감 */}
       <div>
-        <p className="text-xs font-medium text-gray-500 mb-2">마일리지 지급/차감 (현재: {currentMileage.toLocaleString()}P)</p>
+        <p className="text-xs font-medium text-gray-500 mb-2">포인트 지급/차감 (현재: {currentMileage.toLocaleString()}P)</p>
         <input type="number" value={mileageDelta} onChange={e => setMileageDelta(e.target.value)}
           placeholder="양수=지급, 음수=차감"
           className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500 mb-2" />
@@ -98,7 +98,7 @@ export default function MemberActionClient({ memberId, currentGrade, currentMile
           className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500 mb-2" />
         <button onClick={addMileage} disabled={loading}
           className="w-full px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50">
-          마일리지 적용
+          포인트 적용
         </button>
       </div>
 
