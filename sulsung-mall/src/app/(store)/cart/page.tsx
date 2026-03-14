@@ -118,7 +118,7 @@ export default function CartPage() {
   }
 
   return (
-    <div style={{ backgroundColor: '#f5f5f5', minHeight: '100vh', paddingBottom: 80 }}>
+    <div style={{ backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
       <style>{`
         [data-store-header], [data-bottom-nav], [data-store-footer] { display: none !important; }
         .flex-1.pb-\\[52px\\] { padding-bottom: 0 !important; }

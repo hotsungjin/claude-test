@@ -23,12 +23,14 @@ export default function ReferralShareClient({ url, code }: { url: string; code: 
   return (
     <div className="flex gap-2">
       <button onClick={copy}
-        className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white text-sm px-3 py-2 rounded-lg transition-colors">
+        className="flex items-center gap-1.5 text-sm px-3 py-2 rounded-lg transition-colors"
+        style={{ backgroundColor: '#2d6a2e', color: '#fff' }}>
         <Copy className="w-3.5 h-3.5" />
         {copied ? '복사됨!' : '링크 복사'}
       </button>
       <button onClick={share}
-        className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white text-sm px-3 py-2 rounded-lg transition-colors">
+        className="flex items-center gap-1.5 text-sm px-3 py-2 rounded-lg transition-colors"
+        style={{ backgroundColor: '#2d6a2e', color: '#fff' }}>
         <Share2 className="w-3.5 h-3.5" />
         공유
       </button>

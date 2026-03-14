@@ -82,7 +82,7 @@ export default async function ReferralPage({
         <div className="flex mb-4 rounded-xl overflow-hidden" style={{ border: '1px solid #e8e4df' }}>
           <Link
             href="/mypage/referral?tab=status"
-            className="flex-1 py-3 text-center text-[18px] font-medium transition-colors"
+            className={`flex-1 py-3 text-center text-[18px] transition-colors ${tab === 'status' ? 'font-bold' : 'font-medium'}`}
             style={{
               backgroundColor: tab === 'status' ? '#fff' : 'transparent',
               color: tab === 'status' ? '#333' : '#999',
@@ -92,7 +92,7 @@ export default async function ReferralPage({
           </Link>
           <Link
             href="/mypage/referral?tab=guide"
-            className="flex-1 py-3 text-center text-[18px] font-medium transition-colors"
+            className={`flex-1 py-3 text-center text-[18px] transition-colors ${tab === 'guide' ? 'font-bold' : 'font-medium'}`}
             style={{
               backgroundColor: tab === 'guide' ? '#fff' : 'transparent',
               color: tab === 'guide' ? '#333' : '#999',
@@ -105,22 +105,22 @@ export default async function ReferralPage({
         {tab === 'status' && (
           <>
             {/* 내 추천 코드 카드 */}
-            <div className="rounded-2xl p-6 mb-4 text-white" style={{ background: 'linear-gradient(to right, #968774, #a89882)' }}>
-              <p className="text-sm font-medium mb-1 opacity-90">내 추천 코드</p>
-              <p className="text-3xl font-bold tracking-widest mb-4">{referralCode ?? '-'}</p>
+            <div className="bg-green-50 rounded-2xl p-6 mb-4" style={{ border: '1px solid #d4edda' }}>
+              <p className="text-sm font-medium mb-1" style={{ color: '#2d6a2e', opacity: 0.75 }}>내 추천 코드</p>
+              <p className="text-3xl font-bold tracking-widest mb-4" style={{ color: '#2d6a2e' }}>{referralCode ?? '-'}</p>
               {referralUrl && <ReferralShareClient url={referralUrl} code={referralCode} />}
-              <div className="mt-4 grid grid-cols-3 gap-4 pt-4 border-t border-white/20">
+              <div className="mt-4 grid grid-cols-3 gap-4 pt-4" style={{ borderTop: '1px solid #b8ddb8' }}>
                 <div>
-                  <p className="text-[14px] opacity-75">추천 등급</p>
-                  <p className="text-lg font-bold">{referralInfo?.grade ?? '씨앗'}</p>
+                  <p className="text-[14px]" style={{ color: '#5a8a5a' }}>추천 등급</p>
+                  <p className="text-lg font-bold" style={{ color: '#2d6a2e' }}>{referralInfo?.grade ?? '씨앗'}</p>
                 </div>
                 <div>
-                  <p className="text-[14px] opacity-75">추천인 수</p>
-                  <p className="text-xl font-bold">{invitedCount ?? 0}명</p>
+                  <p className="text-[14px]" style={{ color: '#5a8a5a' }}>추천인 수</p>
+                  <p className="text-xl font-bold" style={{ color: '#2d6a2e' }}>{invitedCount ?? 0}명</p>
                 </div>
                 <div>
-                  <p className="text-[14px] opacity-75">총 리워드</p>
-                  <p className="text-xl font-bold">{totalEarned.toLocaleString()}P</p>
+                  <p className="text-[14px]" style={{ color: '#5a8a5a' }}>총 리워드</p>
+                  <p className="text-xl font-bold" style={{ color: '#2d6a2e' }}>{totalEarned.toLocaleString()}P</p>
                 </div>
               </div>
             </div>
@@ -132,7 +132,7 @@ export default async function ReferralPage({
                 {REFERRAL_RATES.map((rate, idx) => (
                   <div key={idx} className="flex justify-between items-center py-2.5 border-b border-gray-50 last:border-0">
                     <span className="text-[18px] text-gray-700">L{idx + 1} {idx === 0 ? '(직접 추천)' : `(${idx + 1}단계)`}</span>
-                    <span className="text-[18px] font-semibold" style={{ color: '#968774' }}>
+                    <span className="text-[18px] font-semibold" style={{ color: '#2d6a2e' }}>
                       {(rate * 100).toFixed(1)}%{referralInfo?.grade_multiplier > 1 ? ` × ${referralInfo.grade_multiplier}` : ''}
                     </span>
                   </div>
@@ -158,7 +158,7 @@ export default async function ReferralPage({
                       <tr key={idx} className={r.status === '취소' ? 'opacity-50' : ''}>
                         <td className="py-2 text-xs text-gray-500">{formatDateTime(r.created_at)}</td>
                         <td className="py-2 text-xs text-gray-700">L{r.depth}</td>
-                        <td className="py-2 text-right font-medium" style={{ color: r.status === '취소' ? '#999' : '#968774' }}>
+                        <td className="py-2 text-right font-medium" style={{ color: r.status === '취소' ? '#999' : '#2d6a2e' }}>
                           {r.status === '취소' ? '-' : '+'}{r.final_points.toLocaleString()}P
                         </td>
                       </tr>
