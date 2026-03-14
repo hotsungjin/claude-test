@@ -52,10 +52,10 @@ export default function MobileGoodsCard({ goods }: { goods: GoodsItem; isFirst?:
           style={{
             border: '1px solid #e5e5e5',
             borderRadius: '4px',
-            color: '#555',
+            color: '#000',
             marginTop: '6px',
             height: '32px',
-            fontSize: '13px',
+            fontSize: '14px',
             fontWeight: 500,
           }}>
           <ShoppingCart style={{ width: 14, height: 14 }} />
@@ -64,7 +64,7 @@ export default function MobileGoodsCard({ goods }: { goods: GoodsItem; isFirst?:
 
         {/* 상품 정보 */}
         <Link href={`/goods/${goods.slug}`} className="block" style={{ marginTop: '8px' }}>
-          <p className="line-clamp-2" style={{ fontSize: '14px', lineHeight: '1.35', color: '#333' }}>
+          <p className="line-clamp-2" style={{ fontSize: '14px', lineHeight: '1.35', color: '#000' }}>
             {goods.name}
           </p>
 
@@ -80,7 +80,7 @@ export default function MobileGoodsCard({ goods }: { goods: GoodsItem; isFirst?:
                   {discountRate}%
                 </span>
               )}
-              <span style={{ fontSize: '15px', fontWeight: 800, color: '#222' }}>
+              <span style={{ fontSize: '16px', fontWeight: 700, color: '#000' }}>
                 {price.toLocaleString()}원
               </span>
             </div>

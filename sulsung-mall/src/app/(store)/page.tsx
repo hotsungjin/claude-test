@@ -3,16 +3,29 @@ import Link from 'next/link'
 import MobileBannerSlider from '@/components/store/layout/MobileBannerSlider'
 import MobileGoodsCard from '@/components/store/goods/MobileGoodsCard'
 import TimeSaleBanner from '@/components/store/home/TimeSaleBanner'
-import PopupModal from '@/components/store/home/PopupModal'
+import AdBanner from '@/components/store/home/AdBanner'
 
-const CATEGORIES = [
-  { name: '한우',       href: '/goods?cateCd=001', emoji: '🐄' },
-  { name: '한돈',       href: '/goods?cateCd=002', emoji: '🐷' },
-  { name: '간편식',     href: '/goods?cateCd=003', emoji: '🍱' },
-  { name: '간식·유제품', href: '/goods?cateCd=004', emoji: '🥛' },
-  { name: '베이비·키즈', href: '/goods?cateCd=005', emoji: '👶' },
-  { name: '선물세트',   href: '/goods?cateCd=006', emoji: '🎁' },
+const CATEGORY_EMOJI: Record<string, string> = {
+  '한우': '🐄',
+  '한돈': '🐷',
+  '간편식': '🍱',
+  '간식·유제품': '🥛',
+  '베이비·키즈': '👶',
+  '선물세트': '🎁',
+  '존쿡델리미트': '🥩',
+}
+
+const EXTRA_CATEGORIES = [
+  { id: 'extra-1', name: '신상품', slug: '_new', emoji: '✨' },
+  { id: 'extra-2', name: '베스트', slug: '_best', emoji: '🏆' },
+  { id: 'extra-3', name: '전체보기', slug: '_all', emoji: '📋' },
 ]
+
+const EXTRA_HREF: Record<string, string> = {
+  '_new': '/goods?sort=newest',
+  '_best': '/goods?sort=sale_count',
+  '_all': '/categories',
+}
 
 export default async function HomePage() {
   const db = await createClient() as any
@@ -20,22 +33,29 @@ export default async function HomePage() {
   const now = new Date().toISOString()
   const [
     { data: banners },
+    { data: adBanners },
     { data: allGoods },
     { data: newGoods },
     { data: timeSales },
-    { data: popups },
+    { data: categories },
   ] = await Promise.all([
     db.from('banners').select('id, image_url, mobile_image_url, link_url, alt')
       .eq('position', 'main_top').eq('is_active', true).order('sort_order'),
+    db.from('banners').select('id, image_url, mobile_image_url, link_url, alt')
+      .eq('position', 'main_ad').eq('is_active', true).order('sort_order').limit(3),
     db.from('goods').select('id, name, slug, price, sale_price, thumbnail_url, sale_count')
       .eq('status', 'active').order('sale_count', { ascending: false }).limit(30),
     db.from('goods').select('id, name, slug, price, sale_price, thumbnail_url, sale_count')
       .eq('status', 'active').order('created_at', { ascending: false }).limit(30),
     db.from('time_sales').select('*, goods(id, name, slug, price, sale_price, thumbnail_url)')
       .eq('is_active', true).lte('starts_at', now).gte('ends_at', now).limit(6),
-    db.from('popups').select('*')
-      .eq('is_active', true).lte('starts_at', now).gte('ends_at', now).order('sort_order').limit(3),
+    db.from('categories').select('id, name, slug, image_url')
+      .is('parent_id', null).eq('is_active', true).order('sort_order'),
   ])
+
+  const ad1 = (adBanners ?? [])[0] ?? null
+  const ad2 = (adBanners ?? [])[1] ?? null
+  const ad3 = (adBanners ?? [])[2] ?? null
 
   const best = allGoods ?? []
   const fresh = newGoods ?? []
@@ -54,26 +74,30 @@ export default async function HomePage() {
 
   return (
     <div className="bg-white">
-      {(popups ?? []).length > 0 && <PopupModal popups={popups ?? []} />}
-
       {/* ① 메인 배너 */}
       <MobileBannerSlider banners={banners ?? []} />
 
       {/* ② 카테고리 아이콘 */}
-      <section className="px-4 py-4">
-        <div className="grid grid-cols-6 gap-1">
-          {CATEGORIES.map(cat => (
-            <Link key={cat.name} href={cat.href}
-              className="flex flex-col items-center gap-1.5 py-1 hover:opacity-75 transition-opacity">
-              <div className="w-12 h-12 rounded-full flex items-center justify-center text-xl"
-                style={{ backgroundColor: '#f7f4f1' }}>
-                {cat.emoji}
-              </div>
-              <span className="text-[11px] text-center leading-tight" style={{ color: '#444' }}>
-                {cat.name}
-              </span>
-            </Link>
-          ))}
+      <section className="px-3 py-5">
+        <div className="grid grid-cols-5 gap-x-1 gap-y-4">
+          {[...(categories ?? []), ...EXTRA_CATEGORIES].slice(0, 10).map((cat: any) => {
+            const href = EXTRA_HREF[cat.slug] ?? `/goods?category=${cat.slug}`
+            const emoji = cat.emoji ?? CATEGORY_EMOJI[cat.name] ?? '📦'
+            return (
+              <Link key={cat.id} href={href}
+                className="flex flex-col items-center gap-2 hover:opacity-75 transition-opacity">
+                <div className="w-[60px] h-[60px] rounded-full flex items-center justify-center text-[26px]"
+                  style={{ backgroundColor: '#f3f0ed' }}>
+                  {cat.image_url ? (
+                    <img src={cat.image_url} alt={cat.name} className="w-full h-full rounded-full object-cover" />
+                  ) : emoji}
+                </div>
+                <span className="text-[12px] text-center leading-tight font-medium" style={{ color: '#333' }}>
+                  {cat.name}
+                </span>
+              </Link>
+            )
+          })}
         </div>
       </section>
 
@@ -100,14 +124,18 @@ export default async function HomePage() {
       />
 
 
-      {/* 설성목장 소개 배너 */}
-      <section>
-        <img
-          src="/images/banner-factory.jpg"
-          alt="THE BETTER FARM, THE SMART FACTORY FOR OUR LIVES"
-          className="w-full h-auto object-cover"
-        />
-      </section>
+      {/* 광고 배너 영역 1 */}
+      {ad1 ? (
+        <AdBanner banner={ad1} />
+      ) : (
+        <section>
+          <img
+            src="/images/banner-factory.jpg"
+            alt="THE BETTER FARM, THE SMART FACTORY FOR OUR LIVES"
+            className="w-full h-auto object-cover"
+          />
+        </section>
+      )}
 
 
       {/* ⑤ 지금 가장 많이 담고 있어요 */}
@@ -129,6 +157,8 @@ export default async function HomePage() {
         goods={s4}
       />
 
+      {/* 광고 배너 영역 2 */}
+      {ad2 && <AdBanner banner={ad2} />}
 
       {/* ⑦ 이 상품, 어때요 */}
       <HorizontalSection
@@ -143,10 +173,10 @@ export default async function HomePage() {
       {/* ⑧ 실시간 랭킹 */}
       <section style={{ paddingTop: '24px' }}>
         <div className="flex items-center justify-between" style={{ padding: '0 16px 12px' }}>
-          <h2 style={{ fontSize: '17px', fontWeight: 800, color: '#222', lineHeight: 1.3 }}>
+          <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#000', lineHeight: 1.3 }}>
             <span style={{ marginRight: '4px' }}>🏆</span>실시간 랭킹
           </h2>
-          <Link href="/goods?sort=sale_count" className="flex-shrink-0" style={{ fontSize: '13px', fontWeight: 600, color: '#968774' }}>
+          <Link href="/goods?sort=sale_count" className="flex-shrink-0" style={{ fontSize: '15px', fontWeight: 400, color: '#5B9BD5' }}>
             전체보기 &gt;
           </Link>
         </div>
@@ -177,6 +207,8 @@ export default async function HomePage() {
         goods={s8}
       />
 
+      {/* 광고 배너 영역 3 */}
+      {ad3 && <AdBanner banner={ad3} />}
 
       {/* ⑪ 품절임박!!! */}
       <HorizontalSection
@@ -212,15 +244,15 @@ function HorizontalSection({ emoji, title, subtitle, href, goods }: { emoji?: st
     <section style={{ paddingTop: '24px' }}>
       <div className="flex items-start justify-between" style={{ padding: '0 16px 12px' }}>
         <div>
-          <h2 style={{ fontSize: '17px', fontWeight: 800, color: '#222', lineHeight: 1.3 }}>
+          <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#000', lineHeight: 1.3 }}>
             {emoji && <span style={{ marginRight: '4px' }}>{emoji}</span>}
             {title}
           </h2>
           {subtitle && (
-            <p style={{ fontSize: '13px', color: '#999', marginTop: '2px' }}>{subtitle}</p>
+            <p style={{ fontSize: '14px', color: '#999', marginTop: '2px' }}>{subtitle}</p>
           )}
         </div>
-        <Link href={href} className="flex-shrink-0" style={{ fontSize: '13px', fontWeight: 600, color: '#968774', marginTop: '2px' }}>
+        <Link href={href} className="flex-shrink-0" style={{ fontSize: '15px', fontWeight: 400, color: '#5B9BD5', marginTop: '2px' }}>
           전체보기 &gt;
         </Link>
       </div>
