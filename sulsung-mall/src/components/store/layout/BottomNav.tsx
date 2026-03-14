@@ -96,7 +96,7 @@ export default function BottomNav() {
     <nav
       data-bottom-nav
       className="sticky bottom-0 z-50 bg-white flex justify-evenly shadow-[0_-1px_6px_rgba(0,0,0,0.06)]"
-      style={{ borderTop: '1px solid #ebebeb', height: '52px' }}
+      style={{ borderTop: '1px solid #ebebeb', height: '64px' }}
     >
       {NAV_ITEMS.map(item => {
         const Icon = item.icon
