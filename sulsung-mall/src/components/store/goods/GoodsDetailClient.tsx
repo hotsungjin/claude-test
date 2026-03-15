@@ -106,19 +106,19 @@ export default function GoodsDetailClient({ goods, relatedGoods = [] }: { goods:
 
       {/* ── 상단 헤더 (컬리 스타일) ── */}
       <div className="sticky top-0 z-50 bg-white border-b" style={{ borderColor: '#f0f0f0' }}>
-        <div className="flex items-center h-[48px] px-3 gap-2">
-          <button onClick={() => history.back()} className="p-1 flex-shrink-0">
-            <ChevronLeft className="w-6 h-6" style={{ color: '#333' }} />
+        <div className="flex items-center h-[52px] px-4 gap-2">
+          <button onClick={() => history.back()} className="flex-shrink-0 -ml-1 mr-1">
+            <ChevronLeft className="w-[24px] h-[24px]" strokeWidth={2.2} style={{ color: '#222' }} />
           </button>
-          <p className="flex-1 text-[15px] font-medium truncate text-left" style={{ color: '#333' }}>
+          <p className="flex-1 text-[20px] font-bold truncate text-left" style={{ color: '#222' }}>
             {goods.name}
           </p>
-          <div className="flex items-center gap-1 flex-shrink-0">
-            <Link href="/" className="p-1.5">
-              <Home className="w-5 h-5" style={{ color: '#333' }} />
+          <div className="flex items-center flex-shrink-0">
+            <Link href="/" className="w-10 h-10 flex items-center justify-center">
+              <Home className="w-[24px] h-[24px]" strokeWidth={2.2} style={{ color: '#222' }} />
             </Link>
-            <Link href="/cart" className="p-1.5">
-              <ShoppingCart className="w-5 h-5" style={{ color: '#333' }} />
+            <Link href="/cart" className="w-10 h-10 flex items-center justify-center">
+              <ShoppingCart className="w-[24px] h-[24px]" strokeWidth={2.2} style={{ color: '#222' }} />
             </Link>
           </div>
         </div>
@@ -181,21 +181,21 @@ export default function GoodsDetailClient({ goods, relatedGoods = [] }: { goods:
                   설성목장 · {goods.categories.name}
                 </p>
               )}
-              <h1 className="text-[18px] font-bold leading-snug mb-1" style={{ color: '#333' }}>
+              <h1 className="text-[20px] font-bold leading-snug mb-1" style={{ color: '#333' }}>
                 {goods.name}
               </h1>
               {goods.summary && (
-                <p className="text-[13px] mb-1" style={{ color: '#999' }}>{goods.summary}</p>
+                <p className="text-[14px] mb-1" style={{ color: '#999' }}>{goods.summary}</p>
               )}
-              <p className="text-[12px] mb-4" style={{ color: '#b5b5b5' }}>
+              <p className="text-[14px] mb-4" style={{ color: '#b5b5b5' }}>
                 원산지: 국내산 (경기도 이천)
               </p>
 
               <div className="mb-4">
                 {discountRate > 0 && (
                   <div className="flex items-baseline gap-2 mb-0.5">
-                    <span className="text-[28px] font-extrabold" style={{ color: '#e84a3b' }}>{discountRate}%</span>
-                    <span className="text-[28px] font-extrabold" style={{ color: '#333' }}>
+                    <span className="text-[24px] font-extrabold" style={{ color: '#e84a3b' }}>{discountRate}%</span>
+                    <span className="text-[24px] font-extrabold" style={{ color: '#333' }}>
                       {basePrice.toLocaleString()}<span className="text-[18px]">원</span>
                     </span>
                     <span className="text-[14px] line-through" style={{ color: '#b5b5b5' }}>
@@ -205,23 +205,23 @@ export default function GoodsDetailClient({ goods, relatedGoods = [] }: { goods:
                 )}
                 {!discountRate && (
                   <div className="flex items-baseline">
-                    <span className="text-[28px] font-extrabold" style={{ color: '#333' }}>
+                    <span className="text-[24px] font-extrabold" style={{ color: '#333' }}>
                       {basePrice.toLocaleString()}<span className="text-[18px]">원</span>
                     </span>
                   </div>
                 )}
-                <p className="text-[12px] mt-1" style={{ color: '#999' }}>
+                <p className="text-[14px] mt-1" style={{ color: '#000' }}>
                   포인트 {Math.floor(basePrice * (goods.mileage_rate ?? 1) / 100)}P 적립
                 </p>
               </div>
 
               <div className="border-t pt-4 space-y-2" style={{ borderColor: '#f0f0f0' }}>
-                <div className="flex text-[13px]">
-                  <span className="w-[60px] flex-shrink-0" style={{ color: '#999' }}>배송</span>
+                <div className="flex text-[14px]">
+                  <span className="w-[60px] flex-shrink-0" style={{ color: '#333' }}>배송</span>
                   <span style={{ color: '#333' }}>택배배송</span>
                 </div>
-                <div className="flex text-[13px]">
-                  <span className="w-[60px] flex-shrink-0" style={{ color: '#999' }}>배송비</span>
+                <div className="flex text-[14px]">
+                  <span className="w-[60px] flex-shrink-0" style={{ color: '#333' }}>배송비</span>
                   <span style={{ color: '#333' }}>{BASE_SHIPPING_FEE.toLocaleString()}원 ({FREE_SHIPPING_THRESHOLD.toLocaleString()}원 이상 무료)</span>
                 </div>
               </div>
