@@ -116,9 +116,25 @@ export default function AddressesClient({ memberId, initialAddresses }: {
   }
 
   return (
-    <div className="pb-8" style={{ paddingLeft: '20px', paddingRight: '20px' }}>
+    <div className={selectMode ? 'pb-24' : 'pb-8'} style={{ paddingLeft: '20px', paddingRight: '20px' }}>
+      {/* 선택 모드: 푸터/바텀내비 숨김 */}
+      {selectMode && (
+        <style>{`[data-bottom-nav], [data-store-footer] { display: none !important; }`}</style>
+      )}
+
+      {/* 배송지 추가 버튼 (상단) */}
+      {!showForm && (
+        <div className="mt-4 mb-3">
+          <button onClick={openNew}
+            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-[15px] font-medium"
+            style={{ border: '1px solid #ddd', color: '#555', backgroundColor: '#fff' }}>
+            <Plus className="w-5 h-5" /> 배송지 추가
+          </button>
+        </div>
+      )}
+
       {/* 배송지 목록 */}
-      <div className="mt-2">
+      <div>
         {addresses.map(addr => (
           <div key={addr.id}
             className="p-4 rounded-2xl mb-3 cursor-pointer"
@@ -194,17 +210,6 @@ export default function AddressesClient({ memberId, initialAddresses }: {
           </div>
         )}
       </div>
-
-      {/* 새 배송지 추가 버튼 */}
-      {!showForm && (
-        <div className="mt-4">
-          <button onClick={openNew}
-            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-[15px] font-semibold text-white"
-            style={{ backgroundColor: '#968774' }}>
-            <Plus className="w-5 h-5" /> 새 배송지 추가
-          </button>
-        </div>
-      )}
 
       {/* 인라인 폼 */}
       {showForm && (
@@ -325,9 +330,10 @@ export default function AddressesClient({ memberId, initialAddresses }: {
         </div>
       )}
 
-      {/* 선택 모드: 배송지 적용 버튼 */}
+      {/* 선택 모드: 배송지 적용 버튼 (하단 고정) */}
       {selectMode && addresses.length > 0 && (
-        <div className="sticky bottom-0 left-0 right-0 bg-white px-0 py-4 mt-4">
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white px-5 py-4"
+          style={{ maxWidth: 480, margin: '0 auto' }}>
           <button
             onClick={async () => {
               if (!selectedId) return
@@ -335,7 +341,7 @@ export default function AddressesClient({ memberId, initialAddresses }: {
               router.back()
             }}
             className="w-full py-4 rounded-xl text-[16px] font-bold text-white"
-            style={{ backgroundColor: '#333' }}>
+            style={{ backgroundColor: '#968774' }}>
             배송지 적용
           </button>
         </div>
