@@ -97,7 +97,7 @@ export default function GoodsDetailClient({ goods, relatedGoods = [] }: { goods:
   const shippingProgress = Math.min(100, (totalPrice / FREE_SHIPPING_THRESHOLD) * 100)
 
   return (
-    <div className="flex flex-col min-h-full bg-white">
+    <div className="flex flex-col bg-white" style={{ minHeight: '100vh' }}>
       {/* 스토어 헤더/바텀네비/풋터 숨기기 */}
       <style>{`
         [data-store-header], [data-bottom-nav], [data-store-footer] { display: none !important; }
@@ -143,7 +143,7 @@ export default function GoodsDetailClient({ goods, relatedGoods = [] }: { goods:
       </div>
 
       {/* ── 콘텐츠 영역 ── */}
-      <div className="flex-1" style={{ minHeight: 'calc(100vh - 160px)' }}>
+      <div className="flex-1">
         {tab === 'detail' && (
           <>
             {/* 이미지 슬라이더 */}
