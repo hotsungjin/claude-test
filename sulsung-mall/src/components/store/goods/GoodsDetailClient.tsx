@@ -29,17 +29,16 @@ export default function GoodsDetailClient({ goods, relatedGoods = [] }: { goods:
   const [currentImage, setCurrentImage] = useState(0)
   const [showCartSheet, setShowCartSheet] = useState(false)
   const [showConfirmSheet, setShowConfirmSheet] = useState(false)
-  const [wrapperRect, setWrapperRect] = useState<{ top: number; left: number; width: number; height: number } | null>(null)
+  const [wrapperRect, setWrapperRect] = useState<{ top: number; left: number; width: number; height: number }>({ top: 0, left: 0, width: 0, height: 0 })
 
-  useEffect(() => {
-    if (showCartSheet || showConfirmSheet) {
-      const wrapper = document.querySelector('.app-scroll-wrapper')
-      if (wrapper) {
-        const rect = wrapper.getBoundingClientRect()
-        setWrapperRect({ top: rect.top, left: rect.left, width: rect.width, height: rect.height })
-      }
+  const getWrapperRect = () => {
+    const wrapper = document.querySelector('.app-scroll-wrapper')
+    if (wrapper) {
+      const rect = wrapper.getBoundingClientRect()
+      return { top: rect.top, left: rect.left, width: rect.width, height: rect.height }
     }
-  }, [showCartSheet, showConfirmSheet])
+    return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight }
+  }
 
   const images: string[] = goods.thumbnail_url
     ? [goods.thumbnail_url, ...(Array.isArray(goods.images) ? goods.images.map((i: any) => i.url ?? i) : [])]
@@ -88,6 +87,7 @@ export default function GoodsDetailClient({ goods, relatedGoods = [] }: { goods:
     })
     if (!res.ok) { const j = await res.json().catch(() => ({})); alert(j.error ?? '장바구니 담기에 실패했습니다.'); return }
     setShowCartSheet(false)
+    setWrapperRect(getWrapperRect())
     setShowConfirmSheet(true)
     setQty(1)
   }
@@ -359,7 +359,7 @@ export default function GoodsDetailClient({ goods, relatedGoods = [] }: { goods:
             style={{ borderColor: '#e5e5e5' }}>
             <Heart className={cn('w-6 h-6', wishlisted ? 'fill-red-500 text-red-500' : '')} style={wishlisted ? {} : { color: '#d5d5d5' }} />
           </button>
-          <button onClick={() => { setQty(1); setShowCartSheet(true) }}
+          <button onClick={() => { setQty(1); setWrapperRect(getWrapperRect()); setShowCartSheet(true) }}
             className="flex-1 flex items-center justify-center h-[52px] rounded-lg font-bold text-[16px] text-white"
             style={{ backgroundColor: '#968774' }}>
             장바구니 담기
@@ -371,10 +371,10 @@ export default function GoodsDetailClient({ goods, relatedGoods = [] }: { goods:
       {showCartSheet && (
         <div className="z-[100]" style={{
           position: 'fixed',
-          top: wrapperRect?.top ?? 0,
-          left: wrapperRect?.left ?? 0,
-          width: wrapperRect?.width ?? '100%',
-          height: wrapperRect?.height ?? '100%',
+          top: wrapperRect.top,
+          left: wrapperRect.left,
+          width: wrapperRect.width || '100%',
+          height: wrapperRect.height || '100%',
         }} onClick={() => setShowCartSheet(false)}>
           {/* 딤 */}
           <div className="absolute inset-0 bg-black/40" />
@@ -434,10 +434,10 @@ export default function GoodsDetailClient({ goods, relatedGoods = [] }: { goods:
       {showConfirmSheet && (
         <div className="z-[100]" style={{
           position: 'fixed',
-          top: wrapperRect?.top ?? 0,
-          left: wrapperRect?.left ?? 0,
-          width: wrapperRect?.width ?? '100%',
-          height: wrapperRect?.height ?? '100%',
+          top: wrapperRect.top,
+          left: wrapperRect.left,
+          width: wrapperRect.width || '100%',
+          height: wrapperRect.height || '100%',
         }} onClick={() => setShowConfirmSheet(false)}>
           <div className="absolute inset-0 bg-black/40" />
           <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl animate-slide-up"
