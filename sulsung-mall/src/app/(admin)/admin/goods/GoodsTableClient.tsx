@@ -9,7 +9,7 @@ import GoodsBulkActionBar from './BulkActionBar'
 
 const STATUS_LABEL: Record<string, string> = { active: '판매중', inactive: '비공개', soldout: '품절', deleted: '삭제' }
 const STATUS_COLOR: Record<string, string> = {
-  active: 'bg-green-100 text-green-700',
+  active: 'bg-blue-100 text-blue-700',
   inactive: 'bg-gray-100 text-gray-500',
   soldout: 'bg-red-100 text-red-600',
   deleted: 'bg-gray-200 text-gray-400',
@@ -58,11 +58,11 @@ export default function GoodsTableClient({ goods, totalCount, page, pageSize }: 
     <>
       <div className="px-6 py-3 flex items-center justify-between">
         <span className="text-sm text-gray-500">
-          {selected.size > 0 && <span className="text-green-600">{selected.size}개 선택</span>}
+          {selected.size > 0 && <span className="text-blue-600">{selected.size}개 선택</span>}
         </span>
         <button
           onClick={handleDownload}
-          className="inline-flex items-center gap-1.5 bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-green-700 transition-colors"
+          className="inline-flex items-center gap-1.5 bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-700 transition-colors"
         >
           <Download className="w-3.5 h-3.5" />
           엑셀 다운로드{selected.size > 0 ? ` (${selected.size}개)` : ''}
@@ -73,7 +73,7 @@ export default function GoodsTableClient({ goods, totalCount, page, pageSize }: 
           <tr>
             <th className="px-4 py-3 w-10">
               <input type="checkbox" checked={selected.size === goods.length && goods.length > 0}
-                onChange={toggleAll} className="w-4 h-4 accent-green-600" />
+                onChange={toggleAll} className="w-4 h-4 accent-blue-600" />
             </th>
             <th className="px-4 py-3 text-center text-xs text-gray-500 font-medium w-16">번호</th>
             <th className="px-4 py-3 text-center text-xs text-gray-500 font-medium w-20">상품코드</th>
@@ -89,10 +89,10 @@ export default function GoodsTableClient({ goods, totalCount, page, pageSize }: 
         </thead>
         <tbody className="divide-y divide-gray-50">
           {goods.map((item: any, index: number) => (
-            <tr key={item.id} className={`hover:bg-gray-50 ${selected.has(item.id) ? 'bg-green-50' : ''}`}>
+            <tr key={item.id} className={`hover:bg-gray-50 ${selected.has(item.id) ? 'bg-blue-50' : ''}`}>
               <td className="px-4 py-3">
                 <input type="checkbox" checked={selected.has(item.id)}
-                  onChange={() => toggle(item.id)} className="w-4 h-4 accent-green-600" />
+                  onChange={() => toggle(item.id)} className="w-4 h-4 accent-blue-600" />
               </td>
               <td className="px-4 py-3 text-center text-xs text-gray-400">{totalCount - (page - 1) * pageSize - index}</td>
               <td className="px-4 py-3 text-center text-xs text-gray-500 font-mono">{item.godomall_code ?? '-'}</td>
@@ -101,7 +101,9 @@ export default function GoodsTableClient({ goods, totalCount, page, pageSize }: 
                   ? <img src={item.thumbnail_url} alt="" className="w-12 h-12 rounded-lg object-cover aspect-square flex-shrink-0" />
                   : <div className="w-12 h-12 bg-gray-100 rounded-lg flex-shrink-0" />}
               </td>
-              <td className="px-4 py-3 font-medium text-gray-900 max-w-xs truncate">{item.name}</td>
+              <td className="px-4 py-3 font-medium text-gray-900 max-w-xs truncate">
+                <Link href={`/admin/goods/${item.id}`} className="hover:text-blue-600 hover:underline">{item.name}</Link>
+              </td>
               <td className="px-4 py-3 text-gray-500">{item.categories?.name ?? '-'}</td>
               <td className="px-4 py-3 text-right">
                 {item.sale_price ? (
