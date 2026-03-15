@@ -20,7 +20,7 @@ export default async function AddressesPage() {
     .order('created_at')
 
   return (
-    <div style={{ backgroundColor: '#fff', minHeight: '100vh' }}>
+    <div className="flex flex-col" style={{ backgroundColor: '#fff', minHeight: '100vh' }}>
       <MypageHeader title="배송지 관리" />
       <Suspense>
         <AddressesClient memberId={member.id} initialAddresses={addresses ?? []} />

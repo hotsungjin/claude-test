@@ -116,7 +116,7 @@ export default function AddressesClient({ memberId, initialAddresses }: {
   }
 
   return (
-    <div className={selectMode ? 'pb-24' : 'pb-8'} style={{ paddingLeft: '20px', paddingRight: '20px' }}>
+    <div className={selectMode ? 'flex-1 flex flex-col' : 'pb-8'} style={{ paddingLeft: '20px', paddingRight: '20px' }}>
       {/* 선택 모드: 푸터/바텀내비 숨김 */}
       {selectMode && (
         <style>{`[data-bottom-nav], [data-store-footer] { display: none !important; }`}</style>
@@ -330,9 +330,9 @@ export default function AddressesClient({ memberId, initialAddresses }: {
         </div>
       )}
 
-      {/* 선택 모드: 배송지 적용 버튼 (하단 고정) */}
+      {/* 선택 모드: 배송지 적용 버튼 (맨 하단) */}
       {selectMode && addresses.length > 0 && (
-        <div className="sticky bottom-0 z-50 bg-white py-4 -mx-5 px-5">
+        <div className="mt-auto pt-4 pb-6">
           <button
             onClick={async () => {
               if (!selectedId) return
