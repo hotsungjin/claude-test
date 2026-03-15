@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ShoppingCart, Minus, Plus, Check } from 'lucide-react'
@@ -31,10 +31,10 @@ export default function CartBottomSheet({ goods, onClose }: Props) {
   const remain = Math.max(0, FREE_SHIPPING_THRESHOLD - cartTotal)
   const progress = Math.min(100, (cartTotal / FREE_SHIPPING_THRESHOLD) * 100)
 
-  const [wrapperRect, setWrapperRect] = useState<{ top: number; left: number; width: number; height: number }>({ top: 0, left: 0, width: 0, height: 0 })
+  const [wrapperRect, setWrapperRect] = useState<{ top: number; left: number; width: number; height: number } | null>(null)
 
-  // 마운트 시 app-scroll-wrapper 위치 계산 + 스크롤 잠금
-  useEffect(() => {
+  // 마운트 시 (페인트 전) app-scroll-wrapper 위치 계산 + 스크롤 잠금
+  useLayoutEffect(() => {
     const wrapper = document.querySelector('.app-scroll-wrapper') as HTMLElement
     if (!wrapper) return
     const rect = wrapper.getBoundingClientRect()
@@ -76,10 +76,10 @@ export default function CartBottomSheet({ goods, onClose }: Props) {
     <div ref={wrapperRef}
       style={{
         position: 'fixed',
-        top: wrapperRect.top,
-        left: wrapperRect.left,
-        width: wrapperRect.width || '100%',
-        height: wrapperRect.height || '100%',
+        top: wrapperRect?.top ?? 0,
+        left: wrapperRect?.left ?? 0,
+        width: wrapperRect?.width ?? '100%',
+        height: wrapperRect?.height ?? '100%',
         zIndex: 100,
       }}
       onClick={onClose}>
