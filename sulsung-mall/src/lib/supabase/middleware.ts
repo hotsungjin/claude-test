@@ -23,42 +23,19 @@ export async function updateSession(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  // 관리자 경로 보호
+  // 관리자 경로 보호 (로그인 여부만 체크, 관리자 권한은 layout에서 확인)
   if (request.nextUrl.pathname.startsWith('/admin')) {
     if (!user) {
-      return NextResponse.redirect(new URL('/auth/login?redirect=/admin', request.url))
-    }
-
-    // admin_users 테이블에서 관리자 여부 확인
-    const { data: adminUser } = await supabase
-      .from('admin_users')
-      .select('id')
-      .eq('auth_id', user.id)
-      .single()
-
-    if (!adminUser) {
-      // 관리자가 아닌 경우 홈으로 리다이렉트
-      return NextResponse.redirect(new URL('/', request.url))
+      return NextResponse.redirect(new URL('/admin/login', request.url))
     }
   }
 
-  // 마이페이지 경로 보호
+  // 마이페이지 경로 보호 (로그인 여부만 체크, 휴면 체크는 layout에서 확인)
   if (request.nextUrl.pathname.startsWith('/mypage')) {
     if (!user) {
       return NextResponse.redirect(
         new URL(`/auth/login?redirect=${request.nextUrl.pathname}`, request.url)
       )
-    }
-
-    // 휴면 회원 체크 → 재활성화 페이지로 리다이렉트
-    const { data: member } = await supabase
-      .from('members')
-      .select('is_dormant')
-      .eq('auth_id', user.id)
-      .single()
-
-    if (member?.is_dormant) {
-      return NextResponse.redirect(new URL('/auth/dormant', request.url))
     }
   }
 
