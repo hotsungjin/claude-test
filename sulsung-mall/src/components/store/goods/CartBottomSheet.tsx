@@ -72,10 +72,10 @@ export default function CartBottomSheet({ goods, onClose }: Props) {
     <div ref={wrapperRef}
       style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 100, display: 'flex', justifyContent: 'center' }}
       onClick={onClose}>
+      {/* 오버레이 */}
+      <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)' }} />
       {/* 480px 제한 컨테이너 */}
       <div style={{ position: 'relative', width: '100%', maxWidth: 480, height: '100%' }}>
-        {/* 오버레이 */}
-        <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)' }} />
         {/* 바텀시트 */}
         <div style={{
           position: 'absolute',

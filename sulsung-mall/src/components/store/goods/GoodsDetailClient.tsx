@@ -358,11 +358,11 @@ export default function GoodsDetailClient({ goods, relatedGoods = [] }: { goods:
 
       {/* ══════ 장바구니 담기 바텀시트 ══════ */}
       {showCartSheet && (
-        <div className="fixed inset-0 z-[100]" onClick={() => setShowCartSheet(false)}>
+        <div className="fixed inset-0 z-[100] flex justify-center" onClick={() => setShowCartSheet(false)}>
           {/* 딤 */}
           <div className="absolute inset-0 bg-black/40" />
           {/* 시트 */}
-          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl animate-slide-up"
+          <div className="absolute bottom-0 w-full max-w-[480px] bg-white rounded-t-2xl animate-slide-up"
             onClick={e => e.stopPropagation()}>
             {/* 핸들 */}
             <div className="flex justify-center pt-3 pb-2">
@@ -415,9 +415,9 @@ export default function GoodsDetailClient({ goods, relatedGoods = [] }: { goods:
 
       {/* ══════ 장바구니 담기 완료 바텀시트 ══════ */}
       {showConfirmSheet && (
-        <div className="fixed inset-0 z-[100]" onClick={() => setShowConfirmSheet(false)}>
+        <div className="fixed inset-0 z-[100] flex justify-center" onClick={() => setShowConfirmSheet(false)}>
           <div className="absolute inset-0 bg-black/40" />
-          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl animate-slide-up"
+          <div className="absolute bottom-0 w-full max-w-[480px] bg-white rounded-t-2xl animate-slide-up"
             onClick={e => e.stopPropagation()}>
             <div className="flex justify-center pt-3 pb-2">
               <div className="w-10 h-1 rounded-full bg-gray-300" />
