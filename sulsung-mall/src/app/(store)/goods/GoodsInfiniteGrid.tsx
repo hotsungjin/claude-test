@@ -20,37 +20,45 @@ export default function GoodsInfiniteGrid({ initialGoods, totalCount, perPage, q
   const [loading, setLoading] = useState(false)
   const [hasMore, setHasMore] = useState(initialGoods.length < totalCount)
   const loaderRef = useRef<HTMLDivElement>(null)
+  const loadingRef = useRef(false)
 
   // 필터 변경 시 리셋
   useEffect(() => {
     setGoods(initialGoods)
     setPage(1)
     setHasMore(initialGoods.length < totalCount)
+    loadingRef.current = false
   }, [initialGoods, totalCount])
 
   const loadMore = useCallback(async () => {
-    if (loading || !hasMore) return
+    if (loadingRef.current || !hasMore) return
+    loadingRef.current = true
     setLoading(true)
     const nextPage = page + 1
     try {
-      const sep = queryString ? '&' : '?'
       const url = `/api/v1/goods?${queryString}${queryString ? '&' : ''}page=${nextPage}`
       const res = await fetch(url)
       const data = await res.json()
       const newGoods = data.goods ?? []
-      setGoods(prev => [...prev, ...newGoods])
+      setGoods(prev => {
+        const updated = [...prev, ...newGoods]
+        setHasMore(updated.length < totalCount)
+        return updated
+      })
       setPage(nextPage)
-      setHasMore(goods.length + newGoods.length < totalCount)
     } catch {} finally {
       setLoading(false)
+      loadingRef.current = false
     }
-  }, [loading, hasMore, page, queryString, goods.length, totalCount])
+  }, [hasMore, page, queryString, totalCount])
 
   useEffect(() => {
     const el = loaderRef.current
     if (!el) return
     const observer = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting) loadMore()
+      if (entries[0].isIntersecting && !loadingRef.current) {
+        loadMore()
+      }
     }, { rootMargin: '200px' })
     observer.observe(el)
     return () => observer.disconnect()
