@@ -143,7 +143,7 @@ export default function GoodsDetailClient({ goods, relatedGoods = [] }: { goods:
       </div>
 
       {/* ── 콘텐츠 영역 ── */}
-      <div className="flex-1">
+      <div className="flex-1" style={{ minHeight: 'calc(100vh - 160px)' }}>
         {tab === 'detail' && (
           <>
             {/* 이미지 슬라이더 */}
