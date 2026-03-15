@@ -114,8 +114,8 @@ export default function AddressesClient({ memberId, initialAddresses }: {
       <div className="mt-2">
         {addresses.map(addr => (
           <div key={addr.id}
-            className="py-5"
-            style={{ borderBottom: '1px solid #f0f0f0' }}>
+            className="p-4 rounded-2xl mb-3"
+            style={{ backgroundColor: '#f7f7f7' }}>
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1.5">
@@ -134,19 +134,19 @@ export default function AddressesClient({ memberId, initialAddresses }: {
                   )}
                 </div>
                 <p className="text-[14px]" style={{ color: '#555' }}>{addr.phone}</p>
-                <p className="text-[14px] mt-1" style={{ color: '#333' }}>
-                  [{addr.zipcode}] {addr.address1} {addr.address2}
+                <p className="text-[14px] mt-1 leading-relaxed" style={{ color: '#333' }}>
+                  {addr.address1} {addr.address2}
                 </p>
               </div>
               <div className="flex gap-1.5 flex-shrink-0 ml-3">
                 <button onClick={() => openEdit(addr)}
                   className="text-[13px] px-3 py-1.5 rounded-lg"
-                  style={{ border: '1px solid #ddd', color: '#555' }}>
+                  style={{ border: '1px solid #ddd', color: '#555', backgroundColor: '#fff' }}>
                   수정
                 </button>
                 <button onClick={() => handleDelete(addr.id)}
                   className="text-[13px] px-3 py-1.5 rounded-lg"
-                  style={{ border: '1px solid #ddd', color: '#555' }}>
+                  style={{ border: '1px solid #ddd', color: '#555', backgroundColor: '#fff' }}>
                   삭제
                 </button>
               </div>
