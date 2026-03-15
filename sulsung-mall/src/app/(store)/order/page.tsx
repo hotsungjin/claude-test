@@ -189,7 +189,7 @@ export default function OrderPage() {
                 {defaultAddress.address1} {defaultAddress.address2}
               </p>
               <button
-                onClick={() => router.push('/mypage/addresses')}
+                onClick={() => router.push('/mypage/addresses?select=true')}
                 className="flex-shrink-0 text-[13px] px-3 py-1.5 rounded-lg border"
                 style={{ borderColor: '#ddd', color: '#555' }}
               >

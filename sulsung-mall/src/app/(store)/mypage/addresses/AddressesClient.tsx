@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Plus, Pencil, Trash2, MapPin, Search } from 'lucide-react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { Plus, Pencil, Trash2, MapPin, Search, Check } from 'lucide-react'
 
 declare global { interface Window { daum: any } }
 
@@ -15,6 +16,12 @@ const LABELS = ['집', '회사', '기타']
 export default function AddressesClient({ memberId, initialAddresses }: {
   memberId: string; initialAddresses: Address[]
 }) {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const selectMode = searchParams.get('select') === 'true'
+  const [selectedId, setSelectedId] = useState<string | null>(
+    initialAddresses.find(a => a.is_default)?.id ?? initialAddresses[0]?.id ?? null
+  )
   const [addresses, setAddresses] = useState<Address[]>(initialAddresses)
   const [showForm, setShowForm] = useState(false)
   const [editTarget, setEditTarget] = useState<Address | null>(null)
@@ -114,8 +121,12 @@ export default function AddressesClient({ memberId, initialAddresses }: {
       <div className="mt-2">
         {addresses.map(addr => (
           <div key={addr.id}
-            className="p-4 rounded-2xl mb-3"
-            style={{ backgroundColor: '#f7f7f7' }}>
+            className="p-4 rounded-2xl mb-3 cursor-pointer"
+            style={{
+              backgroundColor: '#f7f7f7',
+              border: selectMode && selectedId === addr.id ? '2px solid #968774' : '2px solid transparent',
+            }}
+            onClick={selectMode ? () => setSelectedId(addr.id) : undefined}>
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1.5">
@@ -138,20 +149,32 @@ export default function AddressesClient({ memberId, initialAddresses }: {
                   {addr.address1} {addr.address2}
                 </p>
               </div>
-              <div className="flex gap-1.5 flex-shrink-0 ml-3">
-                <button onClick={() => openEdit(addr)}
-                  className="text-[13px] px-3 py-1.5 rounded-lg"
-                  style={{ border: '1px solid #ddd', color: '#555', backgroundColor: '#fff' }}>
-                  수정
-                </button>
-                <button onClick={() => handleDelete(addr.id)}
-                  className="text-[13px] px-3 py-1.5 rounded-lg"
-                  style={{ border: '1px solid #ddd', color: '#555', backgroundColor: '#fff' }}>
-                  삭제
-                </button>
-              </div>
+              {selectMode ? (
+                <div className="flex-shrink-0 ml-3 mt-1">
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center"
+                    style={selectedId === addr.id
+                      ? { backgroundColor: '#968774' }
+                      : { border: '2px solid #ddd' }
+                    }>
+                    {selectedId === addr.id && <Check className="w-4 h-4 text-white" />}
+                  </div>
+                </div>
+              ) : (
+                <div className="flex gap-1.5 flex-shrink-0 ml-3">
+                  <button onClick={() => openEdit(addr)}
+                    className="text-[13px] px-3 py-1.5 rounded-lg"
+                    style={{ border: '1px solid #ddd', color: '#555', backgroundColor: '#fff' }}>
+                    수정
+                  </button>
+                  <button onClick={() => handleDelete(addr.id)}
+                    className="text-[13px] px-3 py-1.5 rounded-lg"
+                    style={{ border: '1px solid #ddd', color: '#555', backgroundColor: '#fff' }}>
+                    삭제
+                  </button>
+                </div>
+              )}
             </div>
-            {!addr.is_default && (
+            {!selectMode && !addr.is_default && (
               <button onClick={() => setDefault(addr.id)}
                 className="mt-3 text-[13px] font-medium"
                 style={{ color: '#968774' }}>
@@ -299,6 +322,22 @@ export default function AddressesClient({ memberId, initialAddresses }: {
                 </button>
               </div>
             </form>
+        </div>
+      )}
+
+      {/* 선택 모드: 배송지 적용 버튼 */}
+      {selectMode && addresses.length > 0 && (
+        <div className="sticky bottom-0 left-0 right-0 bg-white px-0 py-4 mt-4">
+          <button
+            onClick={async () => {
+              if (!selectedId) return
+              await setDefault(selectedId)
+              router.back()
+            }}
+            className="w-full py-4 rounded-xl text-[16px] font-bold text-white"
+            style={{ backgroundColor: '#333' }}>
+            배송지 적용
+          </button>
         </div>
       )}
     </div>

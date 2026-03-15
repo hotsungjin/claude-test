@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { Suspense } from 'react'
 import AddressesClient from './AddressesClient'
 import MypageHeader from '@/components/store/mypage/MypageHeader'
 
@@ -21,7 +22,9 @@ export default async function AddressesPage() {
   return (
     <div style={{ backgroundColor: '#fff', minHeight: '100vh' }}>
       <MypageHeader title="배송지 관리" />
-      <AddressesClient memberId={member.id} initialAddresses={addresses ?? []} />
+      <Suspense>
+        <AddressesClient memberId={member.id} initialAddresses={addresses ?? []} />
+      </Suspense>
     </div>
   )
 }
