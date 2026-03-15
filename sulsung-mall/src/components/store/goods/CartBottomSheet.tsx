@@ -31,10 +31,14 @@ export default function CartBottomSheet({ goods, onClose }: Props) {
   const remain = Math.max(0, FREE_SHIPPING_THRESHOLD - cartTotal)
   const progress = Math.min(100, (cartTotal / FREE_SHIPPING_THRESHOLD) * 100)
 
-  // 스크롤 잠금: app-scroll-wrapper의 스크롤을 막음
+  const [wrapperRect, setWrapperRect] = useState<{ top: number; left: number; width: number; height: number }>({ top: 0, left: 0, width: 0, height: 0 })
+
+  // 마운트 시 app-scroll-wrapper 위치 계산 + 스크롤 잠금
   useEffect(() => {
     const wrapper = document.querySelector('.app-scroll-wrapper') as HTMLElement
     if (!wrapper) return
+    const rect = wrapper.getBoundingClientRect()
+    setWrapperRect({ top: rect.top, left: rect.left, width: rect.width, height: rect.height })
     const prevOverflow = wrapper.style.overflow
     wrapper.style.overflow = 'hidden'
     return () => { wrapper.style.overflow = prevOverflow }
@@ -70,18 +74,23 @@ export default function CartBottomSheet({ goods, onClose }: Props) {
 
   return (
     <div ref={wrapperRef}
-      style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 100, display: 'flex', justifyContent: 'center' }}
+      style={{
+        position: 'fixed',
+        top: wrapperRect.top,
+        left: wrapperRect.left,
+        width: wrapperRect.width || '100%',
+        height: wrapperRect.height || '100%',
+        zIndex: 100,
+      }}
       onClick={onClose}>
       {/* 오버레이 */}
       <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)' }} />
-      {/* 480px 제한 컨테이너 */}
-      <div style={{ position: 'relative', width: '100%', maxWidth: 480, height: '100%' }}>
-        {/* 바텀시트 */}
-        <div style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
+      {/* 바텀시트 */}
+      <div style={{
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
           backgroundColor: 'white',
           borderRadius: '16px 16px 0 0',
           animation: 'cart-slide-up 0.3s ease-out',
@@ -178,7 +187,6 @@ export default function CartBottomSheet({ goods, onClose }: Props) {
             </>
           )}
         </div>
-      </div>
 
       <style>{`
         @keyframes cart-slide-up {
