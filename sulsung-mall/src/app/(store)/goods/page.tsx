@@ -59,7 +59,7 @@ export default async function GoodsListPage({ searchParams }: { searchParams: Pr
     if (curation) {
       const { data: curationGoods, count: cCount } = await (supabase as any)
         .from('curation_goods')
-        .select('goods(id, name, slug, price, sale_price, thumbnail_url, sale_count, tags, status)', { count: 'exact' })
+        .select('goods(id, name, slug, price, sale_price, member_price, thumbnail_url, sale_count, tags, status)', { count: 'exact' })
         .eq('curation_id', curation.id)
         .order('sort_order')
         .range(from, from + ITEMS_PER_PAGE - 1)
@@ -73,7 +73,7 @@ export default async function GoodsListPage({ searchParams }: { searchParams: Pr
     // 일반 모드
     let query = supabase
       .from('goods')
-      .select('id, name, slug, price, sale_price, thumbnail_url, sale_count, tags, categories(name)', { count: 'exact' })
+      .select('id, name, slug, price, sale_price, member_price, thumbnail_url, sale_count, tags, categories(name)', { count: 'exact' })
       .eq('status', 'active')
       .range(from, from + ITEMS_PER_PAGE - 1)
 
@@ -118,11 +118,12 @@ export default async function GoodsListPage({ searchParams }: { searchParams: Pr
   const { data: categoriesRaw } = await supabase.from('categories').select('id, name, slug').eq('is_active', true).is('parent_id', null)
   // 상품이 있는 카테고리만 필터링
   const allCats = (categoriesRaw ?? []) as unknown as { id: number; name: string; slug: string }[]
-  const { data: allChildren } = await supabase.from('categories').select('id, parent_id').eq('is_active', true).not('parent_id', 'is', null)
-  const childrenMap = new Map<number, number[]>()
-  for (const c of (allChildren ?? []) as any[]) {
+  const { data: allChildren } = await supabase.from('categories').select('id, slug, parent_id').eq('is_active', true).not('parent_id', 'is', null)
+  const childrenList = (allChildren ?? []) as any[]
+  const childrenMap = new Map<number, { id: number; slug: string }[]>()
+  for (const c of childrenList) {
     const arr = childrenMap.get(c.parent_id) ?? []
-    arr.push(c.id)
+    arr.push({ id: c.id, slug: c.slug })
     childrenMap.set(c.parent_id, arr)
   }
   const { data: goodsCounts } = await (supabase as any).from('goods').select('category_id').eq('status', 'active').limit(5000)
@@ -130,8 +131,21 @@ export default async function GoodsListPage({ searchParams }: { searchParams: Pr
   const categories = allCats.filter(cat => {
     if (catIdSet.has(cat.id)) return true
     const kids = childrenMap.get(cat.id) ?? []
-    return kids.some(kid => catIdSet.has(kid))
+    return kids.some(kid => catIdSet.has(kid.id))
   })
+
+  // 서브 카테고리 선택 시 부모 카테고리 slug 찾기 (탭 하이라이트용)
+  let activeTabSlug = params.category
+  if (params.category && !allCats.some(cat => cat.slug === params.category)) {
+    // 현재 카테고리가 부모가 아닌 경우 → 부모 slug으로 매핑
+    for (const [parentId, kids] of childrenMap.entries()) {
+      if (kids.some(kid => kid.slug === params.category)) {
+        const parent = allCats.find(c => c.id === parentId)
+        if (parent) activeTabSlug = parent.slug
+        break
+      }
+    }
+  }
 
   // 활성 필터 개수
   const activeFilters = [params.min_price, params.max_price, params.tag].filter(Boolean).length
@@ -150,7 +164,7 @@ export default async function GoodsListPage({ searchParams }: { searchParams: Pr
           <Link
             href={buildLink(params, { category: undefined })}
             className="flex-shrink-0 px-4 py-1.5 rounded-full text-[13px] font-medium transition-colors"
-            style={!params.category ? { backgroundColor: '#968774', color: '#fff' } : { backgroundColor: '#f3f0ed', color: '#666' }}
+            style={!activeTabSlug ? { backgroundColor: '#968774', color: '#fff' } : { backgroundColor: '#f3f0ed', color: '#666' }}
           >
             전체
           </Link>
@@ -159,7 +173,7 @@ export default async function GoodsListPage({ searchParams }: { searchParams: Pr
               key={cat.id}
               href={buildLink(params, { category: cat.slug })}
               className="flex-shrink-0 px-4 py-1.5 rounded-full text-[13px] font-medium transition-colors"
-              style={params.category === cat.slug ? { backgroundColor: '#968774', color: '#fff' } : { backgroundColor: '#f3f0ed', color: '#666' }}
+              style={activeTabSlug === cat.slug ? { backgroundColor: '#968774', color: '#fff' } : { backgroundColor: '#f3f0ed', color: '#666' }}
             >
               {cat.name}
             </Link>
