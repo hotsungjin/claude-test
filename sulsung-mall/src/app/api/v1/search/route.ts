@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient, createAdminClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/server'
+import { getAuthMember } from '@/lib/supabase/auth'
 
 // 급상승 검색어 조회 (최근 1시간 기준 상위 10개)
 export async function GET() {
@@ -23,13 +24,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'keyword required' }, { status: 400 })
     }
 
-    const supabase = await createClient() as any
-    const { data: { user } } = await supabase.auth.getUser()
+    const { memberId } = await getAuthMember()
 
     const adminClient = await createAdminClient()
     await (adminClient as any).from('search_logs').insert({
       keyword: keyword.trim().toLowerCase(),
-      member_id: user?.id ?? null,
+      member_id: memberId ?? null,
     })
 
     return NextResponse.json({ success: true })

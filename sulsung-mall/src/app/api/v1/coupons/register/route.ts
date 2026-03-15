@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthMember } from '@/lib/supabase/auth'
 import { z } from 'zod'
 
 const Schema = z.object({
@@ -7,12 +7,8 @@ const Schema = z.object({
 })
 
 export async function POST(req: NextRequest) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
-
-  const { data: member } = await (supabase as any).from('members').select('id').eq('auth_id', user.id).single()
-  if (!member) return NextResponse.json({ error: '회원 정보를 찾을 수 없습니다' }, { status: 403 })
+  const { supabase, memberId } = await getAuthMember()
+  if (!memberId) return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
 
   const body = await req.json()
   const parsed = Schema.safeParse(body)
@@ -42,7 +38,7 @@ export async function POST(req: NextRequest) {
     .from('coupon_issues')
     .select('id')
     .eq('coupon_id', coupon.id)
-    .eq('member_id', member.id)
+    .eq('member_id', memberId)
     .single()
 
   if (existing) return NextResponse.json({ error: '이미 등록된 쿠폰입니다' }, { status: 400 })
@@ -50,7 +46,7 @@ export async function POST(req: NextRequest) {
   // 발급
   const { data, error } = await (supabase as any).from('coupon_issues').insert({
     coupon_id: coupon.id,
-    member_id: member.id,
+    member_id: memberId,
     status: 'unused',
   }).select().single()
 

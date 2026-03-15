@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthMember } from '@/lib/supabase/auth'
 import { z } from 'zod'
 
 const Schema = z.object({
@@ -11,12 +11,8 @@ const Schema = z.object({
 })
 
 export async function POST(req: NextRequest) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
-
-  const { data: member } = await (supabase as any).from('members').select('id').eq('auth_id', user.id).single()
-  if (!member) return NextResponse.json({ error: '회원 정보를 찾을 수 없습니다' }, { status: 403 })
+  const { supabase, memberId } = await getAuthMember()
+  if (!memberId) return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
 
   const body = await req.json()
   const parsed = Schema.safeParse(body)
@@ -24,7 +20,7 @@ export async function POST(req: NextRequest) {
 
   const { data, error } = await (supabase as any).from('inquiries').insert({
     ...parsed.data,
-    member_id: member.id,
+    member_id: memberId,
     status: 'pending',
   }).select().single()
 

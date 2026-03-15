@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthMember } from '@/lib/supabase/auth'
 import { generateOrderNo } from '@/utils/format'
-import { BASE_SHIPPING_FEE, FREE_SHIPPING_THRESHOLD } from '@/constants'
+import { BASE_SHIPPING_FEE, FREE_SHIPPING_THRESHOLD, GRADE_BENEFITS } from '@/constants'
 
 const orderSchema = z.object({
   items: z.array(z.object({
@@ -24,22 +24,20 @@ const orderSchema = z.object({
 export async function POST(req: NextRequest) {
   try {
     const body = orderSchema.parse(await req.json())
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const supabase = await createClient() as any
+    const { supabase, memberId } = await getAuthMember()
 
     // 현재 로그인 회원 확인
-    const { data: { user } } = await supabase.auth.getUser()
     type MemberRow = { id: string; mileage: number; deposit: number; grade: string }
-    const { data: member } = user
-      ? await (supabase as any).from('members').select('id, mileage, deposit, grade').eq('auth_id', user.id).single() as { data: MemberRow | null }
+    const { data: member } = memberId
+      ? await (supabase as any).from('members').select('id, mileage, deposit, grade').eq('id', memberId).single() as { data: MemberRow | null }
       : { data: null }
 
     // 상품 정보 및 재고 확인
     const goodsIds = body.items.map(i => i.goodsId)
-    type GoodsRow = { id: string; name: string; price: number; sale_price: number | null; stock: number; mileage_rate: number }
+    type GoodsRow = { id: string; name: string; price: number; sale_price: number | null; member_price: number | null; stock: number; mileage_rate: number }
     const { data: goodsList } = await (supabase as any)
       .from('goods')
-      .select('id, name, price, sale_price, stock, mileage_rate')
+      .select('id, name, price, sale_price, member_price, stock, mileage_rate')
       .in('id', goodsIds)
       .eq('status', 'active') as { data: GoodsRow[] | null }
 
@@ -47,13 +45,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: '유효하지 않은 상품이 포함되어 있습니다.' }, { status: 400 })
     }
 
+    // 등급별 혜택
+    const grade = (member?.grade ?? 'bronze') as keyof typeof GRADE_BENEFITS
+    const benefits = GRADE_BENEFITS[grade] ?? GRADE_BENEFITS.bronze
+    const isMember = grade === 'silver' || grade === 'gold' || grade === 'vip'
+
     // 금액 계산 (서버에서 직접 계산 - 클라이언트 신뢰 안 함)
     let goodsAmount = 0
     const orderItems = body.items.map(item => {
       const goods = goodsList.find(g => g.id === item.goodsId)!
       if (goods.stock < item.qty) throw new Error(`${goods.name} 재고가 부족합니다.`)
 
-      const unitPrice = goods.sale_price ?? goods.price
+      // 멤버십 회원이고 member_price가 있으면 멤버십가 적용
+      const unitPrice = (isMember && goods.member_price) ? goods.member_price : (goods.sale_price ?? goods.price)
       const totalPrice = unitPrice * item.qty
       goodsAmount += totalPrice
 
@@ -64,12 +68,13 @@ export async function POST(req: NextRequest) {
         qty:          item.qty,
         unit_price:   unitPrice,
         total_price:  totalPrice,
-        mileage_earned: Math.floor(totalPrice * goods.mileage_rate / 100),
+        mileage_earned: Math.floor(totalPrice * benefits.mileageRate * 100 / 100),
       }
     })
 
-    // 배송비
-    const shippingAmount = goodsAmount >= FREE_SHIPPING_THRESHOLD ? 0 : BASE_SHIPPING_FEE
+    // 배송비 (등급별 무료배송 기준 적용)
+    const freeThreshold = benefits.freeShippingThreshold
+    const shippingAmount = freeThreshold === 0 ? 0 : (goodsAmount >= freeThreshold ? 0 : BASE_SHIPPING_FEE)
 
     // 마일리지/예치금 검증
     const mileageUse = body.mileageUse
@@ -93,7 +98,7 @@ export async function POST(req: NextRequest) {
       .from('orders')
       .insert({
         order_no:       orderNo,
-        member_id:      member?.id ?? null,
+        member_id:      memberId ?? null,
         goods_amount:   goodsAmount,
         shipping_amount: shippingAmount,
         mileage_used:   mileageUse,

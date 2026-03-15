@@ -1,29 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthMember } from '@/lib/supabase/auth'
 
 // 장바구니 조회
 export async function GET() {
-  const supabase = await createClient() as any
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ items: [], defaultAddress: null })
-
-  const { data: member } = await supabase.from('members').select('id').eq('auth_id', user.id).single()
-  if (!member) return NextResponse.json({ items: [], defaultAddress: null })
+  const { supabase, memberId } = await getAuthMember()
+  if (!memberId) return NextResponse.json({ items: [], defaultAddress: null })
 
   const [{ data }, { data: defaultAddr }] = await Promise.all([
     supabase
       .from('carts')
       .select(`
         id, qty, option_name,
-        goods(id, name, slug, price, sale_price, thumbnail_url, stock, status)
+        goods(id, name, slug, price, sale_price, member_price, thumbnail_url, stock, status)
       `)
-      .eq('member_id', member.id)
+      .eq('member_id', memberId)
       .order('created_at', { ascending: false }),
     supabase
       .from('member_addresses')
       .select('id, name, address1, address2, label')
-      .eq('member_id', member.id)
+      .eq('member_id', memberId)
       .eq('is_default', true)
       .single(),
   ])
@@ -41,12 +37,8 @@ const addSchema = z.object({
 export async function POST(req: NextRequest) {
   try {
     const body = addSchema.parse(await req.json())
-    const supabase = await createClient() as any
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 })
-
-    const { data: member } = await supabase.from('members').select('id').eq('auth_id', user.id).single()
-    if (!member) return NextResponse.json({ error: '회원 정보를 찾을 수 없습니다.' }, { status: 400 })
+    const { supabase, memberId } = await getAuthMember()
+    if (!memberId) return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 })
 
     // 재고 확인
     const { data: goods } = await supabase.from('goods').select('stock, status').eq('id', body.goodsId).single()
@@ -57,7 +49,7 @@ export async function POST(req: NextRequest) {
     let existingQuery = supabase
       .from('carts')
       .select('id, qty')
-      .eq('member_id', member.id)
+      .eq('member_id', memberId)
       .eq('goods_id', body.goodsId)
 
     if (body.optionName) {
@@ -73,7 +65,7 @@ export async function POST(req: NextRequest) {
       if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     } else {
       const { error } = await supabase.from('carts').insert({
-        member_id:   member.id,
+        member_id:   memberId,
         goods_id:    body.goodsId,
         option_name: body.optionName ?? null,
         qty:         body.qty,
@@ -90,12 +82,10 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   try {
     const { cartId, qty } = await req.json()
-    const supabase = await createClient() as any
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return NextResponse.json({ error: '로그인 필요' }, { status: 401 })
+    const { supabase, memberId } = await getAuthMember()
+    if (!memberId) return NextResponse.json({ error: '로그인 필요' }, { status: 401 })
 
-    const { data: member } = await supabase.from('members').select('id').eq('auth_id', user.id).single()
-    await supabase.from('carts').update({ qty }).eq('id', cartId).eq('member_id', member.id)
+    await supabase.from('carts').update({ qty }).eq('id', cartId).eq('member_id', memberId)
     return NextResponse.json({ success: true })
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 })
@@ -106,12 +96,10 @@ export async function PATCH(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   try {
     const { cartId } = await req.json()
-    const supabase = await createClient() as any
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return NextResponse.json({ error: '로그인 필요' }, { status: 401 })
+    const { supabase, memberId } = await getAuthMember()
+    if (!memberId) return NextResponse.json({ error: '로그인 필요' }, { status: 401 })
 
-    const { data: member } = await supabase.from('members').select('id').eq('auth_id', user.id).single()
-    await supabase.from('carts').delete().eq('id', cartId).eq('member_id', member.id)
+    await supabase.from('carts').delete().eq('id', cartId).eq('member_id', memberId)
     return NextResponse.json({ success: true })
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 })

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthMember } from '@/lib/supabase/auth'
 import { z } from 'zod'
 
 const Schema = z.object({
@@ -8,12 +8,8 @@ const Schema = z.object({
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const supabase = await createClient() as any
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
-
-  const { data: member } = await supabase.from('members').select('id').eq('auth_id', user.id).single()
-  if (!member) return NextResponse.json({ error: '회원 정보를 찾을 수 없습니다' }, { status: 404 })
+  const { supabase, memberId } = await getAuthMember()
+  if (!memberId) return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 })
 
   const body = await req.json()
   const parsed = Schema.safeParse(body)
@@ -22,7 +18,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   // 주문 확인 (본인 주문만)
   const { data: order } = await supabase
     .from('orders').select('status, mileage_used')
-    .eq('id', id).eq('member_id', member.id).single()
+    .eq('id', id).eq('member_id', memberId).single()
 
   if (!order) return NextResponse.json({ error: '주문을 찾을 수 없습니다' }, { status: 404 })
 
@@ -53,7 +49,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   // 즉시 취소 시 마일리지 복원
   if (newStatus === 'cancelled' && order.mileage_used > 0) {
     await supabase.rpc('add_mileage', {
-      p_member_id: member.id,
+      p_member_id: memberId,
       p_amount: order.mileage_used,
       p_description: `주문 취소 마일리지 복원`,
     })

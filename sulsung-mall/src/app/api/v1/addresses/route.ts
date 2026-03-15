@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthMember } from '@/lib/supabase/auth'
 import { z } from 'zod'
 
 const Schema = z.object({
@@ -13,12 +13,8 @@ const Schema = z.object({
 })
 
 export async function POST(req: NextRequest) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: '로그인 필요' }, { status: 401 })
-
-  const { data: member } = await (supabase as any).from('members').select('id').eq('auth_id', user.id).single()
-  if (!member) return NextResponse.json({ error: '회원 없음' }, { status: 403 })
+  const { supabase, memberId } = await getAuthMember()
+  if (!memberId) return NextResponse.json({ error: '로그인 필요' }, { status: 401 })
 
   const body = await req.json()
   const parsed = Schema.safeParse(body)
@@ -26,12 +22,12 @@ export async function POST(req: NextRequest) {
 
   // 기본 배송지 설정 시 기존 기본 해제
   if (parsed.data.is_default) {
-    await (supabase as any).from('member_addresses').update({ is_default: false }).eq('member_id', member.id)
+    await (supabase as any).from('member_addresses').update({ is_default: false }).eq('member_id', memberId)
   }
 
   const { data, error } = await (supabase as any).from('member_addresses').insert({
     ...parsed.data,
-    member_id: member.id,
+    member_id: memberId,
   }).select().single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
