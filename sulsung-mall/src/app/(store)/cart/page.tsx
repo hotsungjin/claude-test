@@ -118,7 +118,7 @@ export default function CartPage() {
   }
 
   return (
-    <div style={{ backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
+    <div className="flex flex-col" style={{ backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
       <style>{`
         [data-store-header], [data-bottom-nav], [data-store-footer] { display: none !important; }
         .flex-1.pb-\\[52px\\] { padding-bottom: 0 !important; }
@@ -271,7 +271,7 @@ export default function CartPage() {
       </div>
 
       {/* ── 결제 요약 ── */}
-      <div className="mt-2 bg-white px-4 pt-5 pb-4">
+      <div className="mt-2 bg-white px-4 pt-5 pb-4 flex-1">
         <div className="space-y-3 text-[14px]">
           <div className="flex justify-between">
             <span style={{ color: '#333' }}>상품 금액</span>
@@ -302,7 +302,7 @@ export default function CartPage() {
       </div>
 
       {/* ── 하단 고정 주문 버튼 ── */}
-      <div className="sticky bottom-0 z-40 bg-white px-4 pt-3 pb-4 border-t" style={{ borderColor: '#f0f0f0' }}>
+      <div className="sticky bottom-0 z-40 bg-white px-4 pt-3 pb-4 border-t mt-auto" style={{ borderColor: '#f0f0f0' }}>
         {/* 쿠폰 배너 */}
         <div className="flex items-center justify-between px-3 py-2.5 mb-3 rounded-lg border" style={{ borderColor: '#968774', backgroundColor: '#faf8f6' }}>
           <div className="flex items-center gap-2">
