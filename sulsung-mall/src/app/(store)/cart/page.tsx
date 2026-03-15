@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { X, ShoppingBag, Minus, Plus, Check } from 'lucide-react'
@@ -20,6 +21,7 @@ interface DefaultAddress {
 }
 
 export default function CartPage() {
+  const router = useRouter()
   const [items, setItems] = useState<CartItem[]>([])
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [loading, setLoading] = useState(true)
@@ -98,7 +100,7 @@ export default function CartPage() {
         `}</style>
         {/* 헤더 */}
         <div className="flex items-center h-[52px] px-4">
-          <button onClick={() => history.back()} className="mr-3">
+          <button onClick={() => router.push('/')} className="mr-3">
             <X className="w-6 h-6" style={{ color: '#333' }} />
           </button>
           <h1 className="text-[18px] font-bold" style={{ color: '#333' }}>장바구니</h1>
@@ -125,7 +127,7 @@ export default function CartPage() {
       `}</style>
       {/* ── 헤더 ── */}
       <div className="bg-white flex items-center h-[52px] px-4">
-        <button onClick={() => history.back()} className="mr-3">
+        <button onClick={() => router.push('/')} className="mr-3">
           <X className="w-6 h-6" style={{ color: '#333' }} />
         </button>
         <h1 className="text-[18px] font-bold" style={{ color: '#333' }}>장바구니</h1>
