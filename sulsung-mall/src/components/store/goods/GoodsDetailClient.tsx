@@ -221,6 +221,17 @@ export default function GoodsDetailClient({ goods, relatedGoods = [] }: { goods:
                     </span>
                   </div>
                 )}
+                {/* 멤버십가 표시 */}
+                {goods.member_price && (
+                  <div className="flex items-center gap-2 mt-1.5 px-3 py-2 rounded-lg" style={{ backgroundColor: '#f0f7f0' }}>
+                    <span className="text-[14px] font-bold" style={{ color: '#6B9E6B' }}>
+                      멤버십가 {goods.member_price.toLocaleString()}원
+                    </span>
+                    <Link href="/membership" className="text-[12px] underline" style={{ color: '#6B9E6B' }}>
+                      가입하기
+                    </Link>
+                  </div>
+                )}
                 <p className="text-[14px] mt-1" style={{ color: '#000' }}>
                   포인트 {Math.floor(basePrice * (goods.mileage_rate ?? 1) / 100)}P 적립
                 </p>
@@ -483,32 +494,6 @@ export default function GoodsDetailClient({ goods, relatedGoods = [] }: { goods:
                 )}
               </p>
             </div>
-
-            {/* 함께 구매한 상품 */}
-            {relatedGoods.length > 0 && (
-              <div className="px-5 pt-2 pb-3">
-                <h4 className="text-[15px] font-bold mb-3" style={{ color: '#333' }}>다른 고객이 함께 구매한 상품</h4>
-                <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1">
-                  {relatedGoods.slice(0, 6).map((item: any) => {
-                    const displayPrice = item.sale_price ?? item.price
-                    return (
-                      <Link key={item.id} href={`/goods/${item.slug}`} className="flex-shrink-0 w-[120px]"
-                        onClick={() => setShowConfirmSheet(false)}>
-                        <div className="relative w-[120px] h-[120px] rounded-lg overflow-hidden bg-gray-100 mb-2">
-                          {item.thumbnail_url ? (
-                            <Image src={item.thumbnail_url} alt={item.name} fill className="object-cover" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-[11px]" style={{ color: '#ccc' }}>No Image</div>
-                          )}
-                        </div>
-                        <p className="text-[12px] line-clamp-2 leading-tight mb-1" style={{ color: '#333' }}>{item.name}</p>
-                        <span className="text-[13px] font-bold" style={{ color: '#333' }}>{formatPrice(displayPrice)}</span>
-                      </Link>
-                    )
-                  })}
-                </div>
-              </div>
-            )}
 
             {/* 쇼핑 계속하기 */}
             <div className="px-5 pb-6">
