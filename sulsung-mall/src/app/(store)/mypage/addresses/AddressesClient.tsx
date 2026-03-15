@@ -332,8 +332,7 @@ export default function AddressesClient({ memberId, initialAddresses }: {
 
       {/* 선택 모드: 배송지 적용 버튼 (하단 고정) */}
       {selectMode && addresses.length > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white px-5 py-4"
-          style={{ maxWidth: 480, margin: '0 auto' }}>
+        <div className="sticky bottom-0 z-50 bg-white py-4 -mx-5 px-5">
           <button
             onClick={async () => {
               if (!selectedId) return
