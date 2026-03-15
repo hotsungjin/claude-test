@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/server'
+import { BASE_SHIPPING_FEE } from '@/constants'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sulsung-mall.com'
 const SITE_NAME = '설성목장몰'
@@ -42,7 +43,7 @@ export async function GET() {
       ${item.naver_category ? `<naver_category>${escapeXml(item.naver_category)}</naver_category>` : ''}
       ${item.brand ? `<brand>${escapeXml(item.brand)}</brand>` : ''}
       <stock_status>${item.stock > 0 ? 'instock' : 'outofstock'}</stock_status>
-      <delivery_fee>4000</delivery_fee>
+      <delivery_fee>${BASE_SHIPPING_FEE}</delivery_fee>
       <product_id>${escapeXml(item.id)}</product_id>
     </item>`
   }).join('\n')

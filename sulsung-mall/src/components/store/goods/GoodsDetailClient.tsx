@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { ChevronLeft, Home, ShoppingCart, Heart, Star, Share2, Minus, Plus, X, Check } from 'lucide-react'
 import { formatPrice, calcDiscountRate } from '@/utils/format'
 import { cn } from '@/utils/cn'
+import { BASE_SHIPPING_FEE, FREE_SHIPPING_THRESHOLD } from '@/constants'
 
 interface Option {
   id: number
@@ -20,8 +21,6 @@ interface OptionGroup {
   name: string
   goods_options: Option[]
 }
-
-const FREE_SHIPPING_THRESHOLD = 50000
 
 export default function GoodsDetailClient({ goods, relatedGoods = [] }: { goods: any; relatedGoods?: any[] }) {
   const [selectedOptions, setSelectedOptions] = useState<Record<number, number>>({})
@@ -223,7 +222,7 @@ export default function GoodsDetailClient({ goods, relatedGoods = [] }: { goods:
                 </div>
                 <div className="flex text-[13px]">
                   <span className="w-[60px] flex-shrink-0" style={{ color: '#999' }}>배송비</span>
-                  <span style={{ color: '#333' }}>3,000원 (50,000원 이상 무료)</span>
+                  <span style={{ color: '#333' }}>{BASE_SHIPPING_FEE.toLocaleString()}원 ({FREE_SHIPPING_THRESHOLD.toLocaleString()}원 이상 무료)</span>
                 </div>
               </div>
             </div>
@@ -278,7 +277,7 @@ export default function GoodsDetailClient({ goods, relatedGoods = [] }: { goods:
                   ['상품명', goods.name],
                   ['원산지', '국내산 (경기도 이천)'],
                   ['배송방법', '택배배송'],
-                  ['배송비', '3,000원 (50,000원 이상 무료)'],
+                  ['배송비', `${BASE_SHIPPING_FEE.toLocaleString()}원 (${FREE_SHIPPING_THRESHOLD.toLocaleString()}원 이상 무료)`],
                   ['포장타입', '냉장/냉동'],
                 ].map(([label, value]) => (
                   <tr key={label} className="border-b" style={{ borderColor: '#f5f5f5' }}>

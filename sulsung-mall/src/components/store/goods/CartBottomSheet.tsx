@@ -1,10 +1,10 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { createPortal } from 'react-dom'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ShoppingCart, Minus, Plus, Check } from 'lucide-react'
+import { FREE_SHIPPING_THRESHOLD } from '@/constants'
 
 interface CartSheetGoods {
   id: string
@@ -24,17 +24,20 @@ interface Props {
 export default function CartBottomSheet({ goods, onClose }: Props) {
   const [step, setStep] = useState<'select' | 'confirm'>('select')
   const [qty, setQty] = useState(1)
-  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null)
   const [cartTotal, setCartTotal] = useState(0)
+  const wrapperRef = useRef<HTMLDivElement>(null)
   const basePrice = goods.sale_price ?? goods.price
   const totalPrice = basePrice * qty
-  const FREE_SHIPPING = 50000
-  const remain = Math.max(0, FREE_SHIPPING - cartTotal)
-  const progress = Math.min(100, (cartTotal / FREE_SHIPPING) * 100)
+  const remain = Math.max(0, FREE_SHIPPING_THRESHOLD - cartTotal)
+  const progress = Math.min(100, (cartTotal / FREE_SHIPPING_THRESHOLD) * 100)
 
+  // 스크롤 잠금: app-scroll-wrapper의 스크롤을 막음
   useEffect(() => {
-    const wrapper = document.querySelector('.app-scroll-wrapper')
-    setPortalTarget(wrapper as HTMLElement ?? document.body)
+    const wrapper = document.querySelector('.app-scroll-wrapper') as HTMLElement
+    if (!wrapper) return
+    const prevOverflow = wrapper.style.overflow
+    wrapper.style.overflow = 'hidden'
+    return () => { wrapper.style.overflow = prevOverflow }
   }, [])
 
   async function fetchCartTotal() {
@@ -65,112 +68,116 @@ export default function CartBottomSheet({ goods, onClose }: Props) {
     setQty(1)
   }
 
-  if (!portalTarget) return null
-
-  const sheet = (
-    <div className="fixed inset-0 z-[100]" style={{ position: 'sticky', top: 0, height: '100vh', marginTop: '-100vh' }}
+  return (
+    <div ref={wrapperRef}
+      style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 100, display: 'flex', justifyContent: 'center' }}
       onClick={onClose}>
-      <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)' }} />
-      <div style={{
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: 'white',
-        borderRadius: '16px 16px 0 0',
-        animation: 'cart-slide-up 0.3s ease-out',
-      }}
-        onClick={e => e.stopPropagation()}>
-        {/* 핸들 */}
-        <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 12, paddingBottom: 8 }}>
-          <div style={{ width: 40, height: 4, borderRadius: 2, backgroundColor: '#d1d5db' }} />
-        </div>
+      {/* 480px 제한 컨테이너 */}
+      <div style={{ position: 'relative', width: '100%', maxWidth: 480, height: '100%' }}>
+        {/* 오버레이 */}
+        <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)' }} />
+        {/* 바텀시트 */}
+        <div style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          backgroundColor: 'white',
+          borderRadius: '16px 16px 0 0',
+          animation: 'cart-slide-up 0.3s ease-out',
+        }}
+          onClick={e => e.stopPropagation()}>
+          {/* 핸들 */}
+          <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 12, paddingBottom: 8 }}>
+            <div style={{ width: 40, height: 4, borderRadius: 2, backgroundColor: '#d1d5db' }} />
+          </div>
 
-        {step === 'select' && (
-          <>
-            {/* 상품 정보 */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '0 20px 16px', borderBottom: '1px solid #f0f0f0' }}>
-              <div style={{ width: 56, height: 56, borderRadius: 8, overflow: 'hidden', flexShrink: 0, backgroundColor: '#f5f5f5' }}>
-                {goods.thumbnail_url && (
-                  <Image src={goods.thumbnail_url} alt={goods.name} width={56} height={56} className="object-cover w-full h-full" />
-                )}
-              </div>
-              <p style={{ fontSize: 15, fontWeight: 500, color: '#333', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                {goods.name}
-              </p>
-            </div>
-
-            {/* 상품명 + 가격 + 수량 */}
-            <div style={{ padding: '20px 20px' }}>
-              <p style={{ fontSize: 14, color: '#333', marginBottom: 16 }}>{goods.name}</p>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <p style={{ fontSize: 18, fontWeight: 700, color: '#333' }}>
-                  {basePrice.toLocaleString()}<span style={{ fontSize: 14 }}>원</span>
+          {step === 'select' && (
+            <>
+              {/* 상품 정보 */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '0 20px 16px', borderBottom: '1px solid #f0f0f0' }}>
+                <div style={{ width: 56, height: 56, borderRadius: 8, overflow: 'hidden', flexShrink: 0, backgroundColor: '#f5f5f5' }}>
+                  {goods.thumbnail_url && (
+                    <Image src={goods.thumbnail_url} alt={goods.name} width={56} height={56} className="object-cover w-full h-full" />
+                  )}
+                </div>
+                <p style={{ fontSize: 15, fontWeight: 500, color: '#333', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                  {goods.name}
                 </p>
-                <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #e5e5e5', borderRadius: 8 }}>
-                  <button onClick={() => setQty(q => Math.max(1, q - 1))}
-                    style={{ width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', color: qty <= 1 ? '#ddd' : '#333' }}>
-                    <Minus style={{ width: 16, height: 16 }} />
-                  </button>
-                  <span style={{ width: 40, textAlign: 'center', fontSize: 15, fontWeight: 500, color: '#333' }}>{qty}</span>
-                  <button onClick={() => setQty(q => Math.min(goods.stock ?? 99, q + 1))}
-                    style={{ width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#333' }}>
-                    <Plus style={{ width: 16, height: 16 }} />
-                  </button>
+              </div>
+
+              {/* 상품명 + 가격 + 수량 */}
+              <div style={{ padding: '20px 20px' }}>
+                <p style={{ fontSize: 14, color: '#333', marginBottom: 16 }}>{goods.name}</p>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <p style={{ fontSize: 18, fontWeight: 700, color: '#333' }}>
+                    {basePrice.toLocaleString()}<span style={{ fontSize: 14 }}>원</span>
+                  </p>
+                  <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #e5e5e5', borderRadius: 8 }}>
+                    <button onClick={() => setQty(q => Math.max(1, q - 1))}
+                      style={{ width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', color: qty <= 1 ? '#ddd' : '#333' }}>
+                      <Minus style={{ width: 16, height: 16 }} />
+                    </button>
+                    <span style={{ width: 40, textAlign: 'center', fontSize: 15, fontWeight: 500, color: '#333' }}>{qty}</span>
+                    <button onClick={() => setQty(q => Math.min(goods.stock ?? 99, q + 1))}
+                      style={{ width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#333' }}>
+                      <Plus style={{ width: 16, height: 16 }} />
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* 담기 버튼 */}
-            <div style={{ padding: '0 20px 24px' }}>
-              <button onClick={handleAdd}
-                style={{ width: '100%', height: 54, borderRadius: 12, fontWeight: 700, fontSize: 16, color: 'white', backgroundColor: '#968774', border: 'none', cursor: 'pointer' }}>
-                총 {totalPrice.toLocaleString()}원 장바구니 담기
-              </button>
-            </div>
-          </>
-        )}
+              {/* 담기 버튼 */}
+              <div style={{ padding: '0 20px 24px' }}>
+                <button onClick={handleAdd}
+                  style={{ width: '100%', height: 54, borderRadius: 12, fontWeight: 700, fontSize: 16, color: 'white', backgroundColor: '#968774', border: 'none', cursor: 'pointer' }}>
+                  총 {totalPrice.toLocaleString()}원 장바구니 담기
+                </button>
+              </div>
+            </>
+          )}
 
-        {step === 'confirm' && (
-          <>
-            {/* 완료 메시지 */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <div style={{ width: 24, height: 24, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#968774' }}>
-                  <Check style={{ width: 16, height: 16, color: 'white' }} />
+          {step === 'confirm' && (
+            <>
+              {/* 완료 메시지 */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 24, height: 24, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#968774' }}>
+                    <Check style={{ width: 16, height: 16, color: 'white' }} />
+                  </div>
+                  <p style={{ fontSize: 16, fontWeight: 700, color: '#333' }}>장바구니에 상품을 담았습니다.</p>
                 </div>
-                <p style={{ fontSize: 16, fontWeight: 700, color: '#333' }}>장바구니에 상품을 담았습니다.</p>
+                <Link href="/cart" onClick={onClose}
+                  style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '8px 16px', borderRadius: 20, border: '1px solid #e5e5e5', fontSize: 13, fontWeight: 500, color: '#333', textDecoration: 'none' }}>
+                  <ShoppingCart style={{ width: 16, height: 16 }} />
+                  바로가기
+                </Link>
               </div>
-              <Link href="/cart" onClick={onClose}
-                style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '8px 16px', borderRadius: 20, border: '1px solid #e5e5e5', fontSize: 13, fontWeight: 500, color: '#333', textDecoration: 'none' }}>
-                <ShoppingCart style={{ width: 16, height: 16 }} />
-                바로가기
-              </Link>
-            </div>
 
-            {/* 무료배송 프로그레스 */}
-            <div style={{ padding: '0 20px 16px' }}>
-              <div style={{ position: 'relative', height: 6, borderRadius: 3, overflow: 'hidden', backgroundColor: '#f0f0f0' }}>
-                <div style={{ height: '100%', borderRadius: 3, width: `${progress}%`, backgroundColor: '#968774' }} />
+              {/* 무료배송 프로그레스 */}
+              <div style={{ padding: '0 20px 16px' }}>
+                <div style={{ position: 'relative', height: 6, borderRadius: 3, overflow: 'hidden', backgroundColor: '#f0f0f0' }}>
+                  <div style={{ height: '100%', borderRadius: 3, width: `${progress}%`, backgroundColor: '#968774' }} />
+                </div>
+                <p style={{ fontSize: 13, marginTop: 8, color: '#666' }}>
+                  {remain > 0 ? (
+                    <><span style={{ fontWeight: 700, color: '#968774' }}>{remain.toLocaleString()}원</span> 더 담으면 무료 배송!</>
+                  ) : (
+                    <span style={{ fontWeight: 700, color: '#968774' }}>무료 배송 조건을 충족했습니다!</span>
+                  )}
+                </p>
               </div>
-              <p style={{ fontSize: 13, marginTop: 8, color: '#666' }}>
-                {remain > 0 ? (
-                  <><span style={{ fontWeight: 700, color: '#968774' }}>{remain.toLocaleString()}원</span> 더 담으면 무료 배송!</>
-                ) : (
-                  <span style={{ fontWeight: 700, color: '#968774' }}>무료 배송 조건을 충족했습니다!</span>
-                )}
-              </p>
-            </div>
 
-            {/* 쇼핑 계속하기 */}
-            <div style={{ padding: '0 20px 24px' }}>
-              <button onClick={onClose}
-                style={{ width: '100%', height: 50, borderRadius: 12, fontSize: 15, fontWeight: 500, border: '1px solid #e5e5e5', color: '#333', backgroundColor: 'white', cursor: 'pointer' }}>
-                쇼핑 계속하기
-              </button>
-            </div>
-          </>
-        )}
+              {/* 쇼핑 계속하기 */}
+              <div style={{ padding: '0 20px 24px' }}>
+                <button onClick={onClose}
+                  style={{ width: '100%', height: 50, borderRadius: 12, fontSize: 15, fontWeight: 500, border: '1px solid #e5e5e5', color: '#333', backgroundColor: 'white', cursor: 'pointer' }}>
+                  쇼핑 계속하기
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       <style>{`
@@ -181,6 +188,4 @@ export default function CartBottomSheet({ goods, onClose }: Props) {
       `}</style>
     </div>
   )
-
-  return createPortal(sheet, portalTarget)
 }
