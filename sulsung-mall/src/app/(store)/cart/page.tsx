@@ -44,18 +44,27 @@ export default function CartPage() {
   }
 
   async function removeItem(cartId: string) {
-    await fetch('/api/v1/cart', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cartId }) })
+    // 즉시 UI에서 제거 (낙관적 업데이트)
     setItems(prev => prev.filter(i => i.id !== cartId))
     setSelected(prev => { const n = new Set(prev); n.delete(cartId); return n })
+    try {
+      await fetch('/api/v1/cart', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cartId }) })
+    } catch {}
   }
 
   async function removeSelected() {
     const ids = Array.from(selected)
-    await Promise.all(ids.map(id =>
-      fetch('/api/v1/cart', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cartId: id }) })
-    ))
-    setItems(prev => prev.filter(i => !selected.has(i.id)))
+    if (ids.length === 0) return
+    // 즉시 UI에서 제거 (낙관적 업데이트)
+    const removedSet = new Set(ids)
+    setItems(prev => prev.filter(i => !removedSet.has(i.id)))
     setSelected(new Set())
+    // 백그라운드에서 서버 삭제 처리
+    for (const id of ids) {
+      try {
+        await fetch('/api/v1/cart', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cartId: id }) })
+      } catch {}
+    }
   }
 
   function toggleSelect(id: string) {
