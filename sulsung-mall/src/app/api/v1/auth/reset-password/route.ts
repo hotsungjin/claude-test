@@ -16,15 +16,29 @@ export async function POST(req: NextRequest) {
     // TODO: 솔라피 계정 생성 후 SMS 인증 다시 활성화
     // 현재는 인증 없이 비밀번호 변경 허용
 
-    // 회원 조회
-    const { data: member } = await supabase
+    // 회원 조회 (하이픈 없는 번호 + 하이픈 있는 번호 모두 시도)
+    const cleanPhone = body.phone.replace(/[^0-9]/g, '')
+    const formattedPhone = cleanPhone.length === 11
+      ? `${cleanPhone.slice(0, 3)}-${cleanPhone.slice(3, 7)}-${cleanPhone.slice(7)}`
+      : cleanPhone
+
+    let { data: member } = await supabase
       .from('members')
       .select('auth_id, phone')
-      .eq('phone', body.phone)
+      .eq('phone', cleanPhone)
       .single()
 
+    if (!member) {
+      const { data: member2 } = await supabase
+        .from('members')
+        .select('auth_id, phone')
+        .eq('phone', formattedPhone)
+        .single()
+      member = member2
+    }
+
     if (!member || !member.auth_id) {
-      console.log(`[reset-password] 회원 없음: phone=${body.phone}, member=`, member)
+      console.log(`[reset-password] 회원 없음: phone=${cleanPhone}/${formattedPhone}, member=`, member)
       return NextResponse.json({ error: '등록되지 않은 휴대폰 번호입니다.' }, { status: 404 })
     }
 
@@ -37,10 +51,17 @@ export async function POST(req: NextRequest) {
 
     console.log(`[reset-password] auth 유저 확인: id=${authUser.user.id}, email=${authUser.user.email}`)
 
-    // 비밀번호 변경
+    // 비밀번호 변경 + auth 이메일을 phone 기반으로 통일 (소셜/수동 생성 계정 대응)
+    const expectedEmail = `${body.phone}@sulsung.internal`
+    const updatePayload: Record<string, any> = { password: body.password }
+    if (authUser.user.email !== expectedEmail) {
+      updatePayload.email = expectedEmail
+      console.log(`[reset-password] auth 이메일 변경: ${authUser.user.email} → ${expectedEmail}`)
+    }
+
     const { data: updateData, error: updateError } = await supabase.auth.admin.updateUserById(
       member.auth_id,
-      { password: body.password }
+      updatePayload
     )
 
     if (updateError) {
