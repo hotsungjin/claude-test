@@ -52,8 +52,11 @@ export async function POST(req: NextRequest) {
     console.log(`[reset-password] auth 유저 확인: id=${authUser.user.id}, email=${authUser.user.email}`)
 
     // 비밀번호 변경 + auth 이메일을 phone 기반으로 통일 (소셜/수동 생성 계정 대응)
-    const expectedEmail = `${body.phone}@sulsung.internal`
-    const updatePayload: Record<string, any> = { password: body.password }
+    const expectedEmail = `${cleanPhone}@sulsung.internal`
+    const updatePayload: Record<string, any> = {
+      password: body.password,
+      email_confirm: true,
+    }
     if (authUser.user.email !== expectedEmail) {
       updatePayload.email = expectedEmail
       console.log(`[reset-password] auth 이메일 변경: ${authUser.user.email} → ${expectedEmail}`)
