@@ -51,20 +51,10 @@ export async function POST(req: NextRequest) {
 
     console.log(`[reset-password] auth 유저 확인: id=${authUser.user.id}, email=${authUser.user.email}`)
 
-    // 비밀번호 변경 + auth 이메일을 phone 기반으로 통일 (소셜/수동 생성 계정 대응)
-    const expectedEmail = `${cleanPhone}@sulsung.internal`
-    const updatePayload: Record<string, any> = {
-      password: body.password,
-      email_confirm: true,
-    }
-    if (authUser.user.email !== expectedEmail) {
-      updatePayload.email = expectedEmail
-      console.log(`[reset-password] auth 이메일 변경: ${authUser.user.email} → ${expectedEmail}`)
-    }
-
-    const { data: updateData, error: updateError } = await supabase.auth.admin.updateUserById(
+    // 비밀번호 변경
+    const { error: updateError } = await supabase.auth.admin.updateUserById(
       member.auth_id,
-      updatePayload
+      { password: body.password }
     )
 
     if (updateError) {
@@ -72,7 +62,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: updateError.message }, { status: 500 })
     }
 
-    console.log(`[reset-password] 비밀번호 변경 성공: auth_id=${member.auth_id}, phone=${body.phone}`)
+    // auth 이메일이 {phone}@sulsung.internal이 아니면 RPC로 직접 변경
+    // (updateUserById의 email 변경은 확인 메일이 필요하므로 SECURITY DEFINER RPC 사용)
+    const expectedEmail = `${cleanPhone}@sulsung.internal`
+    if (authUser.user.email !== expectedEmail) {
+      const { error: emailError } = await supabase.rpc('update_auth_email', {
+        p_user_id: member.auth_id,
+        p_new_email: expectedEmail,
+      })
+      if (emailError) {
+        console.error(`[reset-password] auth 이메일 변경 실패:`, emailError)
+      } else {
+        console.log(`[reset-password] auth 이메일 변경: ${authUser.user.email} → ${expectedEmail}`)
+      }
+    }
+
+    console.log(`[reset-password] 비밀번호 변경 성공: auth_id=${member.auth_id}, phone=${cleanPhone}`)
 
     return NextResponse.json({ success: true })
   } catch (err: any) {
