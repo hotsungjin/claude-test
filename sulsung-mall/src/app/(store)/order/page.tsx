@@ -153,18 +153,7 @@ export default function OrderPage() {
         return
       }
 
-      // 2. 무통장입금은 결제 건너뛰기
-      if (paymentMethod === 'bank') {
-        await fetch('/api/v1/orders/skip-payment', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orderId: orderData.orderId }),
-        })
-        router.push(`/order/complete?orderId=${orderData.orderId}`)
-        return
-      }
-
-      // 3. 토스페이먼츠 결제 요청
+      // 2. 토스페이먼츠 결제 요청
       if (!tossRef.current) {
         alert('결제 모듈을 불러오는 중입니다. 잠시 후 다시 시도해주세요.')
         setLoading(false)
@@ -178,6 +167,7 @@ export default function OrderPage() {
 
       // 결제 수단 매핑 (V2 Standard SDK)
       const methodMap: Record<string, string> = {
+        bank: 'VIRTUAL_ACCOUNT',
         card: 'CARD',
         transfer: 'TRANSFER',
         phone: 'MOBILE_PHONE',
@@ -560,11 +550,11 @@ export default function OrderPage() {
         <h2 className="text-[18px] font-bold mb-4" style={{ color: '#333' }}>결제수단</h2>
 
         <div className="space-y-0">
-          {[
-            { key: 'bank', label: '무통장입금' },
-            { key: 'card', label: '신용카드' },
-            { key: 'phone', label: '휴대폰' },
-          ].map(opt => (
+          {([
+            { key: 'bank', label: '무통장입금', logo: '' },
+            { key: 'card', label: '신용카드', logo: '' },
+            { key: 'phone', label: '휴대폰', logo: '' },
+          ] as { key: string; label: string; logo: string }[]).map(opt => (
             <div key={opt.key}>
               <button
                 onClick={() => { setPaymentMethod(opt.key); if (opt.key !== 'card') setShowCardSelect(false) }}
