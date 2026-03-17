@@ -193,7 +193,8 @@ export default function OrderPage() {
         setLoading(false)
         return
       }
-      alert(err?.message ?? '결제 처리 중 오류가 발생했습니다.')
+      console.error('[TossPayments Error]', JSON.stringify(err, null, 2))
+      alert(`결제 오류: ${err?.code ?? 'UNKNOWN'} - ${err?.message ?? '알 수 없는 에러'}`)
       setLoading(false)
     }
   }
