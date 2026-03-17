@@ -176,22 +176,20 @@ export default function OrderPage() {
         ? `${firstItemName} 외 ${items.length - 1}건`
         : firstItemName
 
-      // 결제 수단 매핑
-      const methodMap: Record<string, { method: string; easyPay?: { provider: string } }> = {
-        card: { method: 'CARD' },
-        naverpay: { method: 'EASY_PAY', easyPay: { provider: 'NAVERPAY' } },
-        kakaopay: { method: 'EASY_PAY', easyPay: { provider: 'KAKAOPAY' } },
-        tosspay: { method: 'EASY_PAY', easyPay: { provider: 'TOSSPAY' } },
-        phone: { method: 'MOBILE_PHONE' },
+      // 결제 수단 매핑 (V2 Standard SDK)
+      const methodMap: Record<string, string> = {
+        card: 'CARD',
+        transfer: 'TRANSFER',
+        phone: 'MOBILE_PHONE',
       }
 
-      const paymentConfig = methodMap[paymentMethod] ?? { method: 'CARD' }
+      const method = methodMap[paymentMethod] ?? 'CARD'
 
       const customerKey = member?.id ?? '_ANONYMOUS'
       const payment = tossRef.current.payment({ customerKey })
 
       await payment.requestPayment({
-        ...paymentConfig,
+        method,
         amount: { currency: 'KRW', value: totalAmount },
         orderId: orderData.orderId,
         orderName,
@@ -564,9 +562,6 @@ export default function OrderPage() {
         <div className="space-y-0">
           {[
             { key: 'bank', label: '무통장입금' },
-            { key: 'naverpay', label: '네이버페이', logo: '/images/pay/naverpay.svg' },
-            { key: 'kakaopay', label: '카카오페이', logo: '/images/pay/kakaopay.svg' },
-            { key: 'tosspay', label: '토스페이', logo: '/images/pay/tosspay.svg' },
             { key: 'card', label: '신용카드' },
             { key: 'phone', label: '휴대폰' },
           ].map(opt => (
