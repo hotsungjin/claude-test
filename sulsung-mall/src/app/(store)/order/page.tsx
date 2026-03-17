@@ -69,7 +69,7 @@ export default function OrderPage() {
 
     // 외부 스크립트는 즉시 로드 시작
     const tossScript = document.createElement('script')
-    tossScript.src = 'https://js.tosspayments.com/v2/standard'
+    tossScript.src = 'https://js.tosspayments.com/v1/payment'
     tossScript.onload = () => { tossRef.current = window.TossPayments(process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY!) }
     document.head.appendChild(tossScript)
 
@@ -165,22 +165,17 @@ export default function OrderPage() {
         ? `${firstItemName} 외 ${items.length - 1}건`
         : firstItemName
 
-      // 결제 수단 매핑 (V2 Standard SDK)
+      // 결제 수단 매핑 (V1 SDK - 기존 결제창)
       const methodMap: Record<string, string> = {
-        bank: 'VIRTUAL_ACCOUNT',
-        card: 'CARD',
-        transfer: 'TRANSFER',
-        phone: 'MOBILE_PHONE',
+        bank: '가상계좌',
+        card: '카드',
+        phone: '휴대폰',
       }
 
-      const method = methodMap[paymentMethod] ?? 'CARD'
+      const method = methodMap[paymentMethod] ?? '카드'
 
-      const customerKey = member?.id ?? '_ANONYMOUS'
-      const payment = tossRef.current.payment({ customerKey })
-
-      await payment.requestPayment({
-        method,
-        amount: { currency: 'KRW', value: totalAmount },
+      await tossRef.current.requestPayment(method, {
+        amount: totalAmount,
         orderId: orderData.orderId,
         orderName,
         customerName: form.recipient,
