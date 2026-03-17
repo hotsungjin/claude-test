@@ -32,7 +32,8 @@ export async function POST(req: NextRequest) {
     }
 
     if (order.total_amount !== body.amount) {
-      return NextResponse.json({ error: '결제 금액이 일치하지 않습니다.' }, { status: 400 })
+      console.error(`[payment/confirm] 금액 불일치: DB=${order.total_amount}, 요청=${body.amount}, orderId=${body.orderId}`)
+      return NextResponse.json({ error: `결제 금액이 일치하지 않습니다. (DB: ${order.total_amount}, 요청: ${body.amount})` }, { status: 400 })
     }
 
     // 2. 토스페이먼츠 결제 승인
