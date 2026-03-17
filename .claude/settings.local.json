@@ -7,7 +7,16 @@
       "Bash(git stash:*)",
       "Bash(vercel --version)",
       "Bash(npx vercel:*)",
-      "Bash(git merge:*)"
+      "Bash(git merge:*)",
+      "Bash(ls \"/Users/sungjincho/Documents/Projects/sulsung-mall/src/app/\\(store\\)/categories/\")",
+      "Bash(git -C /Users/sungjincho/Documents/Projects add \"sulsung-mall/src/app/\\(store\\)/goods/page.tsx\")",
+      "Bash(git -C /Users/sungjincho/Documents/Projects add \"sulsung-mall/src/app/\\(store\\)/goods/GoodsInfiniteGrid.tsx\")",
+      "Bash(grep -r godomall-2636 /Users/sungjincho/Documents/Projects/sulsung-mall/src --include=*.ts --include=*.tsx)",
+      "Bash(find /Users/sungjincho/Documents/Projects/sulsung-mall/supabase -type f -name *migration*)",
+      "Bash(find /Users/sungjincho/Documents/Projects/sulsung-mall -type f -name *.sql)",
+      "Bash(ls -la /Users/sungjincho/Documents/Projects/sulsung-mall/src/app/\\\\\\(store\\\\\\)/auth/)",
+      "Bash(ls /Users/sungjincho/Documents/Projects/sulsung-mall/src/app/\\\\\\(store\\\\\\)/order/)",
+      "Bash(git add:*)"
     ]
   }
 }

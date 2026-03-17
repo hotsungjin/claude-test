@@ -73,7 +73,7 @@ export default async function CartAbandonmentPage() {
         </div>
         <div className="bg-white rounded-xl p-4 shadow-sm">
           <p className="text-xs text-gray-500 mb-1">발송 완료</p>
-          <p className="text-2xl font-bold text-green-600">{remindedCount}<span className="text-sm font-normal text-gray-400">명</span></p>
+          <p className="text-2xl font-bold text-blue-600">{remindedCount}<span className="text-sm font-normal text-gray-400">명</span></p>
         </div>
       </div>
 

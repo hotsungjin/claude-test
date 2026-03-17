@@ -21,11 +21,11 @@ export default function AdBanner({ banner }: AdBannerProps) {
 
   if (banner.link_url) {
     return (
-      <section>
+      <section style={{ paddingTop: '22px', paddingBottom: '26px' }}>
         <Link href={banner.link_url}>{img}</Link>
       </section>
     )
   }
 
-  return <section>{img}</section>
+  return <section style={{ paddingTop: '22px', paddingBottom: '26px' }}>{img}</section>
 }

@@ -50,8 +50,17 @@ export async function GET(req: NextRequest) {
     else query = query.order('sale_count', { ascending: false })
 
     if (category) {
-      const { data: cat } = await supabase.from('categories').select('id').eq('slug', category).single()
-      if (cat) query = (query as any).eq('category_id', (cat as any).id)
+      const { data: cat } = await supabase.from('categories').select('id, parent_id').eq('slug', category).single()
+      if (cat) {
+        if (!(cat as any).parent_id) {
+          // 부모 카테고리: 자식 카테고리 상품도 포함
+          const { data: children } = await supabase.from('categories').select('id').eq('parent_id', (cat as any).id)
+          const ids = [(cat as any).id, ...((children ?? []) as any[]).map((c: any) => c.id)]
+          query = (query as any).in('category_id', ids)
+        } else {
+          query = (query as any).eq('category_id', (cat as any).id)
+        }
+      }
     }
 
     const { data, count: c } = await query

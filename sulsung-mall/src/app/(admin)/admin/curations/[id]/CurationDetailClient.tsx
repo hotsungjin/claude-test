@@ -125,11 +125,11 @@ export default function CurationDetailClient({ curationId }: { curationId: strin
         </Link>
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{curation.name}</h1>
-          <p className="text-sm text-gray-500">큐레이션 상품 관리 · {items.length}개 상품</p>
+          <p className="text-sm text-gray-500">기획전 상품 관리 · {items.length}개 상품</p>
         </div>
         {changed && (
           <button onClick={handleSave} disabled={saving}
-            className="ml-auto bg-green-700 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-green-800 disabled:opacity-50">
+            className="ml-auto bg-blue-700 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-blue-800 disabled:opacity-50">
             {saving ? '저장 중...' : '저장'}
           </button>
         )}
@@ -147,7 +147,7 @@ export default function CurationDetailClient({ curationId }: { curationId: strin
                 onChange={e => setSearchQuery(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && searchGoods()}
                 placeholder="상품명 검색"
-                className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500"
+                className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-500"
               />
             </div>
             <button onClick={searchGoods}
@@ -158,7 +158,7 @@ export default function CurationDetailClient({ curationId }: { curationId: strin
 
           {searchResults.length > 0 && searchResults.some(g => !selectedIds.has(g.id)) && (
             <button onClick={addAllSearchResults}
-              className="w-full mb-3 py-2 border border-green-600 text-green-700 rounded-lg text-sm font-medium hover:bg-green-50 transition">
+              className="w-full mb-3 py-2 border border-blue-600 text-blue-700 rounded-lg text-sm font-medium hover:bg-blue-50 transition">
               전체 추가 ({searchResults.filter(g => !selectedIds.has(g.id)).length}개)
             </button>
           )}
@@ -167,7 +167,7 @@ export default function CurationDetailClient({ curationId }: { curationId: strin
             {searching && <p className="text-sm text-gray-400 py-4 text-center">검색 중...</p>}
             {searchResults.map(g => (
               <div key={g.id}
-                className={`flex items-center gap-3 p-2 rounded-lg ${selectedIds.has(g.id) ? 'bg-green-50 opacity-60' : 'hover:bg-gray-50 cursor-pointer'}`}
+                className={`flex items-center gap-3 p-2 rounded-lg ${selectedIds.has(g.id) ? 'bg-blue-50 opacity-60' : 'hover:bg-gray-50 cursor-pointer'}`}
                 onClick={() => !selectedIds.has(g.id) && addGoods(g)}>
                 <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
                   {g.thumbnail_url && <img src={g.thumbnail_url} alt="" className="w-full h-full object-cover" />}
@@ -182,7 +182,7 @@ export default function CurationDetailClient({ curationId }: { curationId: strin
                   </p>
                 </div>
                 {selectedIds.has(g.id)
-                  ? <span className="text-xs text-green-600 font-medium flex-shrink-0">추가됨</span>
+                  ? <span className="text-xs text-blue-600 font-medium flex-shrink-0">추가됨</span>
                   : <span className="text-xs text-blue-600 font-medium flex-shrink-0">+ 추가</span>
                 }
               </div>
@@ -218,7 +218,7 @@ export default function CurationDetailClient({ curationId }: { curationId: strin
                       moveItemTo(idx, target - 1)
                     }
                   }}
-                  className="w-8 text-xs text-gray-500 text-center flex-shrink-0 border border-transparent hover:border-gray-300 focus:border-green-500 focus:outline-none rounded py-0.5 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="w-8 text-xs text-gray-500 text-center flex-shrink-0 border border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none rounded py-0.5 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
                 <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
                   {item.goods?.thumbnail_url && <img src={item.goods.thumbnail_url} alt="" className="w-full h-full object-cover" />}

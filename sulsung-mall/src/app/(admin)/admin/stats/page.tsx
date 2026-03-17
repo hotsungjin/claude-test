@@ -102,7 +102,7 @@ export default async function AdminStatsPage() {
         <div className="bg-white rounded-xl p-5 shadow-sm">
           <p className="text-xs text-gray-500 mb-1">이번달 매출</p>
           <p className="text-xl font-bold text-gray-900">{formatPrice(thisMonthSales)}</p>
-          <p className={`text-xs mt-1 ${salesGrowth >= 0 ? 'text-green-600' : 'text-red-500'}`}>
+          <p className={`text-xs mt-1 ${salesGrowth >= 0 ? 'text-blue-600' : 'text-red-500'}`}>
             전월 대비 {salesGrowth >= 0 ? '+' : ''}{salesGrowth}%
           </p>
         </div>
@@ -165,7 +165,7 @@ export default async function AdminStatsPage() {
                   <td className="px-4 py-3 text-gray-800">{goods.name}</td>
                   <td className="px-4 py-3 text-right font-medium text-gray-900">{goods.sale_count?.toLocaleString() ?? 0}개</td>
                   <td className="px-4 py-3 text-right text-gray-600">{formatPrice(price)}</td>
-                  <td className="px-4 py-3 text-right font-medium text-green-700">{formatPrice(price * (goods.sale_count ?? 0))}</td>
+                  <td className="px-4 py-3 text-right font-medium text-blue-700">{formatPrice(price * (goods.sale_count ?? 0))}</td>
                 </tr>
               )
             })}

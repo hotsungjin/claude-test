@@ -19,7 +19,7 @@ export default async function AdminGoodsEditPage({ params }: { params: Promise<{
   return (
     <div>
       <nav className="flex items-center gap-1 text-sm text-gray-500 mb-6">
-        <Link href="/admin/goods" className="hover:text-green-700">상품 관리</Link>
+        <Link href="/admin/goods" className="hover:text-blue-700">상품 관리</Link>
         <ChevronRight className="w-4 h-4" />
         <span className="text-gray-900 font-medium">{goods.name}</span>
       </nav>

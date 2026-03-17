@@ -25,6 +25,18 @@
   --color-brand-bg:   var(--brand-bg);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* 관리자 블루 팔레트 */
+  --color-blue-50:  #EEF2FF;
+  --color-blue-100: #DDE5FF;
+  --color-blue-200: #B8C9FF;
+  --color-blue-300: #8FA8FF;
+  --color-blue-400: #7B96F7;
+  --color-blue-500: #6384F0;
+  --color-blue-600: #5474E0;
+  --color-blue-700: #4563CC;
+  --color-blue-800: #3650A8;
+  --color-blue-900: #283D85;
 }
 
 html, body {

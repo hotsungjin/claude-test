@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/server'
-import { sendSMS, generateCode, normalizePhone } from '@/lib/sms'
+import { generateCode, normalizePhone } from '@/lib/sms'
+import { sendVerificationCode } from '@/lib/notification/solapi'
 
 const schema = z.object({
   phone: z.string().min(10),
@@ -58,8 +59,8 @@ export async function POST(req: NextRequest) {
       expires_at: expiresAt.toISOString(),
     })
 
-    // SMS 발송
-    await sendSMS(phone, `[설성목장몰] 인증번호 ${code}를 입력해주세요.`)
+    // 알림톡 우선 발송 (실패 시 SMS 폴백)
+    await sendVerificationCode({ phone, code })
 
     return NextResponse.json({ success: true, expiresAt: expiresAt.toISOString() })
   } catch (err: any) {

@@ -28,7 +28,7 @@ export default async function AdminNoticesPage({
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">공지사항 관리</h1>
         <Link href="/admin/notices/new"
-          className="flex items-center gap-2 bg-green-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-green-800">
+          className="flex items-center gap-2 bg-blue-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-blue-800">
           <Plus className="w-4 h-4" /> 공지 등록
         </Link>
       </div>
@@ -51,14 +51,14 @@ export default async function AdminNoticesPage({
             {(notices ?? []).map((n: any) => (
               <tr key={n.id} className="hover:bg-gray-50">
                 <td className="px-4 py-3 font-medium text-gray-900">
-                  {n.is_pinned && <Pin className="w-3 h-3 inline text-green-600 mr-1 -mt-0.5" />}
+                  {n.is_pinned && <Pin className="w-3 h-3 inline text-blue-600 mr-1 -mt-0.5" />}
                   {n.title}
                 </td>
                 <td className="px-4 py-3 text-center">
-                  {n.is_pinned ? <span className="text-xs text-green-600 font-medium">고정</span> : <span className="text-xs text-gray-300">-</span>}
+                  {n.is_pinned ? <span className="text-xs text-blue-600 font-medium">고정</span> : <span className="text-xs text-gray-300">-</span>}
                 </td>
                 <td className="px-4 py-3 text-center">
-                  <span className={`text-xs font-medium ${n.is_visible ? 'text-green-600' : 'text-gray-400'}`}>
+                  <span className={`text-xs font-medium ${n.is_visible ? 'text-blue-600' : 'text-gray-400'}`}>
                     {n.is_visible ? '공개' : '비공개'}
                   </span>
                 </td>
@@ -79,7 +79,7 @@ export default async function AdminNoticesPage({
           <div className="flex justify-center gap-1 py-4 border-t border-gray-50">
             {Array.from({ length: Math.min(totalPages, 10) }, (_, i) => i + 1).map(p => (
               <a key={p} href={`/admin/notices?page=${p}`}
-                className={`w-8 h-8 flex items-center justify-center rounded text-xs font-medium ${p === page ? 'bg-green-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}>
+                className={`w-8 h-8 flex items-center justify-center rounded text-xs font-medium ${p === page ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}>
                 {p}
               </a>
             ))}

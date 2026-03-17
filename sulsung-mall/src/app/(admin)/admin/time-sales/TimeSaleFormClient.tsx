@@ -70,19 +70,19 @@ export default function TimeSaleFormClient({ initialData }: { initialData?: any 
           <label className="block text-sm font-medium text-gray-700 mb-1">세일명 *</label>
           <input value={form.name} onChange={e => set('name', e.target.value)} required
             placeholder="예: 설날 한우 특가"
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">상품 ID (UUID) *</label>
           <input value={form.goods_id} onChange={e => set('goods_id', e.target.value)} required
             placeholder="상품 UUID"
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-green-500" />
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-blue-500" />
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">할인 유형</label>
             <select value={form.discount_type} onChange={e => set('discount_type', e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500">
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
               <option value="rate">정률 (%)</option>
               <option value="amount">정액 (원)</option>
             </select>
@@ -91,19 +91,19 @@ export default function TimeSaleFormClient({ initialData }: { initialData?: any 
             <label className="block text-sm font-medium text-gray-700 mb-1">할인값 *</label>
             <input type="number" value={form.discount_value} onChange={e => set('discount_value', e.target.value)} required min={1}
               placeholder={form.discount_type === 'rate' ? '10' : '5000'}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
           </div>
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">시작 *</label>
             <input type="datetime-local" value={form.starts_at} onChange={e => set('starts_at', e.target.value)} required
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">종료 *</label>
             <input type="datetime-local" value={form.ends_at} onChange={e => set('ends_at', e.target.value)} required
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
           </div>
         </div>
         <div className="grid grid-cols-2 gap-4">
@@ -111,12 +111,12 @@ export default function TimeSaleFormClient({ initialData }: { initialData?: any 
             <label className="block text-sm font-medium text-gray-700 mb-1">한정 수량 (선택)</label>
             <input type="number" value={form.max_qty} onChange={e => set('max_qty', e.target.value)} min={1}
               placeholder="비워두면 무제한"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
           </div>
           <div className="flex items-end pb-2">
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" checked={form.is_active} onChange={e => set('is_active', e.target.checked)}
-                className="w-4 h-4 accent-green-600" />
+                className="w-4 h-4 accent-blue-600" />
               <span className="text-sm font-medium text-gray-700">활성화</span>
             </label>
           </div>
@@ -133,7 +133,7 @@ export default function TimeSaleFormClient({ initialData }: { initialData?: any 
           <button type="button" onClick={() => router.back()}
             className="px-5 py-2.5 text-sm border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50">취소</button>
           <button type="submit" disabled={loading}
-            className="px-6 py-2.5 bg-green-700 text-white text-sm font-semibold rounded-xl hover:bg-green-800 disabled:opacity-50">
+            className="px-6 py-2.5 bg-blue-700 text-white text-sm font-semibold rounded-xl hover:bg-blue-800 disabled:opacity-50">
             {loading ? '저장 중...' : isEdit ? '수정' : '등록'}
           </button>
         </div>

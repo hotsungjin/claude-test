@@ -34,7 +34,7 @@ export default function OrderBulkActionBar({ selectedIds }: { selectedIds: strin
           배송중
         </button>
         <button onClick={() => bulkAction('delivered')} disabled={loading}
-          className="px-3 py-1.5 bg-green-600 rounded-lg text-xs font-medium hover:bg-green-500 disabled:opacity-50">
+          className="px-3 py-1.5 bg-blue-600 rounded-lg text-xs font-medium hover:bg-blue-500 disabled:opacity-50">
           배송완료
         </button>
         <button onClick={() => bulkAction('cancelled')} disabled={loading}

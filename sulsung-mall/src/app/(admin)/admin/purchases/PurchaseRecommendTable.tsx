@@ -40,7 +40,7 @@ export default function PurchaseRecommendTable({ items }: { items: RecommendItem
           { key: 'all', label: '전체' },
         ].map(tab => (
           <button key={tab.key} onClick={() => { setFilter(tab.key as any); setShowCount(30) }}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${filter === tab.key ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${filter === tab.key ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
             {tab.label}
           </button>
         ))}
@@ -99,7 +99,7 @@ export default function PurchaseRecommendTable({ items }: { items: RecommendItem
                         {item.recommendQty.toLocaleString()}
                       </span>
                     ) : (
-                      <span className="text-green-600">충분</span>
+                      <span className="text-blue-600">충분</span>
                     )}
                   </td>
                 </tr>

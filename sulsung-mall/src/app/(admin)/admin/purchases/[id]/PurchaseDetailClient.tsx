@@ -12,7 +12,7 @@ const STATUS_COLOR: Record<string, string> = {
   draft: 'bg-gray-100 text-gray-600',
   ordered: 'bg-blue-100 text-blue-700',
   receiving: 'bg-yellow-100 text-yellow-700',
-  completed: 'bg-green-100 text-green-700',
+  completed: 'bg-blue-100 text-blue-700',
   cancelled: 'bg-red-100 text-red-600',
 }
 
@@ -97,7 +97,7 @@ export default function PurchaseDetailClient({ order }: { order: PurchaseOrder }
           )}
           {canReceive && (
             <button onClick={handleReceive} disabled={loading}
-              className="flex items-center gap-1.5 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-50">
+              className="flex items-center gap-1.5 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50">
               <CheckCircle className="w-4 h-4" /> 입고 처리
             </button>
           )}
@@ -156,7 +156,7 @@ export default function PurchaseDetailClient({ order }: { order: PurchaseOrder }
             {order.purchase_order_items.map((item) => {
               const remaining = item.qty - item.received_qty
               return (
-                <tr key={item.id} className={remaining <= 0 ? 'bg-green-50/50' : ''}>
+                <tr key={item.id} className={remaining <= 0 ? 'bg-blue-50/50' : ''}>
                   <td className="px-4 py-3">
                     {item.goods.thumbnail_url
                       ? <img src={item.goods.thumbnail_url} alt="" className="w-9 h-9 rounded object-cover" />
@@ -168,7 +168,7 @@ export default function PurchaseDetailClient({ order }: { order: PurchaseOrder }
                   <td className="px-4 py-3 text-right text-gray-500">{item.unit_price.toLocaleString()}원</td>
                   <td className="px-4 py-3 text-right text-gray-700 font-medium">{(item.qty * item.unit_price).toLocaleString()}원</td>
                   <td className="px-4 py-3 text-right">
-                    <span className={remaining <= 0 ? 'text-green-600 font-medium' : 'text-gray-500'}>
+                    <span className={remaining <= 0 ? 'text-blue-600 font-medium' : 'text-gray-500'}>
                       {item.received_qty}/{item.qty}
                     </span>
                   </td>
@@ -178,9 +178,9 @@ export default function PurchaseDetailClient({ order }: { order: PurchaseOrder }
                         <input type="number" min={0} max={remaining}
                           value={receiveQtys[item.id] ?? 0}
                           onChange={e => setReceiveQtys(prev => ({ ...prev, [item.id]: Math.min(remaining, Math.max(0, Number(e.target.value))) }))}
-                          className="w-20 text-right border border-gray-200 rounded px-2 py-1 text-sm focus:outline-none focus:border-green-500" />
+                          className="w-20 text-right border border-gray-200 rounded px-2 py-1 text-sm focus:outline-none focus:border-blue-500" />
                       ) : (
-                        <span className="text-green-600 text-xs">완료</span>
+                        <span className="text-blue-600 text-xs">완료</span>
                       )}
                     </td>
                   )}

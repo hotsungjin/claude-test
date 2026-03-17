@@ -3,6 +3,7 @@ import { createAdminClient } from '@/lib/supabase/server'
 import { sendOrderConfirm, sendCancelComplete } from '@/lib/notification/solapi'
 import { formatPrice } from '@/utils/format'
 import { distributeReferralRewards, cancelReferralRewards } from '@/lib/referral-reward'
+import { activateMembershipIfNeeded, cancelMembershipIfNeeded } from '@/lib/membership'
 
 // 토스페이먼츠 웹훅 시크릿 검증
 function verifyWebhook(req: NextRequest): boolean {
@@ -84,6 +85,12 @@ export async function POST(req: NextRequest) {
         distributeReferralRewards(supabase, order.id, order.member_id, order.total_amount)
           .catch(err => console.error('[Referral Reward Error]', err))
 
+        // 멤버십 상품 구매 시 자동 활성화
+        if (order.member_id) {
+          activateMembershipIfNeeded(supabase, order.id, order.member_id)
+            .catch(err => console.error('[Membership Activation Error]', err))
+        }
+
         break
       }
 
@@ -124,6 +131,11 @@ export async function POST(req: NextRequest) {
 
         // 추천 리워드 취소
         await cancelReferralRewards(supabase, order.id)
+
+        // 멤버십 상품 주문 취소 시 멤버십 해지
+        if (order.member_id) {
+          await cancelMembershipIfNeeded(supabase, order.id, order.member_id)
+        }
 
         // 재고 복구
         const { data: orderItems } = await supabase

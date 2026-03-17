@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 const BULK_TRANSITIONS: { label: string; value: string; color: string }[] = [
   { label: '배송준비중', value: 'preparing', color: 'bg-blue-600 hover:bg-blue-500' },
   { label: '배송중', value: 'shipped', color: 'bg-indigo-600 hover:bg-indigo-500' },
-  { label: '배송완료', value: 'delivered', color: 'bg-green-600 hover:bg-green-500' },
+  { label: '배송완료', value: 'delivered', color: 'bg-blue-600 hover:bg-blue-500' },
   { label: '취소완료', value: 'cancelled', color: 'bg-red-600 hover:bg-red-500' },
   { label: '반품완료', value: 'returned', color: 'bg-orange-600 hover:bg-orange-500' },
 ]

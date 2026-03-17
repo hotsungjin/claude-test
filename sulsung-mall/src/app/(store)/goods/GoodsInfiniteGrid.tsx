@@ -16,53 +16,73 @@ interface Props {
 
 export default function GoodsInfiniteGrid({ initialGoods, totalCount, perPage, queryString }: Props) {
   const [goods, setGoods] = useState<GoodsItem[]>(initialGoods)
-  const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(false)
   const [hasMore, setHasMore] = useState(initialGoods.length < totalCount)
   const loaderRef = useRef<HTMLDivElement>(null)
+
+  // ref로 최신 값 유지 (observer 콜백에서 사용)
+  const pageRef = useRef(1)
+  const hasMoreRef = useRef(initialGoods.length < totalCount)
   const loadingRef = useRef(false)
+  const queryStringRef = useRef(queryString)
+  const totalCountRef = useRef(totalCount)
 
   // 필터 변경 시 리셋
   useEffect(() => {
     setGoods(initialGoods)
-    setPage(1)
     setHasMore(initialGoods.length < totalCount)
+    pageRef.current = 1
+    hasMoreRef.current = initialGoods.length < totalCount
     loadingRef.current = false
-  }, [initialGoods, totalCount])
+    queryStringRef.current = queryString
+    totalCountRef.current = totalCount
+  }, [initialGoods, totalCount, queryString])
 
   const loadMore = useCallback(async () => {
-    if (loadingRef.current || !hasMore) return
+    if (loadingRef.current || !hasMoreRef.current) return
     loadingRef.current = true
     setLoading(true)
-    const nextPage = page + 1
+    const nextPage = pageRef.current + 1
     try {
-      const url = `/api/v1/goods?${queryString}${queryString ? '&' : ''}page=${nextPage}`
+      const qs = queryStringRef.current
+      const url = `/api/v1/goods?${qs}${qs ? '&' : ''}page=${nextPage}`
       const res = await fetch(url)
       const data = await res.json()
       const newGoods = data.goods ?? []
-      setGoods(prev => {
-        const updated = [...prev, ...newGoods]
-        setHasMore(updated.length < totalCount)
-        return updated
-      })
-      setPage(nextPage)
-    } catch {} finally {
+      if (newGoods.length === 0) {
+        hasMoreRef.current = false
+        setHasMore(false)
+      } else {
+        setGoods(prev => {
+          const updated = [...prev, ...newGoods]
+          const more = updated.length < totalCountRef.current
+          hasMoreRef.current = more
+          setHasMore(more)
+          return updated
+        })
+        pageRef.current = nextPage
+      }
+    } catch {
+      hasMoreRef.current = false
+      setHasMore(false)
+    } finally {
       setLoading(false)
       loadingRef.current = false
     }
-  }, [hasMore, page, queryString, totalCount])
+  }, []) // 의존성 없음 — 모두 ref 사용
 
+  // IntersectionObserver — loadMore가 안정적이므로 한 번만 생성
   useEffect(() => {
     const el = loaderRef.current
     if (!el) return
     const observer = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && !loadingRef.current) {
+      if (entries[0].isIntersecting && !loadingRef.current && hasMoreRef.current) {
         loadMore()
       }
     }, { rootMargin: '200px' })
     observer.observe(el)
     return () => observer.disconnect()
-  }, [loadMore])
+  }, [loadMore, hasMore]) // hasMore 변경 시 observer 재연결 (loader div 재생성 대응)
 
   if (goods.length === 0) {
     return (

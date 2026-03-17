@@ -24,6 +24,8 @@ export default function Header() {
   const [cartCount, setCartCount] = useState(0)
   const [scrolled, setScrolled] = useState(false)
   const [trending, setTrending] = useState<{ keyword: string; count: number }[]>([])
+  const [popular, setPopular] = useState<{ keyword: string; count: number }[]>([])
+
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 0)
@@ -32,10 +34,17 @@ export default function Header() {
   }, [])
 
   useEffect(() => {
-    fetch('/api/v1/cart')
-      .then(r => r.json())
-      .then(j => setCartCount((j.items ?? j.data ?? []).length))
-      .catch(() => {})
+    const fetchCart = () => {
+      fetch('/api/v1/cart?count=true')
+        .then(r => r.json())
+        .then(j => setCartCount(j.count ?? 0))
+        .catch(() => {})
+    }
+    fetchCart()
+    // 주요 API warm-up (cold start 방지)
+    fetch('/api/v1/members/me').catch(() => {})
+    window.addEventListener('cart-updated', fetchCart)
+    return () => window.removeEventListener('cart-updated', fetchCart)
   }, [])
 
   // BottomNav 검색 탭 클릭 이벤트 수신
@@ -50,7 +59,10 @@ export default function Header() {
     if (searchOpen) {
       fetch('/api/v1/search')
         .then(r => r.json())
-        .then(j => setTrending(j.keywords ?? []))
+        .then(j => {
+          setTrending(j.keywords ?? [])
+          setPopular(j.popular ?? [])
+        })
         .catch(() => {})
     }
   }, [searchOpen])
@@ -75,12 +87,15 @@ export default function Header() {
   }
 
   const isMypage = pathname.startsWith('/mypage') || pathname.startsWith('/notice') || pathname.startsWith('/faq')
+  const isOrder = pathname.startsWith('/order')
   const isGoodsWithTitle = pathname === '/goods' && searchParams.get('title')
+  const isGoodsWithCategory = pathname === '/goods' && searchParams.get('category')
+  const isSearch = pathname === '/goods' && searchParams.get('q')
 
   return (
     <>
       {/* 상단 헤더 — 마이페이지 및 타이틀이 있는 상품 목록에서는 숨김 */}
-      {!isMypage && !isGoodsWithTitle && (
+      {!isMypage && !isOrder && !isGoodsWithTitle && !isGoodsWithCategory && !isSearch && (
       <header
         data-store-header
         className="sticky top-0 z-50 w-full bg-white"
@@ -104,7 +119,7 @@ export default function Header() {
         </div>
 
         {/* 카테고리 탭 네비게이션 — 마이페이지에서는 숨김 */}
-        {!pathname.startsWith('/mypage') && (
+        {!pathname.startsWith('/mypage') && !isOrder && (
           <nav className="flex overflow-x-auto scrollbar-hide shadow-[0_1px_6px_rgba(0,0,0,0.06)]" style={{ paddingLeft: '18px', clipPath: 'inset(0 0 -10px 0)' }}>
             {NAV_TABS.map(tab => {
               const tabUrl = new URL(tab.href, 'http://x')
@@ -166,10 +181,13 @@ export default function Header() {
 
           {/* 검색 콘텐츠 */}
           <div className="flex-1 overflow-y-auto bg-white px-5 py-6">
-            {/* 추천 검색어 */}
+            {/* 추천 검색어 — 전체 누적 인기 검색어 */}
             <h3 className="text-[18px] font-bold mb-4" style={{ color: '#1a1a1a' }}>추천 검색어</h3>
             <div className="flex flex-wrap gap-2.5 mb-10">
-              {['한우', '한돈', '간편식', '선물세트', '유제품', '베이비'].map(tag => (
+              {(popular.length > 0
+                ? popular.map(p => p.keyword)
+                : ['한우', '한돈', '간편식', '선물세트', '유제품', '베이비']
+              ).map(tag => (
                 <button key={tag}
                   onClick={() => doSearch(tag)}
                   className="px-4 py-2 rounded-full text-[15px]"
@@ -181,7 +199,7 @@ export default function Header() {
 
             {/* 급상승 검색어 */}
             <h3 className="text-[18px] font-bold mb-1" style={{ color: '#1a1a1a' }}>급상승 검색어</h3>
-            <p className="text-[13px] mb-5" style={{ color: '#999' }}>최근 1시간 동안 검색 횟수가 급상승했어요</p>
+            <p className="text-[13px] mb-5" style={{ color: '#999' }}>최근 1주일 동안 검색 횟수가 급상승했어요</p>
 
             {trending.length > 0 ? (
               <div className="grid grid-cols-2 gap-x-6">

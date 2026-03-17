@@ -106,19 +106,19 @@ export default function CategoryListClient({ categories }: { categories: Categor
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">카테고리명 *</label>
                 <input value={form.name} onChange={e => handleNameChange(e.target.value)} required
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
                   placeholder="예: 한우" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">슬러그 *</label>
                 <input value={form.slug} onChange={e => setForm(prev => ({ ...prev, slug: e.target.value }))} required
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500 font-mono"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 font-mono"
                   placeholder="예: hanwoo" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">정렬 순서</label>
                 <input type="number" value={form.sort_order} onChange={e => setForm(prev => ({ ...prev, sort_order: Number(e.target.value) }))}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -128,7 +128,7 @@ export default function CategoryListClient({ categories }: { categories: Categor
             </div>
             <div className="flex gap-2">
               <button type="submit" disabled={loading}
-                className="px-4 py-2 bg-green-700 text-white text-sm font-semibold rounded-lg hover:bg-green-800 disabled:opacity-50">
+                className="px-4 py-2 bg-blue-700 text-white text-sm font-semibold rounded-lg hover:bg-blue-800 disabled:opacity-50">
                 {loading ? '저장 중...' : editId ? '수정' : '추가'}
               </button>
               <button type="button" onClick={resetForm}
@@ -144,7 +144,7 @@ export default function CategoryListClient({ categories }: { categories: Categor
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
         <div className="px-6 py-3 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
           <span className="text-sm text-gray-500">총 <strong>{categories.length}</strong>건</span>
-          <button onClick={() => startAdd()} className="flex items-center gap-1 px-3 py-1.5 bg-green-700 text-white text-xs font-semibold rounded-lg hover:bg-green-800">
+          <button onClick={() => startAdd()} className="flex items-center gap-1 px-3 py-1.5 bg-blue-700 text-white text-xs font-semibold rounded-lg hover:bg-blue-800">
             <Plus className="w-3.5 h-3.5" /> 카테고리 추가
           </button>
         </div>
@@ -209,7 +209,7 @@ function CategoryRow({ cat, isChild, onEdit, onDelete }: {
       <td className="px-4 py-3 text-xs text-gray-500 font-mono">{cat.slug}</td>
       <td className="px-4 py-3 text-center">
         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-          cat.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
+          cat.is_active ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'
         }`}>
           {cat.is_active ? '활성' : '비활성'}
         </span>

@@ -19,7 +19,7 @@ const BTN_COLOR: Record<string, string> = {
   blue:   'bg-blue-600 hover:bg-blue-700',
   indigo: 'bg-indigo-600 hover:bg-indigo-700',
   purple: 'bg-purple-600 hover:bg-purple-700',
-  green:  'bg-green-600 hover:bg-green-700',
+  green:  'bg-blue-600 hover:bg-blue-700',
   red:    'bg-red-600 hover:bg-red-700',
   orange: 'bg-orange-500 hover:bg-orange-600',
   gray:   'bg-gray-500 hover:bg-gray-600',
@@ -155,7 +155,7 @@ export default function OrderStatusClient({ orderId, currentStatus, adminMemo }:
             <select
               value={delivery.company_id}
               onChange={e => handleCompanyChange(Number(e.target.value))}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
             >
               <option value={0} disabled>택배사 선택</option>
               {companies.map(c => (
@@ -167,7 +167,7 @@ export default function OrderStatusClient({ orderId, currentStatus, adminMemo }:
               value={delivery.tracking_no}
               onChange={e => setDelivery(d => ({ ...d, tracking_no: e.target.value }))}
               placeholder="송장번호 입력"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500 font-mono"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 font-mono"
             />
             {currentStatus === 'shipped' && (
               <button onClick={saveDelivery} disabled={loading}
@@ -199,7 +199,7 @@ export default function OrderStatusClient({ orderId, currentStatus, adminMemo }:
         <p className="text-xs font-medium text-gray-500 mb-2">관리자 메모</p>
         <textarea value={memo} onChange={e => setMemo(e.target.value)} rows={3}
           placeholder="내부 메모 (고객에게 보이지 않음)"
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500 resize-none" />
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 resize-none" />
         <button onClick={saveMemo} disabled={loading}
           className="mt-2 px-4 py-1.5 bg-gray-800 text-white text-xs rounded-lg hover:bg-gray-700 disabled:opacity-50">
           메모 저장
@@ -207,7 +207,7 @@ export default function OrderStatusClient({ orderId, currentStatus, adminMemo }:
       </div>
 
       {message && (
-        <p className={`text-sm px-3 py-2 rounded-lg ${message.includes('실패') || message.includes('입력') ? 'text-red-700 bg-red-50' : 'text-green-700 bg-green-50'}`}>
+        <p className={`text-sm px-3 py-2 rounded-lg ${message.includes('실패') || message.includes('입력') ? 'text-red-700 bg-red-50' : 'text-blue-700 bg-blue-50'}`}>
           {message}
         </p>
       )}

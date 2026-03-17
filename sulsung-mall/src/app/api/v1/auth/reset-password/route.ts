@@ -5,7 +5,7 @@ import { createAdminClient } from '@/lib/supabase/server'
 const schema = z.object({
   phone: z.string().min(10),
   password: z.string().min(8),
-  verificationId: z.number().optional(),
+  verificationId: z.number(),
 })
 
 export async function POST(req: NextRequest) {
@@ -13,8 +13,24 @@ export async function POST(req: NextRequest) {
     const body = schema.parse(await req.json())
     const supabase = await createAdminClient() as any
 
-    // TODO: 솔라피 계정 생성 후 SMS 인증 다시 활성화
-    // 현재는 인증 없이 비밀번호 변경 허용
+    // SMS 인증 검증
+    const { data: verification } = await (supabase as any)
+      .from('sms_verifications')
+      .select('id, phone, verified')
+      .eq('id', body.verificationId)
+      .eq('purpose', 'reset_password')
+      .eq('verified', true)
+      .single()
+
+    if (!verification) {
+      return NextResponse.json({ error: '휴대폰 인증이 필요합니다.' }, { status: 403 })
+    }
+
+    const cleanVerifiedPhone = verification.phone.replace(/[^0-9]/g, '')
+    const cleanRequestPhone = body.phone.replace(/[^0-9]/g, '')
+    if (cleanVerifiedPhone !== cleanRequestPhone) {
+      return NextResponse.json({ error: '인증된 번호와 일치하지 않습니다.' }, { status: 403 })
+    }
 
     // 회원 조회 (하이픈 없는 번호 + 하이픈 있는 번호 모두 시도)
     const cleanPhone = body.phone.replace(/[^0-9]/g, '')

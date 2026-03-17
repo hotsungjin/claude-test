@@ -38,7 +38,7 @@ export default function CouponIssueClient({ couponId, grades }: Props) {
   return (
     <div className="bg-white rounded-xl shadow-sm p-6">
       <div className="flex items-center gap-2 mb-4">
-        <Users className="w-4 h-4 text-green-700" />
+        <Users className="w-4 h-4 text-blue-700" />
         <h3 className="font-semibold text-gray-800">회원 일괄 발급</h3>
       </div>
 
@@ -46,7 +46,7 @@ export default function CouponIssueClient({ couponId, grades }: Props) {
         <div>
           <label className="text-xs font-medium text-gray-600 mb-1 block">발급 대상</label>
           <select value={target} onChange={e => setTarget(e.target.value as any)}
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500">
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
             <option value="all">전체 회원</option>
             <option value="grade">등급별 발급</option>
           </select>
@@ -56,7 +56,7 @@ export default function CouponIssueClient({ couponId, grades }: Props) {
           <div>
             <label className="text-xs font-medium text-gray-600 mb-1 block">등급 선택</label>
             <select value={grade} onChange={e => setGrade(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500">
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
               <option value="">등급 선택</option>
               {grades.map(g => <option key={g} value={g}>{g}</option>)}
             </select>
@@ -66,14 +66,14 @@ export default function CouponIssueClient({ couponId, grades }: Props) {
         {error && <p className="text-xs text-red-600 bg-red-50 px-3 py-2 rounded-lg">{error}</p>}
 
         {result && (
-          <p className="text-xs text-green-700 bg-green-50 px-3 py-2 rounded-lg">
+          <p className="text-xs text-blue-700 bg-blue-50 px-3 py-2 rounded-lg">
             완료: {result.total}명 중 {result.issued}명에게 신규 발급됨
             {result.total - result.issued > 0 && ` (${result.total - result.issued}명은 이미 보유)`}
           </p>
         )}
 
         <button onClick={handleIssue} disabled={loading}
-          className="w-full bg-green-700 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-green-600 disabled:opacity-50">
+          className="w-full bg-blue-700 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-blue-600 disabled:opacity-50">
           {loading ? '발급 중...' : '발급하기'}
         </button>
       </div>

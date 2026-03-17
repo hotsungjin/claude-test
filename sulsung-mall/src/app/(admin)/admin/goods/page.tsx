@@ -39,7 +39,7 @@ export default async function AdminGoodsPage({ searchParams }: { searchParams: P
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">상품 관리</h1>
         <Link href="/admin/goods/new"
-          className="flex items-center gap-2 bg-green-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-green-800">
+          className="flex items-center gap-2 bg-blue-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-blue-800">
           <Plus className="w-4 h-4" /> 상품 등록
         </Link>
       </div>
@@ -48,7 +48,7 @@ export default async function AdminGoodsPage({ searchParams }: { searchParams: P
       <div className="bg-white rounded-xl p-4 shadow-sm mb-6">
         <form className="flex flex-wrap gap-2">
           <input name="q" defaultValue={params.q} placeholder="상품명 검색"
-            className="border border-gray-200 rounded-lg px-3 py-2 text-sm flex-1 min-w-[150px] focus:outline-none focus:border-green-500" />
+            className="border border-gray-200 rounded-lg px-3 py-2 text-sm flex-1 min-w-[150px] focus:outline-none focus:border-blue-500" />
           <select name="category" defaultValue={params.category}
             className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none">
             <option value="">전체 카테고리</option>
@@ -103,7 +103,7 @@ export default async function AdminGoodsPage({ searchParams }: { searchParams: P
               if (params.brand) qs.set('brand', params.brand)
               return (
                 <a key={p} href={`/admin/goods?${qs.toString()}`}
-                  className={`w-8 h-8 flex items-center justify-center rounded text-xs font-medium ${p === page ? 'bg-green-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}>
+                  className={`w-8 h-8 flex items-center justify-center rounded text-xs font-medium ${p === page ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}>
                   {p}
                 </a>
               )

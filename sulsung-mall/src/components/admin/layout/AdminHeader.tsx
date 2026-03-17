@@ -27,7 +27,7 @@ export default function AdminHeader({ name, role }: AdminHeaderProps) {
           <Bell className="w-5 h-5 text-gray-500" />
         </button>
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
+          <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
             {name.charAt(0)}
           </div>
           <span className="text-sm font-medium text-gray-700">{roleLabel}({name})</span>

@@ -92,7 +92,7 @@ export default async function PurchasesPage() {
     draft: 'bg-gray-100 text-gray-600',
     ordered: 'bg-blue-100 text-blue-700',
     receiving: 'bg-yellow-100 text-yellow-700',
-    completed: 'bg-green-100 text-green-700',
+    completed: 'bg-blue-100 text-blue-700',
     cancelled: 'bg-red-100 text-red-600',
   }
 
@@ -101,7 +101,7 @@ export default async function PurchasesPage() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">발주 관리</h1>
         <Link href="/admin/purchases/new"
-          className="flex items-center gap-2 bg-green-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-green-800">
+          className="flex items-center gap-2 bg-blue-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-blue-800">
           <Plus className="w-4 h-4" /> 발주서 작성
         </Link>
       </div>
@@ -143,8 +143,8 @@ export default async function PurchasesPage() {
         </div>
         <div className="bg-white rounded-xl p-4 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center">
-              <Package className="w-5 h-5 text-green-500" />
+            <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+              <Package className="w-5 h-5 text-blue-500" />
             </div>
             <div>
               <p className="text-xs text-gray-500">전체 상품</p>

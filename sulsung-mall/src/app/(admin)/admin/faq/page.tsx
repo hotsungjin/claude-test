@@ -16,7 +16,7 @@ export default async function AdminFaqPage() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">자주 묻는 질문</h1>
         <Link href="/admin/faq/new"
-          className="px-4 py-2 bg-green-700 text-white text-sm font-semibold rounded-lg hover:bg-green-800">
+          className="px-4 py-2 bg-blue-700 text-white text-sm font-semibold rounded-lg hover:bg-blue-800">
           FAQ 등록
         </Link>
       </div>
@@ -44,7 +44,7 @@ export default async function AdminFaqPage() {
                 <td className="px-4 py-3 text-gray-800 font-medium truncate max-w-md">{faq.question}</td>
                 <td className="px-4 py-3 text-center">
                   <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                    faq.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
+                    faq.is_active ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'
                   }`}>
                     {faq.is_active ? '활성' : '비활성'}
                   </span>

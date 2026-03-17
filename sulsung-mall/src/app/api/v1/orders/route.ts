@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { getAuthMember } from '@/lib/supabase/auth'
+import { createAdminClient } from '@/lib/supabase/server'
 import { generateOrderNo } from '@/utils/format'
 import { BASE_SHIPPING_FEE, FREE_SHIPPING_THRESHOLD, GRADE_BENEFITS } from '@/constants'
 
@@ -24,12 +25,13 @@ const orderSchema = z.object({
 export async function POST(req: NextRequest) {
   try {
     const body = orderSchema.parse(await req.json())
-    const { supabase, memberId } = await getAuthMember()
+    const { memberId } = await getAuthMember()
+    const supabase = await createAdminClient() as any
 
     // 현재 로그인 회원 확인
     type MemberRow = { id: string; mileage: number; deposit: number; grade: string }
     const { data: member } = memberId
-      ? await (supabase as any).from('members').select('id, mileage, deposit, grade').eq('id', memberId).single() as { data: MemberRow | null }
+      ? await supabase.from('members').select('id, mileage, deposit, grade').eq('id', memberId).single() as { data: MemberRow | null }
       : { data: null }
 
     // 상품 정보 및 재고 확인

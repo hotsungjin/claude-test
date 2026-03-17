@@ -5,19 +5,7 @@ import { ChevronRight } from 'lucide-react'
 import { formatDateTime, formatPrice, ORDER_STATUS_LABEL } from '@/utils/format'
 import MemberActionClient from './MemberActionClient'
 
-const GRADE_COLOR: Record<string, string> = {
-  bronze: 'bg-gray-100 text-gray-600',
-  silver: 'bg-blue-100 text-blue-700',
-  gold:   'bg-yellow-100 text-yellow-700',
-  vip:    'bg-purple-100 text-purple-700',
-}
-
-const GRADE_LABEL: Record<string, string> = {
-  bronze: '브론즈',
-  silver: '실버',
-  gold:   '골드',
-  vip:    'VIP',
-}
+import { GRADE_LABEL, GRADE_COLOR } from '@/constants'
 
 export default async function AdminMemberDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -36,7 +24,7 @@ export default async function AdminMemberDetailPage({ params }: { params: Promis
   return (
     <div>
       <nav className="flex items-center gap-1 text-sm text-gray-500 mb-6">
-        <Link href="/admin/members" className="hover:text-green-700">회원 관리</Link>
+        <Link href="/admin/members" className="hover:text-blue-700">회원 관리</Link>
         <ChevronRight className="w-4 h-4" />
         <span className="text-gray-900 font-medium">{member.name}</span>
       </nav>
@@ -66,7 +54,7 @@ export default async function AdminMemberDetailPage({ params }: { params: Promis
               </div>
               <div>
                 <dt className="text-gray-500 text-xs mb-0.5">포인트</dt>
-                <dd className="font-medium text-green-700">{(member.mileage ?? 0).toLocaleString()}P</dd>
+                <dd className="font-medium text-blue-700">{(member.mileage ?? 0).toLocaleString()}P</dd>
               </div>
               <div>
                 <dt className="text-gray-500 text-xs mb-0.5">가입일</dt>
@@ -74,7 +62,7 @@ export default async function AdminMemberDetailPage({ params }: { params: Promis
               </div>
               <div>
                 <dt className="text-gray-500 text-xs mb-0.5">계정 상태</dt>
-                <dd className={`text-xs font-medium ${member.is_active ? 'text-green-600' : 'text-red-600'}`}>
+                <dd className={`text-xs font-medium ${member.is_active ? 'text-blue-600' : 'text-red-600'}`}>
                   {member.is_active ? '활성' : '비활성'}
                 </dd>
               </div>
@@ -134,7 +122,7 @@ export default async function AdminMemberDetailPage({ params }: { params: Promis
                     <tr key={log.id}>
                       <td className="py-2 text-xs text-gray-500">{formatDateTime(log.created_at)}</td>
                       <td className="py-2 text-xs text-gray-700">{log.reason}</td>
-                      <td className={`py-2 text-right text-xs font-medium ${log.delta > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      <td className={`py-2 text-right text-xs font-medium ${log.delta > 0 ? 'text-blue-600' : 'text-red-600'}`}>
                         {log.delta > 0 ? '+' : ''}{log.delta.toLocaleString()}P
                       </td>
                       <td className="py-2 text-right text-xs text-gray-700">{log.balance.toLocaleString()}P</td>

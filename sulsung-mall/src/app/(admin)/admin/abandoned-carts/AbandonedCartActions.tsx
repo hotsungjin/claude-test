@@ -41,7 +41,7 @@ export default function AbandonedCartActions({ memberId, memberName, phone, good
   }
 
   if (sent) {
-    return <span className="text-xs text-green-600 font-medium">발송 완료</span>
+    return <span className="text-xs text-blue-600 font-medium">발송 완료</span>
   }
 
   return (

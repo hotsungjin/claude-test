@@ -5,6 +5,7 @@ import { confirmPayment } from '@/lib/payment/toss'
 import { sendOrderConfirm } from '@/lib/notification/solapi'
 import { formatPrice } from '@/utils/format'
 import { distributeReferralRewards } from '@/lib/referral-reward'
+import { activateMembershipIfNeeded } from '@/lib/membership'
 
 const schema = z.object({
   paymentKey: z.string(),
@@ -78,6 +79,12 @@ export async function POST(req: NextRequest) {
     // 6. 추천 리워드 지급
     distributeReferralRewards(supabase, order.id, order.member_id, order.total_amount)
       .catch(err => console.error('[Referral Reward Error]', err))
+
+    // 7. 멤버십 상품 구매 시 자동 활성화
+    if (order.member_id) {
+      activateMembershipIfNeeded(supabase, order.id, order.member_id)
+        .catch(err => console.error('[Membership Activation Error]', err))
+    }
 
     return NextResponse.json({ success: true, orderId: order.id })
   } catch (err: any) {

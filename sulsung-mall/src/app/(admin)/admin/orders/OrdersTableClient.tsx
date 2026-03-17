@@ -11,7 +11,7 @@ const STATUS_COLOR: Record<string, string> = {
   paid: 'bg-blue-100 text-blue-700',
   preparing: 'bg-sky-100 text-sky-700',
   shipped: 'bg-indigo-100 text-indigo-700',
-  delivered: 'bg-green-100 text-green-700',
+  delivered: 'bg-blue-100 text-blue-700',
   confirmed: 'bg-emerald-100 text-emerald-700',
   cancel_requested: 'bg-orange-100 text-orange-700',
   cancelled: 'bg-red-100 text-red-600',
@@ -48,7 +48,7 @@ export default function OrdersTableClient({ orders }: { orders: any[] }) {
             <tr>
               <th className="px-4 py-3 w-10">
                 <input type="checkbox" checked={selected.size === orders.length && orders.length > 0}
-                  onChange={toggleAll} className="w-4 h-4 accent-green-600" />
+                  onChange={toggleAll} className="w-4 h-4 accent-blue-600" />
               </th>
               <th className="px-4 py-3 text-left text-xs text-gray-500 font-medium">주문번호</th>
               <th className="px-4 py-3 text-left text-xs text-gray-500 font-medium">주문자</th>
@@ -61,12 +61,14 @@ export default function OrdersTableClient({ orders }: { orders: any[] }) {
           </thead>
           <tbody className="divide-y divide-gray-50">
             {orders.map((order: any) => (
-              <tr key={order.id} className={`hover:bg-gray-50 ${selected.has(order.id) ? 'bg-green-50' : ''}`}>
+              <tr key={order.id} className={`hover:bg-gray-50 ${selected.has(order.id) ? 'bg-blue-50' : ''}`}>
                 <td className="px-4 py-3">
                   <input type="checkbox" checked={selected.has(order.id)}
-                    onChange={() => toggle(order.id)} className="w-4 h-4 accent-green-600" />
+                    onChange={() => toggle(order.id)} className="w-4 h-4 accent-blue-600" />
                 </td>
-                <td className="px-4 py-3 font-mono text-xs text-gray-700">{order.order_no}</td>
+                <td className="px-4 py-3 font-mono text-xs">
+                  <Link href={`/admin/orders/${order.id}`} className="text-blue-600 hover:underline">{order.order_no}</Link>
+                </td>
                 <td className="px-4 py-3 text-gray-700">
                   {order.members?.name ?? '-'}
                   <span className="block text-xs text-gray-400">{order.members?.email}</span>

@@ -8,10 +8,17 @@ export default function AdminLoginPage() {
   const router = useRouter()
   const supabase = createClient()
 
-  const [email, setEmail] = useState('')
+  const [account, setAccount] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  function formatPhone(value: string) {
+    const nums = value.replace(/[^0-9]/g, '').slice(0, 11)
+    if (nums.length <= 3) return nums
+    if (nums.length <= 7) return `${nums.slice(0, 3)}-${nums.slice(3)}`
+    return `${nums.slice(0, 3)}-${nums.slice(3, 7)}-${nums.slice(7)}`
+  }
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
@@ -19,13 +26,16 @@ export default function AdminLoginPage() {
     setError('')
 
     try {
+      const isPhone = /^[0-9\-]+$/.test(account)
+      const email = isPhone ? `${account.replace(/[^0-9]/g, '')}@sulsung.internal` : account
+
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
 
       if (signInError) {
-        setError('이메일 또는 비밀번호가 올바르지 않습니다.')
+        setError('계정 정보 또는 비밀번호가 올바르지 않습니다.')
         setLoading(false)
         return
       }
@@ -65,10 +75,13 @@ export default function AdminLoginPage() {
 
         <form onSubmit={handleLogin} className="space-y-3">
           <input
-            type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            placeholder="관리자 이메일"
+            type="text"
+            value={account}
+            onChange={e => {
+              const v = e.target.value
+              setAccount(/^[0-9\-]/.test(v) ? formatPhone(v) : v)
+            }}
+            placeholder="이메일 또는 휴대폰 번호"
             required
             className="w-full border border-gray-200 rounded-xl px-4 py-3 text-[14px] focus:outline-none focus:border-gray-400"
           />

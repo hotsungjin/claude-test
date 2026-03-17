@@ -44,11 +44,11 @@ export default function StatsCharts({ dailySales, dailyMembers, statusCounts, ca
           <h3 className="font-semibold text-gray-900 text-sm">일별 매출 (30일)</h3>
           <div className="flex gap-1">
             <button onClick={() => setSalesView('amount')}
-              className={`text-xs px-2.5 py-1 rounded ${salesView === 'amount' ? 'bg-green-100 text-green-700 font-medium' : 'text-gray-400'}`}>
+              className={`text-xs px-2.5 py-1 rounded ${salesView === 'amount' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-gray-400'}`}>
               금액
             </button>
             <button onClick={() => setSalesView('count')}
-              className={`text-xs px-2.5 py-1 rounded ${salesView === 'count' ? 'bg-green-100 text-green-700 font-medium' : 'text-gray-400'}`}>
+              className={`text-xs px-2.5 py-1 rounded ${salesView === 'count' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-gray-400'}`}>
               건수
             </button>
           </div>

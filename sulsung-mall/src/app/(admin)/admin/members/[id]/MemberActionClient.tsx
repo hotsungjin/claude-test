@@ -10,12 +10,9 @@ interface Props {
   isActive: boolean
 }
 
-const GRADES = [
-  { value: 'bronze', label: '브론즈' },
-  { value: 'silver', label: '실버' },
-  { value: 'gold', label: '골드' },
-  { value: 'vip', label: 'VIP' },
-]
+import { GRADE_LABEL } from '@/constants'
+
+const GRADES = Object.entries(GRADE_LABEL).map(([value, label]) => ({ value, label }))
 
 export default function MemberActionClient({ memberId, currentGrade, currentMileage, isActive }: Props) {
   const router = useRouter()
@@ -70,18 +67,18 @@ export default function MemberActionClient({ memberId, currentGrade, currentMile
 
   return (
     <div className="space-y-6">
-      {message && <p className="text-sm text-green-700 bg-green-50 px-3 py-2 rounded-lg">{message}</p>}
+      {message && <p className="text-sm text-blue-700 bg-blue-50 px-3 py-2 rounded-lg">{message}</p>}
 
       {/* 등급 변경 */}
       <div>
         <p className="text-xs font-medium text-gray-500 mb-2">회원 등급 변경</p>
         <div className="flex gap-2">
           <select value={grade} onChange={e => setGrade(e.target.value)}
-            className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500">
+            className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
             {GRADES.map(g => <option key={g.value} value={g.value}>{g.label}</option>)}
           </select>
           <button onClick={saveGrade} disabled={loading || grade === currentGrade}
-            className="px-4 py-2 bg-green-700 text-white text-sm rounded-lg hover:bg-green-800 disabled:opacity-50">
+            className="px-4 py-2 bg-blue-700 text-white text-sm rounded-lg hover:bg-blue-800 disabled:opacity-50">
             변경
           </button>
         </div>
@@ -92,10 +89,10 @@ export default function MemberActionClient({ memberId, currentGrade, currentMile
         <p className="text-xs font-medium text-gray-500 mb-2">포인트 지급/차감 (현재: {currentMileage.toLocaleString()}P)</p>
         <input type="number" value={mileageDelta} onChange={e => setMileageDelta(e.target.value)}
           placeholder="양수=지급, 음수=차감"
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500 mb-2" />
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 mb-2" />
         <input value={mileageReason} onChange={e => setMileageReason(e.target.value)}
           placeholder="사유 (예: 이벤트 지급)"
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500 mb-2" />
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 mb-2" />
         <button onClick={addMileage} disabled={loading}
           className="w-full px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50">
           포인트 적용
@@ -108,7 +105,7 @@ export default function MemberActionClient({ memberId, currentGrade, currentMile
           className={`w-full px-4 py-2 text-sm rounded-lg border font-medium disabled:opacity-40 ${
             isActive
               ? 'border-red-300 text-red-600 hover:bg-red-50'
-              : 'border-green-300 text-green-700 hover:bg-green-50'
+              : 'border-blue-300 text-blue-700 hover:bg-blue-50'
           }`}>
           {isActive ? '계정 비활성화' : '계정 활성화'}
         </button>

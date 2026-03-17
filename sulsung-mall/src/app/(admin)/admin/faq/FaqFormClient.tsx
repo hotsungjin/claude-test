@@ -68,7 +68,7 @@ export default function FaqFormClient({ faq }: { faq?: Faq }) {
       <div>
         <label className="block text-xs font-medium text-gray-500 mb-1.5">카테고리</label>
         <select value={category} onChange={e => setCategory(e.target.value)}
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500">
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
           {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
         </select>
       </div>
@@ -76,14 +76,14 @@ export default function FaqFormClient({ faq }: { faq?: Faq }) {
       <div>
         <label className="block text-xs font-medium text-gray-500 mb-1.5">질문</label>
         <input value={question} onChange={e => setQuestion(e.target.value)}
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500"
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
           placeholder="질문을 입력하세요" />
       </div>
 
       <div>
         <label className="block text-xs font-medium text-gray-500 mb-1.5">답변</label>
         <textarea value={answer} onChange={e => setAnswer(e.target.value)} rows={6}
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500 resize-y"
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 resize-y"
           placeholder="답변을 입력하세요" />
       </div>
 
@@ -91,12 +91,12 @@ export default function FaqFormClient({ faq }: { faq?: Faq }) {
         <div className="flex-1">
           <label className="block text-xs font-medium text-gray-500 mb-1.5">정렬 순서</label>
           <input type="number" value={sortOrder} onChange={e => setSortOrder(Number(e.target.value))}
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
         </div>
         <div className="flex items-end pb-1">
           <label className="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" checked={isActive} onChange={e => setIsActive(e.target.checked)}
-              className="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500" />
+              className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
             <span className="text-sm text-gray-700">활성</span>
           </label>
         </div>
@@ -104,7 +104,7 @@ export default function FaqFormClient({ faq }: { faq?: Faq }) {
 
       <div className="flex gap-3 pt-2">
         <button onClick={handleSubmit} disabled={loading}
-          className="px-6 py-2.5 bg-green-700 text-white text-sm font-semibold rounded-xl hover:bg-green-800 disabled:opacity-50">
+          className="px-6 py-2.5 bg-blue-700 text-white text-sm font-semibold rounded-xl hover:bg-blue-800 disabled:opacity-50">
           {loading ? '저장 중...' : faq ? '수정' : '등록'}
         </button>
         {faq && (

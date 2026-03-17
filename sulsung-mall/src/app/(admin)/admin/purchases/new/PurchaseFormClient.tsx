@@ -70,7 +70,7 @@ export default function PurchaseFormClient({ suppliers, goods }: { suppliers: Su
           <div>
             <label className="block text-xs text-gray-500 mb-1">공급처</label>
             <select value={supplierId} onChange={e => setSupplierId(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-green-500">
+              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-500">
               <option value="">공급처 선택 (선택사항)</option>
               {suppliers.map(s => <option key={s.id} value={s.id}>{s.name} (리드타임 {s.lead_days}일)</option>)}
             </select>
@@ -78,7 +78,7 @@ export default function PurchaseFormClient({ suppliers, goods }: { suppliers: Su
           <div>
             <label className="block text-xs text-gray-500 mb-1">메모</label>
             <input value={memo} onChange={e => setMemo(e.target.value)} placeholder="발주 메모"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-green-500" />
+              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-500" />
           </div>
         </div>
       </div>
@@ -88,7 +88,7 @@ export default function PurchaseFormClient({ suppliers, goods }: { suppliers: Su
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm font-bold text-gray-800">발주 상품</h2>
           <button onClick={() => setShowSearch(!showSearch)}
-            className="flex items-center gap-1.5 bg-green-600 text-white px-3 py-2 rounded-lg text-xs font-medium hover:bg-green-700">
+            className="flex items-center gap-1.5 bg-blue-600 text-white px-3 py-2 rounded-lg text-xs font-medium hover:bg-blue-700">
             <Plus className="w-3.5 h-3.5" /> 상품 추가
           </button>
         </div>
@@ -145,12 +145,12 @@ export default function PurchaseFormClient({ suppliers, goods }: { suppliers: Su
                   <td className="py-3 text-right">
                     <input type="number" min={1} value={item.qty}
                       onChange={e => updateItem(idx, 'qty', Math.max(1, Number(e.target.value)))}
-                      className="w-20 text-right border border-gray-200 rounded px-2 py-1 text-sm focus:outline-none focus:border-green-500" />
+                      className="w-20 text-right border border-gray-200 rounded px-2 py-1 text-sm focus:outline-none focus:border-blue-500" />
                   </td>
                   <td className="py-3 text-right">
                     <input type="number" min={0} value={item.unit_price}
                       onChange={e => updateItem(idx, 'unit_price', Math.max(0, Number(e.target.value)))}
-                      className="w-28 text-right border border-gray-200 rounded px-2 py-1 text-sm focus:outline-none focus:border-green-500" />
+                      className="w-28 text-right border border-gray-200 rounded px-2 py-1 text-sm focus:outline-none focus:border-blue-500" />
                   </td>
                   <td className="py-3 text-right font-medium text-gray-700">{(item.qty * item.unit_price).toLocaleString()}원</td>
                   <td className="py-3 text-center">
@@ -181,7 +181,7 @@ export default function PurchaseFormClient({ suppliers, goods }: { suppliers: Su
           취소
         </button>
         <button onClick={handleSubmit} disabled={saving || items.length === 0}
-          className="px-6 py-2.5 rounded-xl bg-green-700 text-white text-sm font-semibold hover:bg-green-800 disabled:opacity-50">
+          className="px-6 py-2.5 rounded-xl bg-blue-700 text-white text-sm font-semibold hover:bg-blue-800 disabled:opacity-50">
           {saving ? '저장 중...' : '발주서 저장'}
         </button>
       </div>

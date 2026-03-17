@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { ShoppingCart } from 'lucide-react'
 import { formatPrice, calcDiscountRate } from '@/utils/format'
 import CartBottomSheet from './CartBottomSheet'
@@ -14,40 +13,38 @@ interface GoodsCardProps {
     slug: string
     price: number
     sale_price: number | null
+    member_price?: number | null
     thumbnail_url: string | null
     sale_count?: number
+    review_count?: number
   }
+  variant?: 'grid' | 'scroll'
 }
 
-export default function GoodsCard({ goods }: GoodsCardProps) {
+export default function GoodsCard({ goods, variant = 'grid' }: GoodsCardProps) {
   const [showSheet, setShowSheet] = useState(false)
   const discountRate = goods.sale_price ? calcDiscountRate(goods.price, goods.sale_price) : 0
   const displayPrice = goods.sale_price ?? goods.price
-  const osulPrice = Math.floor(displayPrice * 0.95)
+  const memberPrice = goods.member_price ?? null
+
+  const isScroll = variant === 'scroll'
 
   return (
     <>
-      <div className="block">
-        <Link href={`/goods/${goods.slug}`} className="group block">
-          {/* 이미지 */}
-          <div className="relative bg-gray-100 overflow-hidden mb-2" style={{ aspectRatio: '4 / 5', borderRadius: '4px' }}>
+      <div style={isScroll ? { width: '155px', flexShrink: 0, scrollSnapAlign: 'start' } : undefined}>
+        <Link href={`/goods/${goods.slug}`} className="block">
+          {/* 이미지 — 4:5 비율 */}
+          <div
+            className="w-full overflow-hidden bg-gray-100 relative"
+            style={{ aspectRatio: '4 / 5', borderRadius: '4px' }}
+          >
             {goods.thumbnail_url ? (
-              <Image
-                src={goods.thumbnail_url}
-                alt={goods.name}
-                fill
-                sizes="(max-width: 640px) 50vw, 25vw"
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
-              />
+              <img src={goods.thumbnail_url} alt={goods.name} className="w-full h-full object-cover" loading="lazy" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-300">
-                <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              </div>
+              <div className="w-full h-full flex items-center justify-center text-3xl bg-gray-50">🥩</div>
             )}
             {discountRate > 0 && (
-              <span className="absolute top-2 left-2 text-white text-[11px] font-bold px-1.5 py-0.5 rounded"
+              <span className="absolute top-2 left-2 text-[11px] font-bold text-white px-1.5 py-0.5 rounded"
                 style={{ backgroundColor: '#e84a3b' }}>
                 {discountRate}%
               </span>
@@ -62,6 +59,7 @@ export default function GoodsCard({ goods }: GoodsCardProps) {
             border: '1px solid #e5e5e5',
             borderRadius: '4px',
             color: '#555',
+            marginTop: '6px',
             marginBottom: '6px',
             height: '32px',
             fontSize: '13px',
@@ -71,18 +69,33 @@ export default function GoodsCard({ goods }: GoodsCardProps) {
           담기
         </button>
 
-        {/* 정보 */}
+        {/* 상품 정보 */}
         <Link href={`/goods/${goods.slug}`} className="block">
-          <p className="text-[13px] text-gray-800 font-medium line-clamp-2 mb-1 leading-snug">
+          <p className="text-[13px] font-medium line-clamp-2 leading-snug mb-1" style={{ color: '#333' }}>
             {goods.name}
           </p>
           {discountRate > 0 && (
-            <p className="text-[11px] text-gray-400 line-through">{formatPrice(goods.price)}</p>
+            <p className="text-[11px] line-through" style={{ color: '#aaa' }}>{formatPrice(goods.price)}</p>
           )}
-          <p className="text-[14px] font-bold" style={{ color: '#333' }}>{formatPrice(displayPrice)}</p>
-          <p className="text-[11px] mt-0.5" style={{ color: '#968774' }}>
-            오설가 {formatPrice(osulPrice)}
-          </p>
+          <div className="flex items-center gap-1">
+            {discountRate > 0 && (
+              <span className="text-[15px] font-extrabold" style={{ color: '#e84a3b' }}>
+                {discountRate}%
+              </span>
+            )}
+            <span className="text-[15px] font-bold" style={{ color: '#333' }}>{formatPrice(displayPrice)}</span>
+          </div>
+          {memberPrice && (
+            <p className="text-[14px] font-bold mt-0.5" style={{ color: '#6B9E6B' }}>
+              멤버십 {formatPrice(memberPrice)}
+            </p>
+          )}
+          {/* 리뷰/판매 수 */}
+          {((goods.review_count ?? goods.sale_count ?? 0) > 0) && (
+            <p className="flex items-center gap-0.5 mt-1" style={{ fontSize: '12px', color: '#aaa' }}>
+              <span>💬</span> {(goods.review_count ?? goods.sale_count ?? 0).toLocaleString()}+
+            </p>
+          )}
         </Link>
       </div>
 

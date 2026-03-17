@@ -105,7 +105,7 @@ export default function PopupFormClient({ initialData }: { initialData?: any }) 
     router.refresh()
   }
 
-  const inputClass = "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500"
+  const inputClass = "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
 
   return (
     <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
@@ -145,7 +145,7 @@ export default function PopupFormClient({ initialData }: { initialData?: any }) 
         </div>
         <label className="flex items-center gap-2 cursor-pointer">
           <input type="checkbox" checked={form.is_active} onChange={e => set('is_active', e.target.checked)}
-            className="w-4 h-4 accent-green-600" />
+            className="w-4 h-4 accent-blue-600" />
           <span className="text-sm">활성화</span>
         </label>
       </section>
@@ -158,7 +158,7 @@ export default function PopupFormClient({ initialData }: { initialData?: any }) 
           <label className="text-xs font-medium text-gray-600 mb-2 block">팝업 이미지 * <span className="text-gray-400">(권장: 750×900px)</span></label>
           <div className="flex items-start gap-4">
             <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading}
-              className="flex-shrink-0 w-32 h-20 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center gap-1 hover:border-green-400 hover:bg-green-50 disabled:opacity-50">
+              className="flex-shrink-0 w-32 h-20 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center gap-1 hover:border-blue-400 hover:bg-blue-50 disabled:opacity-50">
               <Upload className="w-5 h-5 text-gray-400" />
               <span className="text-xs text-gray-400">업로드</span>
             </button>
@@ -177,7 +177,7 @@ export default function PopupFormClient({ initialData }: { initialData?: any }) 
             )}
           </div>
         </div>
-        {uploading && <p className="text-xs text-green-600">업로드 중...</p>}
+        {uploading && <p className="text-xs text-blue-600">업로드 중...</p>}
       </section>
 
       {/* 표시 페이지 */}
@@ -193,8 +193,8 @@ export default function PopupFormClient({ initialData }: { initialData?: any }) 
                 onClick={() => togglePage(opt.value)}
                 className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
                   checked
-                    ? 'bg-green-700 text-white border-green-700'
-                    : 'bg-white text-gray-600 border-gray-200 hover:border-green-500'
+                    ? 'bg-blue-700 text-white border-blue-700'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-blue-500'
                 }`}
               >
                 {opt.label}
@@ -208,7 +208,7 @@ export default function PopupFormClient({ initialData }: { initialData?: any }) 
       {/* 버튼 */}
       <div className="flex gap-3">
         <button type="submit" disabled={loading}
-          className="flex-1 bg-green-700 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-green-600 disabled:opacity-50">
+          className="flex-1 bg-blue-700 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-blue-600 disabled:opacity-50">
           {loading ? '저장 중...' : isEdit ? '수정 완료' : '팝업 등록'}
         </button>
         <button type="button" onClick={() => router.back()}

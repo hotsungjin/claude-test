@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/server'
 import { z } from 'zod'
+import { cancelMembershipIfNeeded } from '@/lib/membership'
 
 const VALID_TRANSITIONS: Record<string, string[]> = {
   pending_payment:   ['paid', 'cancelled'],
@@ -68,8 +69,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     changed_by: 'admin',
   })
 
-  // 취소/반품 완료 시 마일리지 복원 + 재고 복원
+  // 취소/반품 완료 시 마일리지 복원 + 재고 복원 + 멤버십 해지
   if (['cancelled', 'returned'].includes(newStatus)) {
+    // 멤버십 상품 주문 취소 시 멤버십 해지
+    if (order.member_id) {
+      await cancelMembershipIfNeeded(supabase as any, id, order.member_id)
+    }
+
     // 마일리지 복원
     if (order.mileage_used > 0 && order.member_id) {
       await (supabase as any).rpc('add_mileage', {

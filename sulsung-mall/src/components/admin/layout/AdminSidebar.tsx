@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Package, ShoppingBag, Users, Tag, FolderTree, Layers, Bookmark,
   BarChart2, Image, MessageSquare, Settings, Star, Bell, Clock, Megaphone, ShoppingCart, Mail,
-  HelpCircle, MessageCircle, ShieldCheck, ClipboardList, FileText, UserPlus, ChevronDown,
+  HelpCircle, MessageCircle, ShieldCheck, ClipboardList, FileText, UserPlus, Crown, ChevronDown,
 } from 'lucide-react'
 import { cn } from '@/utils/cn'
 import { SITE_NAME } from '@/constants'
@@ -30,14 +30,15 @@ const MENU_GROUPS: MenuGroup[] = [
     label: '',
     items: [
       { href: '/admin/dashboard', icon: LayoutDashboard, label: '대시보드', permission: null },
+      { href: '/admin/stats',     icon: BarChart2,       label: '통계',     permission: 'stats' },
     ],
   },
   {
     key: 'orders',
-    label: '주문',
+    label: '주문/발주',
     items: [
-      { href: '/admin/orders',           icon: ShoppingBag,   label: '주문 관리',     permission: 'orders' },
-      { href: '/admin/cart-abandonment', icon: ShoppingCart,   label: '이탈 장바구니', permission: 'orders' },
+      { href: '/admin/orders',     icon: ShoppingBag,   label: '주문 관리',     permission: 'orders' },
+      { href: '/admin/purchases',  icon: ClipboardList, label: 'AI 발주관리',   permission: 'goods' },
     ],
   },
   {
@@ -45,20 +46,29 @@ const MENU_GROUPS: MenuGroup[] = [
     label: '상품',
     items: [
       { href: '/admin/goods',       icon: Package,       label: '상품 관리',     permission: 'goods' },
-      { href: '/admin/purchases',   icon: ClipboardList, label: '발주 관리',     permission: 'goods' },
       { href: '/admin/categories',  icon: FolderTree,    label: '카테고리 관리', permission: 'categories' },
       { href: '/admin/brands',      icon: Bookmark,      label: '브랜드 관리',   permission: 'goods' },
-      { href: '/admin/curations',   icon: Layers,        label: '큐레이션 관리', permission: 'goods' },
+      { href: '/admin/curations',   icon: Layers,        label: '기획전 관리', permission: 'goods' },
     ],
   },
   {
     key: 'members',
-    label: '회원 · 마케팅',
+    label: '회원',
     items: [
-      { href: '/admin/members',    icon: Users,    label: '회원 관리',     permission: 'members' },
-      { href: '/admin/coupons',    icon: Tag,      label: '쿠폰 관리',     permission: 'coupons' },
-      { href: '/admin/referral',   icon: UserPlus, label: '친구추천 관리', permission: 'members' },
-      { href: '/admin/time-sales', icon: Clock,    label: '타임세일',      permission: 'time_sales' },
+      { href: '/admin/members',           icon: Users,        label: '회원 관리',     permission: 'members' },
+      { href: '/admin/membership',         icon: Crown,        label: '멤버십 관리',   permission: 'members' },
+      { href: '/admin/referral',           icon: UserPlus,     label: '친구추천 관리', permission: 'members' },
+    ],
+  },
+  {
+    key: 'marketing',
+    label: '마케팅',
+    items: [
+      { href: '/admin/coupons',            icon: Tag,          label: '쿠폰 관리',     permission: 'coupons' },
+      { href: '/admin/cart-abandonment',   icon: ShoppingCart,  label: '이탈 장바구니', permission: 'orders' },
+      { href: '/admin/time-sales',         icon: Clock,        label: '타임세일',      permission: 'time_sales' },
+      { href: '/admin/email',          icon: Mail,  label: '이메일 발송',   permission: 'email' },
+      { href: '/admin/notifications', icon: Bell,  label: '메시지/알림',    permission: 'notifications' },
     ],
   },
   {
@@ -77,15 +87,12 @@ const MENU_GROUPS: MenuGroup[] = [
     items: [
       { href: '/admin/banners', icon: Image,     label: '배너 관리',   permission: 'banners' },
       { href: '/admin/popups',  icon: Megaphone, label: '팝업 관리',   permission: 'popups' },
-      { href: '/admin/email',   icon: Mail,      label: '이메일 발송', permission: 'email' },
     ],
   },
   {
     key: 'settings',
     label: '설정',
     items: [
-      { href: '/admin/stats',         icon: BarChart2,   label: '통계',       permission: 'stats' },
-      { href: '/admin/notifications', icon: Bell,        label: '알림 설정',   permission: 'notifications' },
       { href: '/admin/terms',         icon: FileText,    label: '약관 관리',   permission: 'settings' },
       { href: '/admin/settings',      icon: Settings,    label: '쇼핑몰 설정', permission: 'settings' },
       { href: '/admin/admins',        icon: ShieldCheck, label: '관리자 관리', permission: 'admins' },
@@ -103,15 +110,17 @@ interface AdminSidebarProps {
 export default function AdminSidebar({ role = 'super', permissions = [] }: AdminSidebarProps) {
   const pathname = usePathname()
 
+  const isActive = useCallback((href: string) => pathname === href || pathname.startsWith(href + '/'), [pathname])
+
   // 현재 경로가 속한 그룹 찾기
   const findActiveGroup = useCallback(() => {
     for (const group of MENU_GROUPS) {
-      if (group.items.some(item => pathname.startsWith(item.href))) {
+      if (group.items.some(item => isActive(item.href))) {
         return group.key
       }
     }
     return 'dashboard'
-  }, [pathname])
+  }, [isActive])
 
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
     // SSR 안전: 초기값은 모든 그룹 열림
@@ -182,8 +191,8 @@ export default function AdminSidebar({ role = 'super', permissions = [] }: Admin
                 key={href}
                 href={href}
                 className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 text-[15px] rounded-lg transition-colors',
-                  pathname.startsWith(href)
+                  'flex items-center gap-3 px-3 py-[5px] text-[15px] rounded-lg transition-colors',
+                  isActive(href)
                     ? 'bg-gray-700/80 text-white font-medium'
                     : 'text-gray-300 hover:bg-gray-800 hover:text-gray-100'
                 )}
@@ -197,10 +206,10 @@ export default function AdminSidebar({ role = 'super', permissions = [] }: Admin
           const isOpen = openGroups[group.key] ?? true
 
           return (
-            <div key={group.key} className="mt-1">
+            <div key={group.key} className="mt-[3px]">
               <button
                 onClick={() => toggleGroup(group.key)}
-                className="w-full flex items-center justify-between px-3 py-2 text-[11px] font-semibold text-gray-500 uppercase tracking-wider hover:text-gray-300 transition-colors"
+                className="w-full flex items-center justify-between px-3 py-[5px] text-[11px] font-semibold text-gray-500 uppercase tracking-wider hover:text-gray-300 transition-colors"
               >
                 {group.label}
                 <ChevronDown
@@ -222,8 +231,8 @@ export default function AdminSidebar({ role = 'super', permissions = [] }: Admin
                       key={href}
                       href={href}
                       className={cn(
-                        'flex items-center gap-3 px-3 py-2 text-[14px] rounded-lg transition-colors',
-                        pathname.startsWith(href)
+                        'flex items-center gap-3 px-3 py-[5px] text-[14px] rounded-lg transition-colors',
+                        isActive(href)
                           ? 'bg-gray-700/80 text-white font-medium'
                           : 'text-gray-300 hover:bg-gray-800 hover:text-gray-100'
                       )}

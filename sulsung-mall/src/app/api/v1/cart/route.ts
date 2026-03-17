@@ -3,28 +3,39 @@ import { z } from 'zod'
 import { getAuthMember } from '@/lib/supabase/auth'
 
 // 장바구니 조회
-export async function GET() {
+export async function GET(req: NextRequest) {
   const { supabase, memberId } = await getAuthMember()
   if (!memberId) return NextResponse.json({ items: [], defaultAddress: null })
 
-  const [{ data }, { data: defaultAddr }] = await Promise.all([
-    supabase
+  // ?count=true 일 때는 개수만 빠르게 반환
+  if (req.nextUrl.searchParams.get('count') === 'true') {
+    const { count } = await supabase
       .from('carts')
-      .select(`
-        id, qty, option_name,
-        goods(id, name, slug, price, sale_price, member_price, thumbnail_url, stock, status)
-      `)
+      .select('id', { count: 'exact', head: true })
       .eq('member_id', memberId)
-      .order('created_at', { ascending: false }),
-    supabase
-      .from('member_addresses')
-      .select('id, name, address1, address2, label')
-      .eq('member_id', memberId)
-      .eq('is_default', true)
-      .single(),
-  ])
+    return NextResponse.json({ count: count ?? 0 })
+  }
 
-  return NextResponse.json({ items: data ?? [], defaultAddress: defaultAddr ?? null })
+  // ?full=true 일 때는 장바구니 + 기본배송지를 한 번에 반환
+  const cartPromise = supabase
+    .from('carts')
+    .select(`
+      id, qty, option_name,
+      goods(id, name, slug, price, sale_price, member_price, thumbnail_url, stock, status)
+    `)
+    .eq('member_id', memberId)
+    .order('created_at', { ascending: false })
+
+  if (req.nextUrl.searchParams.get('full') === 'true') {
+    const [cartRes, addrRes] = await Promise.all([
+      cartPromise,
+      supabase.from('member_addresses').select('id, name, phone, zipcode, address1, address2, label').eq('member_id', memberId).eq('is_default', true).single(),
+    ])
+    return NextResponse.json({ items: cartRes.data ?? [], defaultAddress: addrRes.data ?? null })
+  }
+
+  const { data } = await cartPromise
+  return NextResponse.json({ items: data ?? [] })
 }
 
 // 장바구니 추가/수량변경

@@ -17,7 +17,7 @@ export default async function TimeSalesPage() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">타임세일 관리</h1>
         <Link href="/admin/time-sales/new"
-          className="px-4 py-2 bg-green-700 text-white text-sm font-semibold rounded-xl hover:bg-green-800">
+          className="px-4 py-2 bg-blue-700 text-white text-sm font-semibold rounded-xl hover:bg-blue-800">
           타임세일 등록
         </Link>
       </div>

@@ -57,25 +57,27 @@ export default function GoodsDetailClient({ goods, relatedGoods = [] }: { goods:
   const [wishlisted, setWishlisted] = useState(false)
 
   useEffect(() => {
-    fetch('/api/v1/wishlist')
+    fetch(`/api/v1/wishlist/check?goodsId=${goods.id}`)
       .then(r => r.json())
-      .then(data => {
-        if (data.items?.some((w: any) => w.goods_id === goods.id)) setWishlisted(true)
-      })
+      .then(data => setWishlisted(data.wishlisted))
       .catch(() => {})
   }, [goods.id])
 
   async function toggleWishlist() {
-    const res = await fetch('/api/v1/wishlist', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ goodsId: goods.id }),
-    })
-    if (res.ok) {
-      const data = await res.json()
-      setWishlisted(data.wishlisted)
-    } else {
-      alert('로그인이 필요합니다.')
+    const prev = wishlisted
+    setWishlisted(!prev)
+    try {
+      const res = await fetch('/api/v1/wishlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ goodsId: goods.id }),
+      })
+      if (!res.ok) {
+        setWishlisted(prev)
+        alert('로그인이 필요합니다.')
+      }
+    } catch {
+      setWishlisted(prev)
     }
   }
 
@@ -143,10 +145,10 @@ export default function GoodsDetailClient({ goods, relatedGoods = [] }: { goods:
             { key: 'qna', label: '문의' },
           ] as const).map(t => (
             <button key={t.key} onClick={() => setTab(t.key)}
-              className="flex-1 py-2.5 text-[14px] font-medium border-b-2 -mb-px"
+              className="flex-1 py-2.5 text-[16px] font-medium border-b-2 -mb-px"
               style={tab === t.key
                 ? { borderColor: '#968774', color: '#968774', fontWeight: 700 }
-                : { borderColor: 'transparent', color: '#aaa' }}>
+                : { borderColor: 'transparent', color: '#333' }}>
               {t.label}
             </button>
           ))}
@@ -198,9 +200,11 @@ export default function GoodsDetailClient({ goods, relatedGoods = [] }: { goods:
               {goods.summary && (
                 <p className="text-[14px] mb-1" style={{ color: '#999' }}>{goods.summary}</p>
               )}
-              <p className="text-[14px] mb-4" style={{ color: '#b5b5b5' }}>
-                원산지: 국내산 (경기도 이천)
-              </p>
+              {goods.origin && (
+                <p className="text-[14px] mb-4" style={{ color: '#b5b5b5' }}>
+                  원산지: {goods.origin}
+                </p>
+              )}
 
               <div className="mb-4">
                 {discountRate > 0 && (
@@ -297,10 +301,10 @@ export default function GoodsDetailClient({ goods, relatedGoods = [] }: { goods:
               <tbody>
                 {[
                   ['상품명', goods.name],
-                  ['원산지', '국내산 (경기도 이천)'],
+                  ['원산지', goods.origin ?? '-'],
                   ['배송방법', '택배배송'],
                   ['배송비', `${BASE_SHIPPING_FEE.toLocaleString()}원 (${FREE_SHIPPING_THRESHOLD.toLocaleString()}원 이상 무료)`],
-                  ['포장타입', '냉장/냉동'],
+                  ['포장타입', goods.packaging_type ?? '냉장/냉동'],
                 ].map(([label, value]) => (
                   <tr key={label} className="border-b" style={{ borderColor: '#f5f5f5' }}>
                     <td className="py-3 w-[100px]" style={{ color: '#999' }}>{label}</td>

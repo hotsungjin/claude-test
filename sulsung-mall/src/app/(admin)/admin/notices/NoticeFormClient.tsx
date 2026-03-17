@@ -46,22 +46,22 @@ export default function NoticeFormClient({ initialData }: { initialData?: Notice
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">제목 <span className="text-red-500">*</span></label>
           <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} required
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">내용 <span className="text-red-500">*</span></label>
           <textarea value={form.content} onChange={e => setForm(f => ({ ...f, content: e.target.value }))} required rows={12}
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500 resize-y" />
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 resize-y" />
         </div>
         <div className="flex gap-6">
           <label className="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" checked={form.is_pinned} onChange={e => setForm(f => ({ ...f, is_pinned: e.target.checked }))}
-              className="w-4 h-4 accent-green-600" />
+              className="w-4 h-4 accent-blue-600" />
             <span className="text-sm font-medium text-gray-700">상단 고정</span>
           </label>
           <label className="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" checked={form.is_visible} onChange={e => setForm(f => ({ ...f, is_visible: e.target.checked }))}
-              className="w-4 h-4 accent-green-600" />
+              className="w-4 h-4 accent-blue-600" />
             <span className="text-sm font-medium text-gray-700">공개</span>
           </label>
         </div>
@@ -71,7 +71,7 @@ export default function NoticeFormClient({ initialData }: { initialData?: Notice
         <button type="button" onClick={() => router.back()}
           className="px-5 py-2.5 text-sm border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50">취소</button>
         <button type="submit" disabled={loading}
-          className="px-6 py-2.5 bg-green-700 text-white text-sm font-semibold rounded-xl hover:bg-green-800 disabled:opacity-50">
+          className="px-6 py-2.5 bg-blue-700 text-white text-sm font-semibold rounded-xl hover:bg-blue-800 disabled:opacity-50">
           {loading ? '저장 중...' : isEdit ? '수정 완료' : '등록'}
         </button>
       </div>

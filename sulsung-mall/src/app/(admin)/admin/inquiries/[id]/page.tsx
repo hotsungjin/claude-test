@@ -20,7 +20,7 @@ export default async function AdminInquiryDetailPage({ params }: { params: Promi
   return (
     <div className="max-w-3xl">
       <nav className="flex items-center gap-1 text-sm text-gray-500 mb-6">
-        <Link href="/admin/inquiries" className="hover:text-green-700">1:1 문의</Link>
+        <Link href="/admin/inquiries" className="hover:text-blue-700">1:1 문의</Link>
         <ChevronRight className="w-4 h-4" />
         <span className="text-gray-900 font-medium truncate">{inq.title}</span>
       </nav>

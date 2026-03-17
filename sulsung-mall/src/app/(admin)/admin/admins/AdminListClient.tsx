@@ -131,19 +131,19 @@ export default function AdminListClient({ currentAdminId }: { currentAdminId: st
                 <label className="block text-sm font-medium text-gray-700 mb-1">이메일 *</label>
                 <input value={form.email} onChange={e => setForm(prev => ({ ...prev, email: e.target.value }))}
                   required disabled={!!editId} type="email"
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500 disabled:bg-gray-50"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 disabled:bg-gray-50"
                   placeholder="admin@example.com" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">이름 *</label>
                 <input value={form.name} onChange={e => setForm(prev => ({ ...prev, name: e.target.value }))}
-                  required className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
+                  required className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">등급</label>
                 <select value={form.role} onChange={e => setForm(prev => ({ ...prev, role: e.target.value as any }))}
                   disabled={editId === currentAdminId}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500">
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
                   <option value="super">최고 관리자</option>
                   <option value="admin">일반 관리자</option>
                 </select>
@@ -174,7 +174,7 @@ export default function AdminListClient({ currentAdminId }: { currentAdminId: st
 
             <div className="flex gap-2">
               <button type="submit" disabled={loading}
-                className="px-4 py-2 bg-green-700 text-white text-sm font-semibold rounded-lg hover:bg-green-800 disabled:opacity-50">
+                className="px-4 py-2 bg-blue-700 text-white text-sm font-semibold rounded-lg hover:bg-blue-800 disabled:opacity-50">
                 {loading ? '저장 중...' : editId ? '수정' : '추가'}
               </button>
               <button type="button" onClick={resetForm}
@@ -191,7 +191,7 @@ export default function AdminListClient({ currentAdminId }: { currentAdminId: st
         <div className="px-6 py-3 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
           <span className="text-sm text-gray-500">총 <strong>{admins.length}</strong>명</span>
           <button onClick={() => { resetForm(); setShowForm(true) }}
-            className="flex items-center gap-1 px-3 py-1.5 bg-green-700 text-white text-xs font-semibold rounded-lg hover:bg-green-800">
+            className="flex items-center gap-1 px-3 py-1.5 bg-blue-700 text-white text-xs font-semibold rounded-lg hover:bg-blue-800">
             <Plus className="w-3.5 h-3.5" /> 관리자 추가
           </button>
         </div>

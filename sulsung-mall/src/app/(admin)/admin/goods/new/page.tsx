@@ -14,7 +14,7 @@ export default async function AdminGoodsNewPage() {
     <div>
       {/* 브레드크럼 */}
       <nav className="flex items-center gap-1 text-sm text-gray-500 mb-6">
-        <Link href="/admin/goods" className="hover:text-green-700">상품 관리</Link>
+        <Link href="/admin/goods" className="hover:text-blue-700">상품 관리</Link>
         <ChevronRight className="w-4 h-4" />
         <span className="text-gray-900 font-medium">상품 등록</span>
       </nav>

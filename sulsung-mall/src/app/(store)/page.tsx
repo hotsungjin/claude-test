@@ -1,9 +1,11 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import MobileBannerSlider from '@/components/store/layout/MobileBannerSlider'
-import MobileGoodsCard from '@/components/store/goods/MobileGoodsCard'
+import BannerSlider from '@/components/store/layout/BannerSlider'
+import GoodsCard from '@/components/store/goods/GoodsCard'
 import TimeSaleBanner from '@/components/store/home/TimeSaleBanner'
 import AdBanner from '@/components/store/home/AdBanner'
+
+export const revalidate = 60 // 60초 캐시 — DB 쿼리를 매 요청마다 실행하지 않음
 
 const CATEGORY_EMOJI: Record<string, string> = {
   '한우': '🐄',
@@ -31,11 +33,20 @@ export default async function HomePage() {
   const db = await createClient() as any
 
   const now = new Date().toISOString()
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+  const goodsFields = 'id, name, slug, price, sale_price, member_price, thumbnail_url, sale_count, stock, view_count, created_at'
+
   const [
     { data: banners },
     { data: adBanners },
-    { data: allGoods },
-    { data: newGoods },
+    { data: midBanners },
+    { data: btmBanners },
+    { data: rawDiscountGoods },
+    { data: rawNewestGoods },
+    { data: rawBestGoods },
+    { data: rawLowStockGoods },
+    { data: rawViewedGoods },
+    { data: rawRecentWithReviews },
     { data: timeSales },
     { data: categories },
   ] = await Promise.all([
@@ -43,11 +54,24 @@ export default async function HomePage() {
       .eq('position', 'main_top').eq('is_active', true).order('sort_order'),
     db.from('banners').select('id, image_url, mobile_image_url, link_url, alt')
       .eq('position', 'main_ad').eq('is_active', true).order('sort_order').limit(3),
-    db.from('goods').select('id, name, slug, price, sale_price, thumbnail_url, sale_count')
-      .eq('status', 'active').order('sale_count', { ascending: false }).limit(30),
-    db.from('goods').select('id, name, slug, price, sale_price, thumbnail_url, sale_count')
-      .eq('status', 'active').order('created_at', { ascending: false }).limit(30),
-    db.from('time_sales').select('*, goods(id, name, slug, price, sale_price, thumbnail_url)')
+    db.from('banners').select('id, image_url, mobile_image_url, link_url, alt')
+      .eq('position', 'main_middle').eq('is_active', true).order('sort_order').limit(1),
+    db.from('banners').select('id, image_url, mobile_image_url, link_url, alt')
+      .eq('position', 'main_bottom').eq('is_active', true).order('sort_order').limit(1),
+    // 할인 상품 (sale_price가 있는 상품, 가격순 → 클라이언트에서 할인율 정렬)
+    db.from('goods').select(goodsFields).eq('status', 'active').not('sale_price', 'is', null).limit(30),
+    // 최신 등록순
+    db.from('goods').select(goodsFields).eq('status', 'active').order('created_at', { ascending: false }).limit(20),
+    // 판매량순 (인기/랭킹/단골 공용)
+    db.from('goods').select(goodsFields).eq('status', 'active').order('sale_count', { ascending: false }).limit(30),
+    // 재고 적은 순 (품절임박)
+    db.from('goods').select(goodsFields).eq('status', 'active').gt('stock', 0).order('stock', { ascending: true }).limit(30),
+    // 조회수 높은 순
+    db.from('goods').select(goodsFields).eq('status', 'active').order('view_count', { ascending: false }).limit(20),
+    // 최근 30일 상품 + 리뷰 수
+    db.from('goods').select(`${goodsFields}, reviews(count)`)
+      .eq('status', 'active').gte('created_at', thirtyDaysAgo).limit(20),
+    db.from('time_sales').select('*, goods(id, name, slug, price, sale_price, member_price, thumbnail_url)')
       .eq('is_active', true).lte('starts_at', now).gte('ends_at', now).limit(6),
     db.from('categories').select('id, name, slug, image_url')
       .is('parent_id', null).eq('is_active', true).order('sort_order'),
@@ -56,26 +80,101 @@ export default async function HomePage() {
   const ad1 = (adBanners ?? [])[0] ?? null
   const ad2 = (adBanners ?? [])[1] ?? null
   const ad3 = (adBanners ?? [])[2] ?? null
+  const midBanner = (midBanners ?? [])[0] ?? null
+  const btmBanner = (btmBanners ?? [])[0] ?? null
 
-  const best = allGoods ?? []
-  const fresh = newGoods ?? []
+  const filterGoods = (arr: any[]) => (arr ?? []).filter((g: any) => g.thumbnail_url && !g.name?.includes('개인결제'))
 
-  // 섹션별로 다른 상품 슬라이스 사용
-  const s1 = best.slice(0, 10)          // 할인 특가
-  const s2 = fresh.slice(0, 10)         // 새로 나왔어요
-  const s3 = best.slice(3, 13)          // 지금 가장 많이 담고 있어요
-  const s4 = fresh.slice(3, 13)         // 지금 안사면 후회해요
-  const s5 = best.slice(5, 15)          // 이 상품, 어때요
-  const s6 = best.slice(0, 10)          // 실시간 랭킹 (rank list)
-  const s7 = fresh.slice(5, 15)         // 후기가 좋은 신상품
-  const s8 = best.slice(7, 17)          // AI가 추천합니다
-  const s9 = fresh.slice(0, 10)         // 품절임박!!!
-  const s10 = best.slice(2, 12)         // 단골손님의 장바구니
+  const discountGoods = filterGoods(rawDiscountGoods)
+  const newestGoods = filterGoods(rawNewestGoods)
+  const bestGoods = filterGoods(rawBestGoods)
+  const lowStockGoods = filterGoods(rawLowStockGoods)
+  const viewedGoods = filterGoods(rawViewedGoods)
+
+  // 전체 풀 (랜덤/폴백용) — 이미 가져온 데이터 합침
+  const allPool = new Map<string, any>()
+  ;[discountGoods, newestGoods, bestGoods, lowStockGoods, viewedGoods].forEach(arr =>
+    arr.forEach((g: any) => { if (!allPool.has(g.id)) allPool.set(g.id, g) })
+  )
+
+  // 중복 제거 헬퍼
+  const used = new Set<string>()
+  function pick(items: any[], count: number) {
+    const result = items.filter((g: any) => !used.has(g.id)).slice(0, count)
+    if (result.length < count) {
+      const remaining = [...allPool.values()].filter((g: any) => !used.has(g.id) && !result.some(r => r.id === g.id))
+      const shuffled = seededShuffle(remaining)
+      result.push(...shuffled.slice(0, count - result.length))
+    }
+    result.forEach((g: any) => used.add(g.id))
+    return result
+  }
+
+  // 일별 시드 랜덤 셔플 (매일 다른 추천)
+  function seededShuffle(arr: any[]) {
+    const d = new Date()
+    let seed = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate()
+    const shuffled = [...arr]
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      seed = (seed * 9301 + 49297) % 233280
+      const j = Math.floor((seed / 233280) * (i + 1))
+      ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    }
+    return shuffled
+  }
+
+  // ③ 할인 특가 — 할인율 높은 순
+  const s1 = pick(
+    [...discountGoods]
+      .filter(g => g.sale_price && g.sale_price < g.price)
+      .sort((a, b) => (a.sale_price / a.price) - (b.sale_price / b.price)),
+    10
+  )
+
+  // ④ 새로 나왔어요 — 이미 DB에서 created_at desc 정렬됨
+  const s2 = pick(newestGoods, 10)
+
+  // ⑤ 지금 가장 많이 담고 있어요 — 이미 DB에서 sale_count desc 정렬됨
+  const s3 = pick(bestGoods, 10)
+
+  // ⑥ 지금 안사면 후회해요 — 이미 DB에서 stock asc 정렬됨
+  const s4 = pick(lowStockGoods, 10)
+
+  // ⑦ 이 상품, 어때요 — 이미 DB에서 view_count desc 정렬됨
+  const s5 = pick(viewedGoods, 10)
+
+  // ⑧ 실시간 랭킹 — 판매량 Top 5 (bestGoods에서 미사용 5개)
+  const s6 = pick(bestGoods, 5)
+
+  // ⑨ 후기가 좋은 신상품 — 최근 30일 + 리뷰 수 내림차순
+  const recentWithReviews = filterGoods(rawRecentWithReviews)
+    .map((g: any) => ({
+      ...g,
+      review_count: g.reviews?.[0]?.count ?? 0,
+    }))
+  const s7 = pick(
+    [...recentWithReviews].sort((a, b) => b.review_count - a.review_count),
+    10
+  )
+
+  // ⑩ AI가 추천합니다 — 일별 랜덤 셔플
+  const s8 = pick(seededShuffle([...allPool.values()]), 10)
+
+  // ⑪ 품절임박 — 재고 적은 순 (s4와 중복 제거됨)
+  const s9 = pick(lowStockGoods, 10)
+
+  // ⑫ 단골손님의 장바구니 — 판매량 × 조회수 복합 점수
+  const s10 = pick(
+    [...bestGoods].sort((a, b) =>
+      ((b.sale_count ?? 0) * (b.view_count ?? 1)) - ((a.sale_count ?? 0) * (a.view_count ?? 1))
+    ),
+    10
+  )
 
   return (
     <div className="bg-white">
       {/* ① 메인 배너 */}
-      <MobileBannerSlider banners={banners ?? []} />
+      <BannerSlider banners={banners ?? []} />
 
       {/* ② 카테고리 아이콘 */}
       <section className="px-3 py-5">
@@ -128,7 +227,7 @@ export default async function HomePage() {
       {ad1 ? (
         <AdBanner banner={ad1} />
       ) : (
-        <section>
+        <section style={{ paddingTop: '22px', paddingBottom: '26px' }}>
           <img
             src="/images/banner-factory.jpg"
             alt="THE BETTER FARM, THE SMART FACTORY FOR OUR LIVES"
@@ -170,6 +269,9 @@ export default async function HomePage() {
       />
 
 
+      {/* 메인 중간 배너 */}
+      {midBanner && <AdBanner banner={midBanner} />}
+
       {/* ⑧ 실시간 랭킹 */}
       <section style={{ paddingTop: '22px' }}>
         <div className="flex items-center justify-between" style={{ padding: '0 16px 12px' }}>
@@ -209,6 +311,9 @@ export default async function HomePage() {
 
       {/* 광고 배너 영역 3 */}
       {ad3 && <AdBanner banner={ad3} />}
+
+      {/* 메인 하단 배너 */}
+      {btmBanner && <AdBanner banner={btmBanner} />}
 
       {/* ⑪ 품절임박!!! */}
       <HorizontalSection
@@ -261,7 +366,7 @@ function HorizontalSection({ emoji, title, subtitle, href, goods }: { emoji?: st
       <div style={{ overflow: 'hidden' }}>
         <div className="scrollbar-hide" style={{ display: 'flex', gap: '10px', paddingLeft: '16px', paddingRight: '16px', paddingBottom: '26px', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
           {goods.map((item: any) => (
-            <MobileGoodsCard key={item.id} goods={item} />
+            <GoodsCard key={item.id} goods={item} variant="scroll" />
           ))}
         </div>
       </div>

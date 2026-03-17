@@ -3,17 +3,17 @@ import Link from 'next/link'
 
 const POSITION_LABEL: Record<string, string> = {
   main_top: '메인 상단',
-  main_ad: '광고 배너',
-  main_middle: '메인 중간',
-  main_bottom: '메인 하단',
-  popup: '팝업',
-  aside: '사이드',
+  main_middle: '메인 광고1',
+  main_bottom: '메인 광고2',
+  main_ad: '메인 광고3',
 }
 
 const TABS = [
   { key: 'all', label: '전체' },
-  { key: 'main_top', label: '상단 배너' },
-  { key: 'main_ad', label: '광고 배너' },
+  { key: 'main_top', label: '메인 상단' },
+  { key: 'main_middle', label: '메인 광고1' },
+  { key: 'main_bottom', label: '메인 광고2' },
+  { key: 'main_ad', label: '메인 광고3' },
 ]
 
 export default async function AdminBannersPage({
@@ -36,7 +36,7 @@ export default async function AdminBannersPage({
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">배너 관리</h1>
         <Link href="/admin/banners/new"
-          className="bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-600">
+          className="bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-600">
           + 배너 등록
         </Link>
       </div>
@@ -91,7 +91,7 @@ export default async function AdminBannersPage({
                 <td className="px-4 py-3 font-medium text-gray-800">{banner.name}</td>
                 <td className="px-4 py-3">
                   <span className={`text-xs px-2 py-1 rounded-full ${
-                    banner.position === 'main_ad'
+                    ['main_ad', 'main_middle', 'main_bottom'].includes(banner.position)
                       ? 'bg-orange-50 text-orange-700'
                       : 'bg-blue-50 text-blue-700'
                   }`}>
@@ -104,7 +104,7 @@ export default async function AdminBannersPage({
                   {banner.ends_at ? banner.ends_at.slice(0, 10) : '∞'}
                 </td>
                 <td className="px-4 py-3 text-center">
-                  <span className={`text-xs px-2 py-1 rounded-full ${banner.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                  <span className={`text-xs px-2 py-1 rounded-full ${banner.is_active ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'}`}>
                     {banner.is_active ? '활성' : '비활성'}
                   </span>
                 </td>
@@ -120,7 +120,7 @@ export default async function AdminBannersPage({
               <tr>
                 <td colSpan={7} className="px-4 py-12 text-center text-gray-400 text-sm">
                   등록된 배너가 없습니다.{' '}
-                  <Link href="/admin/banners/new" className="text-green-700 underline">첫 배너를 등록하세요</Link>
+                  <Link href="/admin/banners/new" className="text-blue-700 underline">첫 배너를 등록하세요</Link>
                 </td>
               </tr>
             )}

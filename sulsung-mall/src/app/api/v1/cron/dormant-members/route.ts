@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/server'
-import { sendSms } from '@/lib/notification/solapi'
-import { sendEmail } from '@/lib/email/resend'
+import { sendDormantConverted, sendDormantWarning } from '@/lib/notification/solapi'
 
 // 휴면 회원 자동 처리 Cron
 // 1) 90일 미접속 → 휴면 전환
@@ -41,12 +40,12 @@ export async function GET(req: Request) {
       })
       .eq('id', member.id)
 
-    // 휴면 전환 알림
+    // 휴면 전환 알림 (알림톡 우선, SMS 폴백)
     if (member.phone) {
       try {
-        await sendSms({
-          to: member.phone,
-          text: `[설성목장몰] ${member.name ?? '고객'}님, 90일간 미접속으로 계정이 휴면 처리되었습니다. 로그인하시면 바로 정상 이용 가능합니다.\n\n👉 ${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sulsung.co.kr'}/auth/login`,
+        await sendDormantConverted({
+          phone: member.phone,
+          memberName: member.name ?? '고객',
         })
       } catch {}
     }
@@ -87,21 +86,12 @@ export async function GET(req: Request) {
 
     if ((count ?? 0) > 0) continue
 
-    if (member.email) {
-      try {
-        await sendEmail({
-          to: member.email,
-          subject: '[설성목장몰] 10일 후 계정이 휴면 처리됩니다',
-          html: dormantWarningHtml(member.name ?? '고객'),
-        })
-      } catch {}
-    }
-
+    // 휴면 예고 알림 (알림톡 우선, SMS 폴백)
     if (member.phone) {
       try {
-        await sendSms({
-          to: member.phone,
-          text: `[설성목장몰] ${member.name ?? '고객'}님, 10일 후 장기 미접속으로 계정이 휴면 처리됩니다. 지금 로그인하시면 유지됩니다!\n\n👉 ${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sulsung.co.kr'}/auth/login`,
+        await sendDormantWarning({
+          phone: member.phone,
+          memberName: member.name ?? '고객',
         })
       } catch {}
     }
@@ -126,30 +116,3 @@ export async function GET(req: Request) {
   })
 }
 
-function dormantWarningHtml(name: string) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sulsung.co.kr'
-  return `
-<!DOCTYPE html>
-<html><head><meta charset="utf-8"></head>
-<body style="margin:0;padding:0;background:#f5f5f5;font-family:-apple-system,sans-serif">
-<div style="max-width:600px;margin:0 auto;padding:20px">
-  <div style="background:#968774;padding:20px 24px;border-radius:12px 12px 0 0">
-    <h1 style="margin:0;color:#fff;font-size:18px">설성목장몰</h1>
-  </div>
-  <div style="background:#fff;padding:32px 24px;border-radius:0 0 12px 12px">
-    <h2 style="margin:0 0 16px;color:#333;font-size:20px">${name}님, 오랜만이에요!</h2>
-    <p style="color:#666;line-height:1.6;margin:0 0 24px">
-      마지막 방문 이후 80일이 지났습니다.<br>
-      <strong style="color:#e84a3b">10일 후</strong> 장기 미접속으로 계정이 휴면 처리됩니다.
-    </p>
-    <div style="background:#fef3cd;border-radius:8px;padding:16px;margin-bottom:24px;font-size:14px;color:#856404">
-      휴면 처리되면 적립된 포인트와 쿠폰을 사용할 수 없습니다.<br>
-      로그인하시면 계정이 유지됩니다.
-    </div>
-    <a href="${siteUrl}/auth/login" style="display:block;text-align:center;background:#968774;color:#fff;padding:14px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px">
-      지금 로그인하기
-    </a>
-  </div>
-</div>
-</body></html>`
-}

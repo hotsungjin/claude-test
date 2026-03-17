@@ -59,7 +59,7 @@ export default function TermsEditorClient({ terms }: { terms: Term[] }) {
             onClick={() => setActiveSlug(t.slug)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               t.slug === activeSlug
-                ? 'bg-green-600 text-white'
+                ? 'bg-blue-600 text-white'
                 : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
             }`}
           >
@@ -93,7 +93,7 @@ export default function TermsEditorClient({ terms }: { terms: Term[] }) {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="inline-flex items-center gap-1.5 bg-green-600 text-white px-4 py-1.5 rounded-lg text-xs font-medium hover:bg-green-700 transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 bg-blue-600 text-white px-4 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
             >
               <Save className="w-3.5 h-3.5" />
               {saving ? '저장 중...' : '저장'}
@@ -106,7 +106,7 @@ export default function TermsEditorClient({ terms }: { terms: Term[] }) {
             value={active.content}
             onChange={e => handleContentChange(e.target.value)}
             rows={25}
-            className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-800 focus:outline-none focus:border-green-500 resize-y font-mono leading-relaxed"
+            className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-800 focus:outline-none focus:border-blue-500 resize-y font-mono leading-relaxed"
             placeholder="약관 내용을 입력해주세요..."
           />
           <p className="text-xs text-gray-400 mt-2">
@@ -116,7 +116,7 @@ export default function TermsEditorClient({ terms }: { terms: Term[] }) {
       </div>
 
       {message && (
-        <div className={`text-sm px-4 py-2 rounded-lg ${message.includes('실패') ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}`}>
+        <div className={`text-sm px-4 py-2 rounded-lg ${message.includes('실패') ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'}`}>
           {message}
         </div>
       )}

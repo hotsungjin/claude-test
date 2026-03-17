@@ -125,10 +125,11 @@ export default async function AdminReferralPage({
           { key: 'overview', label: '현황' },
           { key: 'members', label: '추천 회원' },
           { key: 'rewards', label: '리워드 이력' },
+          { key: 'manual', label: '운영 매뉴얼' },
         ].map(t => (
           <Link key={t.key} href={buildUrl({ tab: t.key, page: '1' })}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors ${
-              tab === t.key ? 'border-green-600 text-green-700' : 'border-transparent text-gray-500 hover:text-gray-700'
+              tab === t.key ? 'border-blue-600 text-blue-700' : 'border-transparent text-gray-500 hover:text-gray-700'
             }`}>
             {t.label}
           </Link>
@@ -182,7 +183,7 @@ export default async function AdminReferralPage({
                 {REFERRAL_RATES.map((rate, idx) => (
                   <tr key={idx}>
                     <td className="py-2.5 text-gray-700">L{idx + 1} {idx === 0 ? '(직접 추천)' : `(${idx + 1}단계)`}</td>
-                    <td className="py-2.5 text-right font-medium text-green-700">{(rate * 100).toFixed(1)}%</td>
+                    <td className="py-2.5 text-right font-medium text-blue-700">{(rate * 100).toFixed(1)}%</td>
                     <td className="py-2.5 text-right text-gray-500">{formatPrice(Math.floor(100000 * rate))}</td>
                   </tr>
                 ))}
@@ -230,7 +231,7 @@ export default async function AdminReferralPage({
                     <td className="px-4 py-3 text-gray-500">{m.phone}</td>
                     <td className="px-4 py-3 font-mono text-xs text-gray-700">{m.referral_code}</td>
                     <td className="px-4 py-3 text-center">
-                      <span className="inline-block px-2 py-0.5 text-xs rounded-full bg-green-50 text-green-700">
+                      <span className="inline-block px-2 py-0.5 text-xs rounded-full bg-blue-50 text-blue-700">
                         {m.grade}
                       </span>
                     </td>
@@ -288,10 +289,10 @@ export default async function AdminReferralPage({
                   <td className="px-4 py-3 text-gray-500">{r.buyer?.name ?? '-'}</td>
                   <td className="px-4 py-3 text-center text-gray-700">L{r.depth}</td>
                   <td className="px-4 py-3 text-right text-gray-500">{formatPrice(r.order_amount)}</td>
-                  <td className="px-4 py-3 text-right font-medium text-green-700">+{r.final_points.toLocaleString()}P</td>
+                  <td className="px-4 py-3 text-right font-medium text-blue-700">+{r.final_points.toLocaleString()}P</td>
                   <td className="px-4 py-3 text-center">
                     <span className={`inline-block px-2 py-0.5 text-xs rounded-full ${
-                      r.status === '지급완료' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'
+                      r.status === '지급완료' ? 'bg-blue-50 text-blue-700' : 'bg-red-50 text-red-600'
                     }`}>
                       {r.status}
                     </span>
@@ -316,6 +317,245 @@ export default async function AdminReferralPage({
               ))}
             </div>
           )}
+        </div>
+      )}
+      {/* 운영 매뉴얼 탭 */}
+      {tab === 'manual' && (
+        <div className="space-y-6">
+          {/* 1. 시스템 개요 */}
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-1">친구추천 리워드 시스템 개요</h3>
+            <p className="text-sm text-gray-500 mb-4">회원이 친구를 추천하고, 추천받은 친구가 구매하면 추천인에게 포인트가 지급되는 시스템입니다.</p>
+            <div className="bg-blue-50 rounded-lg p-4 text-sm text-blue-800 leading-relaxed">
+              <p className="font-semibold mb-1">핵심 흐름</p>
+              <p>회원가입 시 추천코드 입력 &rarr; 추천 관계 등록 &rarr; 추천받은 회원이 결제 완료 &rarr; 추천인(최대 5단계)에게 포인트 자동 지급</p>
+            </div>
+          </div>
+
+          {/* 2. 5단계 추천 구조 */}
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">5단계 추천 리워드 구조</h3>
+            <p className="text-sm text-gray-500 mb-4">추천받은 회원이 구매하면, 그 위로 최대 5단계 상위 추천인에게 리워드가 분배됩니다.</p>
+            <table className="w-full text-sm mb-4">
+              <thead>
+                <tr className="border-b border-gray-200">
+                  <th className="pb-2 text-left text-xs text-gray-500 font-medium">단계</th>
+                  <th className="pb-2 text-left text-xs text-gray-500 font-medium">설명</th>
+                  <th className="pb-2 text-right text-xs text-gray-500 font-medium">리워드 비율</th>
+                  <th className="pb-2 text-right text-xs text-gray-500 font-medium">10만원 주문 시</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {[
+                  { level: 'L1', desc: '내가 직접 추천한 친구', rate: '5.0%', example: '5,000P' },
+                  { level: 'L2', desc: '내 친구가 추천한 친구', rate: '2.0%', example: '2,000P' },
+                  { level: 'L3', desc: '3단계 하위 회원', rate: '1.0%', example: '1,000P' },
+                  { level: 'L4', desc: '4단계 하위 회원', rate: '0.5%', example: '500P' },
+                  { level: 'L5', desc: '5단계 하위 회원', rate: '0.2%', example: '200P' },
+                ].map(r => (
+                  <tr key={r.level}>
+                    <td className="py-2.5 font-medium text-blue-700">{r.level}</td>
+                    <td className="py-2.5 text-gray-700">{r.desc}</td>
+                    <td className="py-2.5 text-right font-medium text-gray-900">{r.rate}</td>
+                    <td className="py-2.5 text-right text-gray-500">{r.example}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="bg-gray-50 rounded-lg p-4 text-sm text-gray-600">
+              <p className="font-semibold text-gray-800 mb-2">예시) A &rarr; B &rarr; C &rarr; D 추천 관계일 때, D가 10만원 구매하면:</p>
+              <ul className="space-y-1 ml-4 list-disc">
+                <li>C (L1, 직접 추천인): <span className="font-medium text-blue-700">5,000P</span></li>
+                <li>B (L2, 2단계 상위): <span className="font-medium text-blue-700">2,000P</span></li>
+                <li>A (L3, 3단계 상위): <span className="font-medium text-blue-700">1,000P</span></li>
+              </ul>
+            </div>
+          </div>
+
+          {/* 3. 등급 시스템 */}
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">추천인 등급 시스템</h3>
+            <p className="text-sm text-gray-500 mb-4">직접 추천(L1) 수에 따라 등급이 결정되며, 등급이 높을수록 리워드에 배율이 적용됩니다.</p>
+            <table className="w-full text-sm mb-4">
+              <thead>
+                <tr className="border-b border-gray-200">
+                  <th className="pb-2 text-left text-xs text-gray-500 font-medium">등급</th>
+                  <th className="pb-2 text-center text-xs text-gray-500 font-medium">조건 (직접 추천 수)</th>
+                  <th className="pb-2 text-right text-xs text-gray-500 font-medium">리워드 배율</th>
+                  <th className="pb-2 text-right text-xs text-gray-500 font-medium">L1 실질 비율</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {[
+                  { emoji: '🌱', grade: '씨앗', cond: '0명 이상', mult: '×1.0', effective: '5.0%' },
+                  { emoji: '🌿', grade: '새싹', cond: '2명 이상', mult: '×1.25', effective: '6.25%' },
+                  { emoji: '🌳', grade: '나무', cond: '5명 이상', mult: '×1.5', effective: '7.5%' },
+                  { emoji: '🌲', grade: '숲', cond: '10명 이상', mult: '×1.75', effective: '8.75%' },
+                  { emoji: '🐄', grade: '목장', cond: '20명 이상', mult: '×2.0', effective: '10.0%' },
+                ].map(g => (
+                  <tr key={g.grade}>
+                    <td className="py-2.5 text-gray-700">{g.emoji} {g.grade}</td>
+                    <td className="py-2.5 text-center text-gray-700">{g.cond}</td>
+                    <td className="py-2.5 text-right font-medium text-blue-700">{g.mult}</td>
+                    <td className="py-2.5 text-right text-gray-500">{g.effective}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="bg-amber-50 rounded-lg p-4 text-sm text-amber-800">
+              <p className="font-semibold mb-1">배율 적용 예시</p>
+              <p>숲 등급(×1.75) 회원의 L1 추천인이 10만원 구매 시: 100,000 × 5% × 1.75 = <span className="font-bold">8,750P</span></p>
+            </div>
+          </div>
+
+          {/* 4. 리워드 지급/취소 */}
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">리워드 지급 및 취소 규칙</h3>
+            <div className="space-y-4">
+              <div className="bg-green-50 rounded-lg p-4 text-sm">
+                <p className="font-semibold text-green-800 mb-2">지급 조건</p>
+                <ul className="space-y-1 ml-4 list-disc text-green-700">
+                  <li>추천받은 회원의 <span className="font-medium">결제 완료</span> 시점에 자동 지급</li>
+                  <li>추천 관계 등록일로부터 <span className="font-medium">1년 이내</span>에 발생한 주문만 유효</li>
+                  <li>리워드는 <span className="font-medium">포인트(마일리지)</span>로 즉시 적립</li>
+                  <li><code className="bg-green-100 px-1 rounded">referral_rewards</code> 테이블에 기록 + 회원 마일리지에 합산</li>
+                </ul>
+              </div>
+              <div className="bg-red-50 rounded-lg p-4 text-sm">
+                <p className="font-semibold text-red-800 mb-2">취소 조건</p>
+                <ul className="space-y-1 ml-4 list-disc text-red-700">
+                  <li>해당 주문이 <span className="font-medium">결제 취소</span>되면 리워드도 자동 취소</li>
+                  <li>리워드 상태가 &apos;지급완료&apos; &rarr; &apos;취소&apos;로 변경</li>
+                  <li>지급된 포인트만큼 회원 마일리지에서 <span className="font-medium">차감</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* 5. 추천코드 */}
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">추천코드 안내</h3>
+            <div className="space-y-3 text-sm text-gray-700">
+              <div className="flex gap-3">
+                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">1</span>
+                <p>회원가입 시 <span className="font-medium">6자리 영숫자 추천코드</span>가 자동 생성됩니다 (예: <code className="bg-gray-100 px-1 rounded">K3NP7V</code>)</p>
+              </div>
+              <div className="flex gap-3">
+                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">2</span>
+                <p>신규 회원이 가입 시 추천코드를 입력하면 <span className="font-medium">추천 관계가 등록</span>됩니다</p>
+              </div>
+              <div className="flex gap-3">
+                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">3</span>
+                <p>추천 관계는 <span className="font-medium">가입일로부터 1년간 유효</span>하며, 1년 후에는 리워드가 발생하지 않습니다</p>
+              </div>
+              <div className="flex gap-3">
+                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">4</span>
+                <p>혼동 방지를 위해 <span className="font-medium">0, 1, I, O 문자는 제외</span>됩니다</p>
+              </div>
+            </div>
+          </div>
+
+          {/* 6. 관련 DB 테이블 */}
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">관련 데이터 구조</h3>
+            <div className="space-y-4 text-sm">
+              <div>
+                <p className="font-semibold text-gray-800 mb-2">주요 테이블</p>
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-gray-200">
+                      <th className="pb-2 text-left text-xs text-gray-500 font-medium">테이블</th>
+                      <th className="pb-2 text-left text-xs text-gray-500 font-medium">역할</th>
+                      <th className="pb-2 text-left text-xs text-gray-500 font-medium">주요 필드</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50">
+                    <tr>
+                      <td className="py-2 font-mono text-xs text-blue-700">members</td>
+                      <td className="py-2 text-gray-700">회원 정보</td>
+                      <td className="py-2 text-gray-500">referral_code, referred_by, mileage</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 font-mono text-xs text-blue-700">referral_members</td>
+                      <td className="py-2 text-gray-700">추천인 등급 관리</td>
+                      <td className="py-2 text-gray-500">member_id, grade, grade_multiplier</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 font-mono text-xs text-blue-700">referral_tree</td>
+                      <td className="py-2 text-gray-700">추천 계보 (조상-자손 관계)</td>
+                      <td className="py-2 text-gray-500">ancestor_member_id, descendant_member_id, depth</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 font-mono text-xs text-blue-700">referral_rewards</td>
+                      <td className="py-2 text-gray-700">리워드 지급/취소 이력</td>
+                      <td className="py-2 text-gray-500">receiver_id, buyer_id, depth, final_points, status</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          {/* 7. 고객 문의 대응 */}
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">자주 묻는 질문 (고객 문의 대응)</h3>
+            <div className="space-y-4 text-sm">
+              {[
+                {
+                  q: '추천 리워드가 지급되지 않아요',
+                  a: '1) 추천 관계가 등록되어 있는지 확인 (members.referred_by)\n2) 추천일로부터 1년이 경과했는지 확인\n3) 주문 상태가 결제 완료인지 확인\n4) referral_tree에 해당 관계가 있는지 확인',
+                },
+                {
+                  q: '리워드가 갑자기 사라졌어요',
+                  a: '해당 주문이 취소/환불 처리되면 리워드도 자동 취소됩니다. 리워드 이력 탭에서 해당 건의 상태를 확인하세요.',
+                },
+                {
+                  q: '추천인 등급이 올라가지 않아요',
+                  a: '등급은 직접 추천(L1) 수 기준입니다. 2단계 이하(L2~L5) 추천인은 등급 산정에 포함되지 않습니다.',
+                },
+                {
+                  q: '추천코드를 변경하고 싶어요',
+                  a: '추천코드는 가입 시 자동 생성되며, 변경 기능은 제공되지 않습니다.',
+                },
+                {
+                  q: '1년이 지나면 어떻게 되나요?',
+                  a: '추천 관계 등록일(가입일)로부터 1년이 지나면, 해당 추천인의 구매에 대한 리워드가 더 이상 발생하지 않습니다. 기존에 지급된 리워드는 유지됩니다.',
+                },
+              ].map((faq, idx) => (
+                <div key={idx} className="border border-gray-100 rounded-lg p-4">
+                  <p className="font-semibold text-gray-900 mb-2">Q. {faq.q}</p>
+                  <p className="text-gray-600 whitespace-pre-line">A. {faq.a}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 8. 운영 시 주의사항 */}
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">운영 시 주의사항</h3>
+            <div className="space-y-3 text-sm">
+              <div className="flex gap-3 items-start">
+                <span className="flex-shrink-0 mt-0.5 w-5 h-5 rounded bg-red-100 text-red-600 text-xs font-bold flex items-center justify-center">!</span>
+                <p className="text-gray-700">리워드 비율(L1~L5)이나 등급 배율을 변경하려면 <span className="font-medium">소스 코드 수정</span>이 필요합니다. (<code className="bg-gray-100 px-1 rounded text-xs">src/constants/index.ts</code>의 REFERRAL_RATES, <code className="bg-gray-100 px-1 rounded text-xs">src/lib/referral.ts</code>의 calculateGrade)</p>
+              </div>
+              <div className="flex gap-3 items-start">
+                <span className="flex-shrink-0 mt-0.5 w-5 h-5 rounded bg-red-100 text-red-600 text-xs font-bold flex items-center justify-center">!</span>
+                <p className="text-gray-700">회원의 마일리지를 수동으로 조정할 경우, <span className="font-medium">referral_rewards 기록과 불일치</span>가 발생할 수 있으니 주의하세요.</p>
+              </div>
+              <div className="flex gap-3 items-start">
+                <span className="flex-shrink-0 mt-0.5 w-5 h-5 rounded bg-amber-100 text-amber-600 text-xs font-bold flex items-center justify-center">i</span>
+                <p className="text-gray-700">추천 리워드는 <span className="font-medium">결제 완료 시 자동</span>으로 처리되며, 수동 지급 기능은 없습니다.</p>
+              </div>
+              <div className="flex gap-3 items-start">
+                <span className="flex-shrink-0 mt-0.5 w-5 h-5 rounded bg-amber-100 text-amber-600 text-xs font-bold flex items-center justify-center">i</span>
+                <p className="text-gray-700">실시간 랭킹은 <span className="font-medium">고객 마이페이지</span>에서 확인 가능하며, 리워드 총액 기준으로 순위가 매겨집니다.</p>
+              </div>
+              <div className="flex gap-3 items-start">
+                <span className="flex-shrink-0 mt-0.5 w-5 h-5 rounded bg-amber-100 text-amber-600 text-xs font-bold flex items-center justify-center">i</span>
+                <p className="text-gray-700">부정 추천(자기 추천, 대량 허위 가입 등)이 의심될 경우, <span className="font-medium">추천 회원 탭</span>에서 해당 회원의 추천 수와 패턴을 확인하세요.</p>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

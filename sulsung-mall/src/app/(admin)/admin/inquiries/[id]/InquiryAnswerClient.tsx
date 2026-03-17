@@ -28,17 +28,17 @@ export default function InquiryAnswerClient({ inquiryId, existingAnswer, existin
   return (
     <div className="space-y-4">
       {existingAnswer && existingStatus === 'answered' && (
-        <div className="bg-green-50 border border-green-100 rounded-lg p-4 text-sm text-gray-700 whitespace-pre-wrap">
+        <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 text-sm text-gray-700 whitespace-pre-wrap">
           {existingAnswer}
         </div>
       )}
       <textarea value={answer} onChange={e => setAnswer(e.target.value)} rows={8}
         placeholder="답변 내용을 입력하세요..."
-        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500 resize-y" />
-      {message && <p className="text-sm text-green-700">{message}</p>}
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 resize-y" />
+      {message && <p className="text-sm text-blue-700">{message}</p>}
       <div className="flex gap-3">
         <button onClick={submit} disabled={loading}
-          className="px-6 py-2.5 bg-green-700 text-white text-sm font-semibold rounded-xl hover:bg-green-800 disabled:opacity-50">
+          className="px-6 py-2.5 bg-blue-700 text-white text-sm font-semibold rounded-xl hover:bg-blue-800 disabled:opacity-50">
           {loading ? '저장 중...' : existingAnswer ? '답변 수정' : '답변 등록'}
         </button>
         {existingStatus !== 'closed' && (

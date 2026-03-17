@@ -80,7 +80,7 @@ export default async function AdminAbandonedCartsPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">이탈 장바구니</h1>
-        <span className={`text-xs px-3 py-1.5 rounded-full font-medium ${settings.enabled ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+        <span className={`text-xs px-3 py-1.5 rounded-full font-medium ${settings.enabled ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'}`}>
           자동 리마인드 {settings.enabled ? 'ON' : 'OFF'}
         </span>
       </div>
@@ -97,7 +97,7 @@ export default async function AdminAbandonedCartsPage() {
         </div>
         <div className="bg-white rounded-xl p-5 shadow-sm">
           <p className="text-xs text-gray-500 mb-1">예상 매출</p>
-          <p className="text-xl font-bold text-green-700">{formatPrice(totalValue)}</p>
+          <p className="text-xl font-bold text-blue-700">{formatPrice(totalValue)}</p>
         </div>
         <div className="bg-white rounded-xl p-5 shadow-sm">
           <p className="text-xs text-gray-500 mb-1">리마인드 발송</p>
@@ -129,7 +129,7 @@ export default async function AdminAbandonedCartsPage() {
                   )}
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-sm font-semibold text-green-700">{formatPrice(totalAmount)}</span>
+                  <span className="text-sm font-semibold text-blue-700">{formatPrice(totalAmount)}</span>
                   <AbandonedCartActions
                     memberId={memberId}
                     memberName={member?.name ?? '고객'}

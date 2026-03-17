@@ -44,7 +44,7 @@ export default async function DashboardPage() {
     { label: '오늘 주문', value: `${stats.todayOrders ?? 0}건`, icon: ShoppingBag, color: 'text-blue-600 bg-blue-50' },
     { label: '처리 대기', value: `${stats.pendingOrders ?? 0}건`, icon: Package, color: 'text-orange-600 bg-orange-50' },
     { label: '총 회원수', value: `${(stats.totalMembers ?? 0).toLocaleString()}명`, icon: Users, color: 'text-purple-600 bg-purple-50' },
-    { label: '누적 매출', value: formatPrice(stats.totalSales), icon: TrendingUp, color: 'text-green-600 bg-green-50' },
+    { label: '누적 매출', value: formatPrice(stats.totalSales), icon: TrendingUp, color: 'text-blue-600 bg-blue-50' },
   ]
 
   const STATUS_LABEL: Record<string, string> = {
@@ -58,7 +58,7 @@ export default async function DashboardPage() {
     preparing: 'bg-indigo-100 text-indigo-700',
     shipped: 'bg-purple-100 text-purple-700',
     delivered: 'bg-teal-100 text-teal-700',
-    confirmed: 'bg-green-100 text-green-700',
+    confirmed: 'bg-blue-100 text-blue-700',
     cancelled: 'bg-red-100 text-red-700',
     returned: 'bg-gray-100 text-gray-700',
   }
@@ -87,7 +87,7 @@ export default async function DashboardPage() {
         <div className="lg:col-span-2 bg-white rounded-xl shadow-sm overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
             <h2 className="font-semibold text-gray-900">최근 주문</h2>
-            <a href="/admin/orders" className="text-xs text-green-600 hover:underline">전체보기</a>
+            <a href="/admin/orders" className="text-xs text-blue-600 hover:underline">전체보기</a>
           </div>
           <table className="w-full text-sm">
             <thead className="bg-gray-50">

@@ -3,12 +3,7 @@ import Link from 'next/link'
 import { Package, Ticket, Heart, MessageSquare, ChevronRight, Home } from 'lucide-react'
 import CartBadgeLink from '@/components/store/mypage/CartBadgeLink'
 
-const GRADE_LABEL: Record<string, string> = {
-  bronze: '브론즈',
-  silver: '실버',
-  gold: '골드',
-  vip: 'VIP',
-}
+import { GRADE_LABEL } from '@/constants'
 
 export default async function MypagePage() {
   const supabase = await createClient() as any
@@ -35,6 +30,19 @@ export default async function MypagePage() {
           반가워요! <span className="text-[19px] font-bold" style={{ color: '#222' }}>{member?.name ?? '회원'}님</span>
         </p>
       </div>
+
+      {/* 오늘도설성 멤버십 배너 */}
+      <Link href="/mypage/membership" className="mx-6 mb-4 flex items-center justify-between px-4 py-3.5 rounded-xl"
+        style={{ border: '1px solid #c8e6f8', backgroundColor: '#f0f8ff' }}>
+        <span className="flex items-center gap-2">
+          <span className="text-[16px]">🎁</span>
+          <span className="text-[14px] font-medium" style={{ color: '#333' }}>오늘도설성 오늘 가입하면 1개월간 무료!</span>
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="text-[13px] font-medium" style={{ color: '#5B9BD5' }}>보유중</span>
+          <ChevronRight className="w-4 h-4" style={{ color: '#5B9BD5' }} />
+        </span>
+      </Link>
 
       {/* 적립금 / 쿠폰 카드 */}
       <div className="mx-6 rounded-xl overflow-hidden" style={{ border: '1px solid #e8e4df' }}>
@@ -76,7 +84,7 @@ export default async function MypagePage() {
       {/* 혜택 섹션 */}
       <Section title="혜택">
         <MenuRow href="/mypage/membership" label="오늘도설성" sub="멤버십혜택" />
-        <MenuRow href="/mypage/referral" label="친구초대하고 리워드받기" />
+        <MenuRow href="/mypage/referral" label="친구랑 돈벌기" />
       </Section>
 
       <Divider />

@@ -38,12 +38,12 @@ export default async function AdminMembersPage({
       <div className="bg-white rounded-xl p-4 shadow-sm mb-6">
         <form className="flex flex-wrap gap-3">
           <input name="q" defaultValue={params.q} placeholder="이름 / 이메일 / 연락처 검색"
-            className="border border-gray-200 rounded-lg px-3 py-2 text-sm flex-1 min-w-48 focus:outline-none focus:border-green-500" />
+            className="border border-gray-200 rounded-lg px-3 py-2 text-sm flex-1 min-w-48 focus:outline-none focus:border-blue-500" />
           <select name="grade" defaultValue={params.grade}
             className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none">
             <option value="">전체 등급</option>
-            <option value="bronze">브론즈</option>
-            <option value="silver">실버</option>
+            <option value="bronze">일반</option>
+            <option value="silver">오늘도설성</option>
             <option value="gold">골드</option>
             <option value="vip">VIP</option>
           </select>
@@ -72,7 +72,7 @@ export default async function AdminMembersPage({
         <div className="flex justify-center gap-1 py-4 mt-2">
           {Array.from({ length: Math.min(totalPages, 10) }, (_, i) => i + 1).map(p => (
             <a key={p} href={`/admin/members?page=${p}${params.grade ? `&grade=${params.grade}` : ''}${params.status ? `&status=${params.status}` : ''}`}
-              className={`w-8 h-8 flex items-center justify-center rounded text-xs font-medium ${p === page ? 'bg-green-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}>
+              className={`w-8 h-8 flex items-center justify-center rounded text-xs font-medium ${p === page ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}>
               {p}
             </a>
           ))}

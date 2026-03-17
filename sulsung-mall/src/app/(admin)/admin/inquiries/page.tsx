@@ -5,7 +5,7 @@ import { formatDateTime } from '@/utils/format'
 const STATUS_LABEL: Record<string, string> = { pending: '답변대기', answered: '답변완료', closed: '종료' }
 const STATUS_COLOR: Record<string, string> = {
   pending:  'bg-yellow-100 text-yellow-700',
-  answered: 'bg-green-100 text-green-700',
+  answered: 'bg-blue-100 text-blue-700',
   closed:   'bg-gray-100 text-gray-500',
 }
 
@@ -43,7 +43,7 @@ export default async function AdminInquiriesPage({
           <a key={v} href={v ? `/admin/inquiries?status=${v}` : '/admin/inquiries'}
             className={`px-3 py-1.5 rounded-full text-xs font-medium border ${
               params.status === v || (!params.status && !v)
-                ? 'bg-green-700 text-white border-green-700'
+                ? 'bg-blue-700 text-white border-blue-700'
                 : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
             }`}>
             {l}
@@ -100,7 +100,7 @@ export default async function AdminInquiriesPage({
           <div className="flex justify-center gap-1 py-4 border-t border-gray-50">
             {Array.from({ length: Math.min(totalPages, 10) }, (_, i) => i + 1).map(p => (
               <a key={p} href={`/admin/inquiries?page=${p}${params.status ? `&status=${params.status}` : ''}`}
-                className={`w-8 h-8 flex items-center justify-center rounded text-xs font-medium ${p === page ? 'bg-green-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}>
+                className={`w-8 h-8 flex items-center justify-center rounded text-xs font-medium ${p === page ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}>
                 {p}
               </a>
             ))}

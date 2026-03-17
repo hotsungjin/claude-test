@@ -5,6 +5,7 @@ import GoodsFilterClient from './GoodsFilterClient'
 import GoodsInfiniteGrid from './GoodsInfiniteGrid'
 import SortDropdown from './SortDropdown'
 import GoodsListHeader from './GoodsListHeader'
+import SearchResultHeader from './SearchResultHeader'
 
 interface SearchParams {
   category?: string
@@ -115,17 +116,50 @@ export default async function GoodsListPage({ searchParams }: { searchParams: Pr
     goods = (goodsRaw as any[]) ?? []
     count = gCount
   }
-  const { data: categoriesRaw } = await supabase.from('categories').select('id, name, slug').eq('is_active', true).is('parent_id', null)
-  // 상품이 있는 카테고리만 필터링
+
+  // 카테고리 데이터 로드
+  const { data: categoriesRaw } = await supabase.from('categories').select('id, name, slug').eq('is_active', true).is('parent_id', null).order('sort_order')
   const allCats = (categoriesRaw ?? []) as unknown as { id: number; name: string; slug: string }[]
-  const { data: allChildren } = await supabase.from('categories').select('id, slug, parent_id').eq('is_active', true).not('parent_id', 'is', null)
+  const { data: allChildren } = await supabase.from('categories').select('id, name, slug, parent_id').eq('is_active', true).not('parent_id', 'is', null).order('sort_order')
   const childrenList = (allChildren ?? []) as any[]
-  const childrenMap = new Map<number, { id: number; slug: string }[]>()
+  const childrenMap = new Map<number, { id: number; name: string; slug: string }[]>()
   for (const c of childrenList) {
     const arr = childrenMap.get(c.parent_id) ?? []
-    arr.push({ id: c.id, slug: c.slug })
+    arr.push({ id: c.id, name: c.name, slug: c.slug })
     childrenMap.set(c.parent_id, arr)
   }
+
+  // 카테고리 뷰 모드 판별
+  const hasCategory = !!params.category
+  let parentCategoryName = ''
+  let parentCategorySlug = ''
+  let subCategories: { id: number; name: string; slug: string }[] = []
+
+  if (hasCategory) {
+    // 현재 카테고리가 부모인지 자식인지 판별
+    const parentMatch = allCats.find(c => c.slug === params.category)
+    if (parentMatch) {
+      // 부모 카테고리 선택
+      parentCategoryName = parentMatch.name
+      parentCategorySlug = parentMatch.slug
+      subCategories = childrenMap.get(parentMatch.id) ?? []
+    } else {
+      // 자식 카테고리 선택 → 부모 찾기
+      for (const [parentId, kids] of childrenMap.entries()) {
+        if (kids.some(kid => kid.slug === params.category)) {
+          const parent = allCats.find(c => c.id === parentId)
+          if (parent) {
+            parentCategoryName = parent.name
+            parentCategorySlug = parent.slug
+            subCategories = kids
+          }
+          break
+        }
+      }
+    }
+  }
+
+  // 상품이 있는 카테고리만 필터링 (카테고리 탭용)
   const { data: goodsCounts } = await (supabase as any).from('goods').select('category_id').eq('status', 'active').limit(5000)
   const catIdSet = new Set((goodsCounts ?? []).map((g: any) => g.category_id))
   const categories = allCats.filter(cat => {
@@ -134,59 +168,96 @@ export default async function GoodsListPage({ searchParams }: { searchParams: Pr
     return kids.some(kid => catIdSet.has(kid.id))
   })
 
-  // 서브 카테고리 선택 시 부모 카테고리 slug 찾기 (탭 하이라이트용)
-  let activeTabSlug = params.category
-  if (params.category && !allCats.some(cat => cat.slug === params.category)) {
-    // 현재 카테고리가 부모가 아닌 경우 → 부모 slug으로 매핑
-    for (const [parentId, kids] of childrenMap.entries()) {
-      if (kids.some(kid => kid.slug === params.category)) {
-        const parent = allCats.find(c => c.id === parentId)
-        if (parent) activeTabSlug = parent.slug
-        break
-      }
-    }
-  }
-
   // 활성 필터 개수
   const activeFilters = [params.min_price, params.max_price, params.tag].filter(Boolean).length
   const queryString = buildQuery(params)
 
   const hasTitle = !!params.title
+  const isSearch = !!params.q
 
   return (
     <div>
-      {/* 커스텀 헤더 (전체보기에서 진입 시) */}
-      {hasTitle && <GoodsListHeader title={params.title!} />}
+      {/* 검색 결과 헤더 */}
+      {isSearch && <SearchResultHeader initialQuery={params.q!} />}
 
-      {/* 카테고리 탭 (수평 스크롤) — 전체보기 진입 시 숨김 */}
-      {!hasTitle && <div className="overflow-x-auto scrollbar-hide bg-white" style={{ marginTop: '2px' }}>
-        <div className="flex px-4 py-2 gap-2 whitespace-nowrap">
-          <Link
-            href={buildLink(params, { category: undefined })}
-            className="flex-shrink-0 px-4 py-1.5 rounded-full text-[13px] font-medium transition-colors"
-            style={!activeTabSlug ? { backgroundColor: '#968774', color: '#fff' } : { backgroundColor: '#f3f0ed', color: '#666' }}
-          >
-            전체
-          </Link>
-          {(categories ?? []).map((cat) => (
+      {/* 커스텀 헤더 (전체보기에서 진입 시) */}
+      {hasTitle && !hasCategory && <GoodsListHeader title={params.title!} />}
+
+      {/* 카테고리 뷰: 커스텀 헤더 + 서브카테고리 언더라인 탭 (컬리 스타일) */}
+      {hasCategory && (
+        <>
+          <GoodsListHeader title={parentCategoryName} />
+          {subCategories.length > 0 && (
+            <div className="overflow-x-auto scrollbar-hide bg-white sticky top-[52px] z-40" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+              <div className="flex px-4 whitespace-nowrap">
+                <Link
+                  href={buildLink(params, { category: parentCategorySlug })}
+                  className="flex-shrink-0 px-4 py-3 text-[16px]"
+                  style={{
+                    color: params.category === parentCategorySlug ? '#968774' : '#333',
+                    fontWeight: params.category === parentCategorySlug ? 700 : 400,
+                    borderBottom: params.category === parentCategorySlug ? '2.5px solid #968774' : '2.5px solid transparent',
+                  }}
+                >
+                  전체보기
+                </Link>
+                {subCategories.map(sub => (
+                  <Link
+                    key={sub.id}
+                    href={buildLink(params, { category: sub.slug })}
+                    className="flex-shrink-0 px-4 py-3 text-[16px]"
+                    style={{
+                      color: params.category === sub.slug ? '#968774' : '#333',
+                      fontWeight: params.category === sub.slug ? 700 : 400,
+                      borderBottom: params.category === sub.slug ? '2.5px solid #968774' : '2.5px solid transparent',
+                    }}
+                  >
+                    {sub.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* 카테고리 탭 (수평 스크롤, 필 스타일) — 카테고리 뷰/검색/전체보기 진입 시 숨김 */}
+      {!hasTitle && !isSearch && !hasCategory && (
+        <div className="overflow-x-auto scrollbar-hide bg-white" style={{ marginTop: '2px' }}>
+          <div className="flex px-4 py-2 gap-2 whitespace-nowrap">
             <Link
-              key={cat.id}
-              href={buildLink(params, { category: cat.slug })}
+              href={buildLink(params, { category: undefined })}
               className="flex-shrink-0 px-4 py-1.5 rounded-full text-[13px] font-medium transition-colors"
-              style={activeTabSlug === cat.slug ? { backgroundColor: '#968774', color: '#fff' } : { backgroundColor: '#f3f0ed', color: '#666' }}
+              style={{ backgroundColor: '#968774', color: '#fff' }}
             >
-              {cat.name}
+              전체
             </Link>
-          ))}
+            {(categories ?? []).map((cat) => (
+              <Link
+                key={cat.id}
+                href={buildLink(params, { category: cat.slug })}
+                className="flex-shrink-0 px-4 py-1.5 rounded-full text-[13px] font-medium transition-colors"
+                style={{ backgroundColor: '#f3f0ed', color: '#666' }}
+              >
+                {cat.name}
+              </Link>
+            ))}
+          </div>
         </div>
-      </div>}
+      )}
 
       {/* 상품수 + 정렬 + 필터 (한 줄) */}
       <div className="flex items-center justify-between px-4 py-2.5 bg-white">
         <div className="flex items-center gap-2">
-          <p className="text-[12px]" style={{ color: '#888' }}>
-            총 <strong style={{ color: '#333' }}>{count ?? 0}</strong>개 상품
+          <p className="text-[13px]" style={{ color: '#888' }}>
+            총 <strong style={{ color: '#333' }}>{count ?? 0}</strong>개
           </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <SortDropdown
+            currentSort={params.sort ?? ''}
+            currentParams={params as Record<string, string | undefined>}
+          />
           <GoodsFilterClient
             currentMinPrice={params.min_price ?? ''}
             currentMaxPrice={params.max_price ?? ''}
@@ -195,20 +266,7 @@ export default async function GoodsListPage({ searchParams }: { searchParams: Pr
             activeFilters={activeFilters}
           />
         </div>
-        <SortDropdown
-          currentSort={params.sort ?? ''}
-          currentParams={params as Record<string, string | undefined>}
-        />
       </div>
-
-      {/* 검색 결과 표시 */}
-      {params.q && (
-        <div className="px-4 py-3" style={{ backgroundColor: '#f7f4f1' }}>
-          <p className="text-[13px]" style={{ color: '#666' }}>
-            &ldquo;<strong style={{ color: '#333' }}>{params.q}</strong>&rdquo; 검색 결과 {count ?? 0}개
-          </p>
-        </div>
-      )}
 
       {/* 활성 필터 뱃지 */}
       {(params.tag || params.min_price || params.max_price) && (

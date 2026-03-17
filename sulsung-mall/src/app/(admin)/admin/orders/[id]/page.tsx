@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ChevronRight } from 'lucide-react'
@@ -10,15 +10,15 @@ const STATUS_COLOR: Record<string, string> = {
   paid:            'bg-blue-100 text-blue-700',
   preparing:       'bg-indigo-100 text-indigo-700',
   shipped:         'bg-purple-100 text-purple-700',
-  delivered:       'bg-green-100 text-green-700',
-  confirmed:       'bg-green-200 text-green-800',
+  delivered:       'bg-blue-100 text-blue-700',
+  confirmed:       'bg-blue-200 text-blue-800',
   cancelled:       'bg-gray-100 text-gray-500',
   returned:        'bg-gray-100 text-gray-500',
 }
 
 export default async function AdminOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const supabase = await createClient() as any
+  const supabase = await createAdminClient() as any
 
   const [{ data: order }, { data: items }, { data: logs }] = await Promise.all([
     supabase.from('orders').select(`*, members(name, email, phone)`).eq('id', id).single(),
@@ -31,7 +31,7 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
   return (
     <div>
       <nav className="flex items-center gap-1 text-sm text-gray-500 mb-6">
-        <Link href="/admin/orders" className="hover:text-green-700">주문 관리</Link>
+        <Link href="/admin/orders" className="hover:text-blue-700">주문 관리</Link>
         <ChevronRight className="w-4 h-4" />
         <span className="text-gray-900 font-medium">{order.order_no}</span>
       </nav>
@@ -129,7 +129,7 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
               <ol className="relative border-l border-gray-200 space-y-4 pl-4">
                 {(logs ?? []).map((log: any) => (
                   <li key={log.id} className="relative">
-                    <div className="absolute -left-[17px] top-1 w-2 h-2 bg-green-500 rounded-full" />
+                    <div className="absolute -left-[17px] top-1 w-2 h-2 bg-blue-500 rounded-full" />
                     <p className="text-sm font-medium text-gray-800">
                       {ORDER_STATUS_LABEL[log.from_status] ?? log.from_status}
                       {' → '}

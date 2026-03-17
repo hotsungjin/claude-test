@@ -76,7 +76,7 @@ export default function CouponFormClient({ coupon }: CouponFormProps) {
     router.refresh()
   }
 
-  const inputClass = "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500"
+  const inputClass = "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
 
   return (
     <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
@@ -100,12 +100,12 @@ export default function CouponFormClient({ coupon }: CouponFormProps) {
         <div className="flex items-center gap-4">
           <label className="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" checked={form.is_active} onChange={e => set('is_active', e.target.checked)}
-              className="w-4 h-4 accent-green-600" />
+              className="w-4 h-4 accent-blue-600" />
             <span className="text-sm">활성화</span>
           </label>
           <label className="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" checked={form.is_duplicate} onChange={e => set('is_duplicate', e.target.checked)}
-              className="w-4 h-4 accent-green-600" />
+              className="w-4 h-4 accent-blue-600" />
             <span className="text-sm">다른 쿠폰과 중복 사용 허용</span>
           </label>
         </div>
@@ -181,7 +181,7 @@ export default function CouponFormClient({ coupon }: CouponFormProps) {
       {/* 버튼 */}
       <div className="flex gap-3">
         <button type="submit" disabled={saving}
-          className="flex-1 bg-green-700 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-green-600 disabled:opacity-50">
+          className="flex-1 bg-blue-700 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-blue-600 disabled:opacity-50">
           {saving ? '저장 중...' : isEdit ? '수정 완료' : '쿠폰 생성'}
         </button>
         <a href="/admin/coupons"

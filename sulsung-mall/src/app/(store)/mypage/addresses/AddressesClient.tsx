@@ -337,6 +337,7 @@ export default function AddressesClient({ memberId, initialAddresses }: {
             onClick={async () => {
               if (!selectedId) return
               await setDefault(selectedId)
+              router.refresh()
               router.back()
             }}
             className="w-full py-4 rounded-xl text-[16px] font-bold text-white"

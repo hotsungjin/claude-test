@@ -10,7 +10,7 @@ interface GoodsData {
   id?: string
   name?: string; slug?: string; category_id?: number | null; summary?: string; description?: string
   origin?: string; manufacturer?: string; brand?: string; brand_id?: number | null; weight?: number
-  price?: number; sale_price?: number | null; cost_price?: number | null
+  price?: number; sale_price?: number | null; member_price?: number | null; cost_price?: number | null
   tax_type?: string; status?: string; stock?: number; stock_alert_qty?: number
   mileage_rate?: number; is_option?: boolean; is_gift?: boolean
   thumbnail_url?: string | null; images?: any[]; tags?: string[]
@@ -36,6 +36,7 @@ export default function GoodsFormClient({ categories, brands = [], initialData }
     weight: initialData?.weight ?? '',
     price: initialData?.price ?? '',
     sale_price: initialData?.sale_price ?? '',
+    member_price: initialData?.member_price ?? '',
     cost_price: initialData?.cost_price ?? '',
     tax_type: initialData?.tax_type ?? 'taxable',
     status: initialData?.status ?? 'active',
@@ -123,6 +124,7 @@ export default function GoodsFormClient({ categories, brands = [], initialData }
       weight: form.weight !== '' ? Number(form.weight) : null,
       price: Number(form.price),
       sale_price: form.sale_price !== '' ? Number(form.sale_price) : null,
+      member_price: form.member_price !== '' ? Number(form.member_price) : null,
       cost_price: form.cost_price !== '' ? Number(form.cost_price) : null,
       tax_type: form.tax_type,
       status: form.status,
@@ -176,19 +178,19 @@ export default function GoodsFormClient({ categories, brands = [], initialData }
           <div className="md:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-1">상품명 <span className="text-red-500">*</span></label>
             <input value={form.name} onChange={e => handleNameChange(e.target.value)} required
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">슬러그</label>
             <input value={form.slug} onChange={e => set('slug', e.target.value)}
               placeholder="비워두면 자동 생성됩니다"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500 font-mono" />
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 font-mono" />
             <p className="text-xs text-gray-400 mt-1">비워두면 자동 생성. URL에 표시됩니다.</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">카테고리 <span className="text-red-500">*</span></label>
             <select value={form.category_id} onChange={e => set('category_id', e.target.value)} required
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500">
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
               <option value="">카테고리 선택</option>
               {topCategories.map(cat => (
                 <optgroup key={cat.id} label={cat.name}>
@@ -204,28 +206,28 @@ export default function GoodsFormClient({ categories, brands = [], initialData }
             <label className="block text-sm font-medium text-gray-700 mb-1">요약 설명</label>
             <input value={form.summary} onChange={e => set('summary', e.target.value)}
               placeholder="목록에 표시되는 짧은 설명"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">태그</label>
             <input value={form.tags} onChange={e => set('tags', e.target.value)}
               placeholder="우유, 목장, 신선식품 (쉼표로 구분)"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">원산지</label>
             <input value={form.origin} onChange={e => set('origin', e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">제조사</label>
             <input value={form.manufacturer} onChange={e => set('manufacturer', e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">브랜드 <span className="text-red-500">*</span></label>
             <select value={form.brand_id} onChange={e => set('brand_id', e.target.value)} required
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500">
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
               <option value="">브랜드 선택</option>
               {brands.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
             </select>
@@ -233,7 +235,7 @@ export default function GoodsFormClient({ categories, brands = [], initialData }
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">무게 (g)</label>
             <input type="number" value={form.weight} onChange={e => set('weight', e.target.value)} min={0}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
           </div>
         </div>
       </section>
@@ -245,23 +247,29 @@ export default function GoodsFormClient({ categories, brands = [], initialData }
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">정가 <span className="text-red-500">*</span></label>
             <input type="number" value={form.price} onChange={e => set('price', e.target.value)} required min={1}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">할인가</label>
             <input type="number" value={form.sale_price} onChange={e => set('sale_price', e.target.value)} min={1}
               placeholder="비워두면 정가 적용"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">멤버십가</label>
+            <input type="number" value={form.member_price} onChange={e => set('member_price', e.target.value)} min={1}
+              placeholder="비워두면 멤버십가 미표시"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">원가 (내부용)</label>
             <input type="number" value={form.cost_price} onChange={e => set('cost_price', e.target.value)} min={1}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">과세유형 <span className="text-red-500">*</span></label>
             <select value={form.tax_type} onChange={e => set('tax_type', e.target.value)} required
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500">
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
               <option value="taxable">과세</option>
               <option value="free">면세</option>
               <option value="zero">영세율</option>
@@ -270,22 +278,22 @@ export default function GoodsFormClient({ categories, brands = [], initialData }
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">재고</label>
             <input type="number" value={form.stock} onChange={e => set('stock', Number(e.target.value))} min={0}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">재고알림 기준</label>
             <input type="number" value={form.stock_alert_qty} onChange={e => set('stock_alert_qty', Number(e.target.value))} min={0}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">포인트 적립률 (%)</label>
             <input type="number" value={form.mileage_rate} onChange={e => set('mileage_rate', Number(e.target.value))} min={0} max={100} step={0.1}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">정렬순서</label>
             <input type="number" value={form.sort_order} onChange={e => set('sort_order', Number(e.target.value))}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
           </div>
         </div>
       </section>
@@ -300,7 +308,7 @@ export default function GoodsFormClient({ categories, brands = [], initialData }
               {[['active', '판매중'], ['inactive', '비공개'], ['soldout', '품절']].map(([v, l]) => (
                 <label key={v} className="flex items-center gap-1.5 cursor-pointer">
                   <input type="radio" name="status" value={v} checked={form.status === v} onChange={() => set('status', v)}
-                    className="accent-green-600" />
+                    className="accent-blue-600" />
                   <span className="text-sm">{l}</span>
                 </label>
               ))}
@@ -309,12 +317,12 @@ export default function GoodsFormClient({ categories, brands = [], initialData }
           <div className="flex gap-6">
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" checked={form.is_option} onChange={e => set('is_option', e.target.checked)}
-                className="w-4 h-4 accent-green-600" />
+                className="w-4 h-4 accent-blue-600" />
               <span className="text-sm font-medium text-gray-700">옵션 상품</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" checked={form.is_gift} onChange={e => set('is_gift', e.target.checked)}
-                className="w-4 h-4 accent-green-600" />
+                className="w-4 h-4 accent-blue-600" />
               <span className="text-sm font-medium text-gray-700">사은품</span>
             </label>
           </div>
@@ -332,7 +340,7 @@ export default function GoodsFormClient({ categories, brands = [], initialData }
             {/* 업로드 버튼 */}
             <button type="button" onClick={() => thumbInputRef.current?.click()}
               disabled={uploading}
-              className="flex-shrink-0 w-32 h-32 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center gap-1 hover:border-green-400 hover:bg-green-50 transition-colors disabled:opacity-50">
+              className="flex-shrink-0 w-32 h-32 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center gap-1 hover:border-blue-400 hover:bg-blue-50 transition-colors disabled:opacity-50">
               <Upload className="w-5 h-5 text-gray-400" />
               <span className="text-xs text-gray-400">파일 업로드</span>
             </button>
@@ -355,7 +363,7 @@ export default function GoodsFormClient({ categories, brands = [], initialData }
               <label className="block text-xs text-gray-500 mb-1">또는 URL 직접 입력</label>
               <input value={form.thumbnail_url} onChange={e => set('thumbnail_url', e.target.value)}
                 placeholder="https://..."
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
             </div>
           </div>
         </div>
@@ -379,13 +387,13 @@ export default function GoodsFormClient({ categories, brands = [], initialData }
             ))}
             <button type="button" onClick={() => extraInputRef.current?.click()}
               disabled={uploading}
-              className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center gap-1 hover:border-green-400 hover:bg-green-50 transition-colors disabled:opacity-50">
+              className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center gap-1 hover:border-blue-400 hover:bg-blue-50 transition-colors disabled:opacity-50">
               <ImagePlus className="w-5 h-5 text-gray-400" />
               <span className="text-xs text-gray-400">추가</span>
             </button>
             <input ref={extraInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handleExtraUpload} />
           </div>
-          {uploading && <p className="text-xs text-green-600 mt-2">업로드 중...</p>}
+          {uploading && <p className="text-xs text-blue-600 mt-2">업로드 중...</p>}
         </div>
       </section>
 
@@ -396,7 +404,7 @@ export default function GoodsFormClient({ categories, brands = [], initialData }
           <label className="block text-sm font-medium text-gray-700 mb-1">네이버 쇼핑 카테고리 코드</label>
           <input value={form.naver_category} onChange={e => set('naver_category', e.target.value)}
             placeholder="예: 50000803"
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" />
           <p className="text-xs text-gray-400 mt-1">네이버 쇼핑 카테고리 코드를 입력하면 XML 피드에 포함됩니다.</p>
         </div>
       </section>
@@ -406,7 +414,7 @@ export default function GoodsFormClient({ categories, brands = [], initialData }
         <h2 className="text-base font-semibold text-gray-900 mb-4">상세 설명</h2>
         <textarea value={form.description} onChange={e => set('description', e.target.value)} rows={12}
           placeholder="상세 설명 HTML 또는 텍스트를 입력하세요"
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-green-500 resize-y" />
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-blue-500 resize-y" />
       </section>
 
       {/* 버튼 */}
@@ -425,7 +433,7 @@ export default function GoodsFormClient({ categories, brands = [], initialData }
             취소
           </button>
           <button type="submit" disabled={loading}
-            className="px-6 py-2.5 bg-green-700 text-white text-sm font-semibold rounded-xl hover:bg-green-800 disabled:opacity-50">
+            className="px-6 py-2.5 bg-blue-700 text-white text-sm font-semibold rounded-xl hover:bg-blue-800 disabled:opacity-50">
             {loading ? '저장 중...' : isEdit ? '수정 완료' : '상품 등록'}
           </button>
         </div>

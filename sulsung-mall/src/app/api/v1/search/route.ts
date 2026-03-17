@@ -2,18 +2,28 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/server'
 import { getAuthMember } from '@/lib/supabase/auth'
 
-// 급상승 검색어 조회 (최근 1시간 기준 상위 10개)
+// 급상승 검색어 (최근 1주일) + 추천 검색어 (전체 누적 인기)
 export async function GET() {
   const supabase = await createAdminClient()
 
-  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
+  const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+  const allTime = new Date('2020-01-01').toISOString()
 
-  const { data } = await (supabase as any).rpc('get_trending_keywords', {
-    since_at: oneHourAgo,
-    limit_count: 10,
+  const [{ data: trending }, { data: popular }] = await Promise.all([
+    (supabase as any).rpc('get_trending_keywords', {
+      since_at: oneWeekAgo,
+      limit_count: 10,
+    }),
+    (supabase as any).rpc('get_trending_keywords', {
+      since_at: allTime,
+      limit_count: 10,
+    }),
+  ])
+
+  return NextResponse.json({
+    keywords: trending ?? [],
+    popular: popular ?? [],
   })
-
-  return NextResponse.json({ keywords: data ?? [] })
 }
 
 // 검색 로그 기록

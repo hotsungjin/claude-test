@@ -84,6 +84,8 @@ const NAV_ITEMS = [
 export default function BottomNav() {
   const pathname = usePathname()
 
+  if (pathname.startsWith('/order')) return null
+
   const isActive = (key: string) => {
     if (key === 'home') return pathname === '/'
     if (key === 'category') return pathname === '/categories'

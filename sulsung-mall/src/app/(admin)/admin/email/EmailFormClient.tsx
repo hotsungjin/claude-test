@@ -55,11 +55,11 @@ export default function EmailFormClient() {
             <button key={t.value} onClick={() => setTarget(t.value)}
               className={`p-4 rounded-xl border-2 text-left transition-colors ${
                 target === t.value
-                  ? 'border-green-600 bg-green-50'
+                  ? 'border-blue-600 bg-blue-50'
                   : 'border-gray-100 hover:border-gray-200'
               }`}>
-              <t.icon className={`w-5 h-5 mb-2 ${target === t.value ? 'text-green-600' : 'text-gray-400'}`} />
-              <p className={`text-sm font-semibold ${target === t.value ? 'text-green-700' : 'text-gray-700'}`}>{t.label}</p>
+              <t.icon className={`w-5 h-5 mb-2 ${target === t.value ? 'text-blue-600' : 'text-gray-400'}`} />
+              <p className={`text-sm font-semibold ${target === t.value ? 'text-blue-700' : 'text-gray-700'}`}>{t.label}</p>
               <p className="text-xs text-gray-400 mt-0.5">{t.desc}</p>
             </button>
           ))}
@@ -75,14 +75,14 @@ export default function EmailFormClient() {
             <label className="block text-xs text-gray-500 mb-1">제목</label>
             <input value={subject} onChange={e => setSubject(e.target.value)}
               placeholder="[설성목장몰] 이메일 제목을 입력하세요"
-              className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-green-500" />
+              className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-blue-500" />
           </div>
 
           <div>
             <label className="block text-xs text-gray-500 mb-1">내용 (HTML 지원)</label>
             <textarea value={content} onChange={e => setContent(e.target.value)}
               rows={12} placeholder="이메일 본문을 입력하세요. HTML 태그를 사용할 수 있습니다."
-              className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-green-500 resize-y font-mono" />
+              className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-blue-500 resize-y font-mono" />
           </div>
         </div>
       </div>
@@ -107,13 +107,13 @@ export default function EmailFormClient() {
 
       {/* 결과 */}
       {result && (
-        <div className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-3">
-          <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-            <Send className="w-5 h-5 text-green-600" />
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-center gap-3">
+          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+            <Send className="w-5 h-5 text-blue-600" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-green-800">발송 완료</p>
-            <p className="text-xs text-green-600">
+            <p className="text-sm font-semibold text-blue-800">발송 완료</p>
+            <p className="text-xs text-blue-600">
               전체 {result.total}명 중 {result.sent}명 성공{result.failed > 0 && `, ${result.failed}명 실패`}
             </p>
           </div>
@@ -123,7 +123,7 @@ export default function EmailFormClient() {
       {/* 발송 버튼 */}
       <div className="flex justify-end">
         <button onClick={handleSend} disabled={sending || !subject.trim() || !content.trim()}
-          className="flex items-center gap-2 bg-green-700 text-white px-6 py-3 rounded-xl text-sm font-semibold hover:bg-green-800 disabled:opacity-50 disabled:cursor-not-allowed">
+          className="flex items-center gap-2 bg-blue-700 text-white px-6 py-3 rounded-xl text-sm font-semibold hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed">
           <Send className="w-4 h-4" />
           {sending ? '발송 중...' : '이메일 발송'}
         </button>

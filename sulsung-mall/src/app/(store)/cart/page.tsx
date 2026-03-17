@@ -28,7 +28,8 @@ export default function CartPage() {
   const [defaultAddress, setDefaultAddress] = useState<DefaultAddress | null>(null)
 
   useEffect(() => {
-    fetch('/api/v1/cart').then(r => r.json()).then(d => {
+    // 단일 API로 장바구니 + 배송지 한 번에 조회
+    fetch('/api/v1/cart?full=true').then(r => r.json()).then(d => {
       const list = d.items ?? []
       setItems(list)
       setSelected(new Set(list.map((i: CartItem) => i.id)))
@@ -44,27 +45,26 @@ export default function CartPage() {
   }
 
   async function removeItem(cartId: string) {
-    // 즉시 UI에서 제거 (낙관적 업데이트)
     setItems(prev => prev.filter(i => i.id !== cartId))
     setSelected(prev => { const n = new Set(prev); n.delete(cartId); return n })
     try {
       await fetch('/api/v1/cart', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cartId }) })
     } catch {}
+    window.dispatchEvent(new Event('cart-updated'))
   }
 
   async function removeSelected() {
     const ids = Array.from(selected)
     if (ids.length === 0) return
-    // 즉시 UI에서 제거 (낙관적 업데이트)
     const removedSet = new Set(ids)
     setItems(prev => prev.filter(i => !removedSet.has(i.id)))
     setSelected(new Set())
-    // 백그라운드에서 서버 삭제 처리
     for (const id of ids) {
       try {
         await fetch('/api/v1/cart', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cartId: id }) })
       } catch {}
     }
+    window.dispatchEvent(new Event('cart-updated'))
   }
 
   function toggleSelect(id: string) {
@@ -283,7 +283,7 @@ export default function CartPage() {
 
       {/* ── 결제 요약 ── */}
       <div className="mt-2 bg-white px-4 pt-5 pb-4 flex-1">
-        <div className="space-y-3 text-[14px]">
+        <div className="space-y-2.5 text-[16px]">
           <div className="flex justify-between">
             <span style={{ color: '#333' }}>상품 금액</span>
             <span style={{ color: '#333' }}>{formatPrice(originalTotal)}</span>
@@ -291,48 +291,43 @@ export default function CartPage() {
           {discount > 0 && (
             <div className="flex justify-between">
               <span style={{ color: '#333' }}>상품 할인 금액</span>
-              <span style={{ color: '#e84a3b' }}>-{formatPrice(discount)}</span>
+              <span style={{ color: '#e85050' }}>-{formatPrice(discount)}</span>
             </div>
           )}
           <div className="flex justify-between">
-            <span style={{ color: '#333', fontWeight: 600 }}>배송비</span>
-            <span style={{ color: '#333' }}>{formatPrice(shippingFee)}</span>
+            <span style={{ color: '#333' }}>배송비</span>
+            <span style={{ color: '#333' }}>{shippingFee === 0 ? '0원' : formatPrice(shippingFee)}</span>
           </div>
         </div>
 
         {/* 결제예정금액 */}
         <div className="flex justify-between items-center mt-4 pt-4 border-t" style={{ borderColor: '#f0f0f0' }}>
-          <span className="text-[14px] font-bold" style={{ color: '#333' }}>결제예정금액</span>
+          <span className="text-[20px] font-bold" style={{ color: '#333' }}>결제예정금액</span>
           <span className="text-[20px] font-bold" style={{ color: '#333' }}>{formatPrice(total)}</span>
         </div>
 
         {/* 적립금 안내 */}
         <div className="mt-4 py-3 rounded-lg text-center" style={{ backgroundColor: '#f5f5f5' }}>
-          <p className="text-[13px]" style={{ color: '#999' }}>포인트는 주문서에서 적용할 수 있어요</p>
+          <p className="text-[16px]" style={{ color: '#aaa' }}>포인트는 주문서에서 적용할 수 있어요</p>
         </div>
       </div>
 
       {/* ── 하단 고정 주문 버튼 ── */}
-      <div className="sticky bottom-0 z-40 bg-white px-4 pt-3 pb-4 border-t mt-auto" style={{ borderColor: '#f0f0f0' }}>
+      <div className="sticky bottom-0 z-40 bg-white px-4 pt-3 pb-4 mt-auto">
         {/* 쿠폰 배너 */}
-        <div className="flex items-center justify-between px-3 py-2.5 mb-3 rounded-lg border" style={{ borderColor: '#968774', backgroundColor: '#faf8f6' }}>
+        <div className="flex items-center px-3 py-2.5 mb-3 rounded-lg border" style={{ borderColor: '#968774', backgroundColor: '#faf8f6' }}>
           <div className="flex items-center gap-2">
-            <span className="text-[12px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: '#968774', color: '#fff' }}>%</span>
-            <span className="text-[13px]" style={{ color: '#333' }}>바로 적용되는 <strong style={{ color: '#968774' }}>추가 상품 쿠폰</strong>이 있어요</span>
+            <span className="text-[15px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: '#968774', color: '#fff' }}>%</span>
+            <span className="text-[16px]" style={{ color: '#333' }}>바로 적용되는 <strong>추가 상품 쿠폰</strong>이 있어요</span>
           </div>
         </div>
 
-        {/* 주문 금액 요약 */}
-        {goodsTotal > 0 && shippingFee > 0 && (
-          <p className="text-center text-[12px] mb-2" style={{ color: '#999' }}>
-            배송비 {formatPrice(shippingFee)} 포함
-          </p>
-        )}
-
         {/* 주문 버튼 */}
         <Link href="/order"
-          className="block w-full text-center py-4 rounded-xl font-bold text-[16px] text-white"
-          style={{ backgroundColor: selected.size > 0 ? '#968774' : '#ccc', pointerEvents: selected.size > 0 ? 'auto' : 'none' }}>
+          className="block w-full text-center py-4 rounded-xl font-bold text-[20px] text-white"
+          style={{ backgroundColor: selected.size > 0 ? '#968774' : '#ccc', pointerEvents: selected.size > 0 ? 'auto' : 'none' }}
+          onTouchStart={() => { fetch('/api/v1/members/me'); fetch('/api/v1/members/me/coupons') }}
+          onMouseEnter={() => { fetch('/api/v1/members/me'); fetch('/api/v1/members/me/coupons') }}>
           {formatPrice(total)} 주문하기
         </Link>
       </div>

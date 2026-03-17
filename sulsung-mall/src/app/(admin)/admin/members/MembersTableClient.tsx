@@ -6,19 +6,7 @@ import { UserCheck, Download } from 'lucide-react'
 import { formatDateTime } from '@/utils/format'
 import { downloadExcel } from '@/utils/exportExcel'
 
-const GRADE_COLOR: Record<string, string> = {
-  bronze: 'bg-gray-100 text-gray-600',
-  silver: 'bg-blue-100 text-blue-700',
-  gold:   'bg-yellow-100 text-yellow-700',
-  vip:    'bg-purple-100 text-purple-700',
-}
-
-const GRADE_LABEL: Record<string, string> = {
-  bronze: '브론즈',
-  silver: '실버',
-  gold:   '골드',
-  vip:    'VIP',
-}
+import { GRADE_LABEL, GRADE_COLOR } from '@/constants'
 
 interface Member {
   id: string
@@ -87,11 +75,11 @@ export default function MembersTableClient({ members, count, page, pageSize }: P
       <div className="px-6 py-3 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
         <span className="text-sm text-gray-500">
           총 <strong>{count}</strong>명
-          {selected.size > 0 && <span className="ml-2 text-green-600">({selected.size}명 선택)</span>}
+          {selected.size > 0 && <span className="ml-2 text-blue-600">({selected.size}명 선택)</span>}
         </span>
         <button
           onClick={handleDownload}
-          className="inline-flex items-center gap-1.5 bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-green-700 transition-colors"
+          className="inline-flex items-center gap-1.5 bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-700 transition-colors"
         >
           <Download className="w-3.5 h-3.5" />
           엑셀 다운로드{selected.size > 0 ? ` (${selected.size}명)` : ''}
@@ -106,7 +94,7 @@ export default function MembersTableClient({ members, count, page, pageSize }: P
                   type="checkbox"
                   checked={allChecked}
                   onChange={toggleAll}
-                  className="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
+                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
               </th>
               <th className="px-3 py-3 text-center text-xs text-gray-500 font-medium w-16">번호</th>
@@ -125,18 +113,20 @@ export default function MembersTableClient({ members, count, page, pageSize }: P
             {members.map((m, i) => {
               const rowNum = count - ((page - 1) * pageSize) - i
               return (
-                <tr key={m.id} className={`hover:bg-gray-50 ${selected.has(m.id) ? 'bg-green-50/50' : ''}`}>
+                <tr key={m.id} className={`hover:bg-gray-50 ${selected.has(m.id) ? 'bg-blue-50/50' : ''}`}>
                   <td className="px-3 py-3 text-center">
                     <input
                       type="checkbox"
                       checked={selected.has(m.id)}
                       onChange={() => toggleOne(m.id)}
-                      className="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
+                      className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
                   </td>
                   <td className="px-3 py-3 text-center text-xs text-gray-500">{rowNum}</td>
                   <td className="px-3 py-3 text-center text-xs text-gray-500">{m.member_no}</td>
-                  <td className="px-4 py-3 font-medium text-gray-900">{m.name}</td>
+                  <td className="px-4 py-3 font-medium">
+                    <Link href={`/admin/members/${m.id}`} className="text-blue-600 hover:underline">{m.name}</Link>
+                  </td>
                   <td className="px-4 py-3 text-gray-600 text-xs">{m.email}</td>
                   <td className="px-4 py-3 text-gray-600 text-xs">{m.phone ?? '-'}</td>
                   <td className="px-4 py-3 text-center">
@@ -147,7 +137,7 @@ export default function MembersTableClient({ members, count, page, pageSize }: P
                   <td className="px-4 py-3 text-right text-gray-700">{(m.mileage ?? 0).toLocaleString()}</td>
                   <td className="px-4 py-3 text-center">
                     {m.is_active
-                      ? <span className="flex items-center justify-center gap-1 text-xs text-green-600"><UserCheck className="w-3 h-3" />활성</span>
+                      ? <span className="flex items-center justify-center gap-1 text-xs text-blue-600"><UserCheck className="w-3 h-3" />활성</span>
                       : <span className="text-xs text-gray-400">비활성</span>}
                   </td>
                   <td className="px-4 py-3 text-xs text-gray-500">{formatDateTime(m.created_at)}</td>

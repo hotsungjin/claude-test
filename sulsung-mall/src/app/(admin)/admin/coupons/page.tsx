@@ -46,7 +46,7 @@ export default async function AdminCouponsPage({
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">쿠폰 관리</h1>
         <Link href="/admin/coupons/new"
-          className="flex items-center gap-2 bg-green-700 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-600">
+          className="flex items-center gap-2 bg-blue-700 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-600">
           <Plus className="w-4 h-4" />
           쿠폰 생성
         </Link>
@@ -56,7 +56,7 @@ export default async function AdminCouponsPage({
       <div className="bg-white rounded-xl p-4 shadow-sm mb-6">
         <form className="flex flex-wrap gap-3">
           <input name="q" defaultValue={params.q} placeholder="쿠폰명 검색"
-            className="border border-gray-200 rounded-lg px-3 py-2 text-sm flex-1 min-w-40 focus:outline-none focus:border-green-500" />
+            className="border border-gray-200 rounded-lg px-3 py-2 text-sm flex-1 min-w-40 focus:outline-none focus:border-blue-500" />
           <select name="type" defaultValue={params.type}
             className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none">
             <option value="">전체 유형</option>
@@ -128,7 +128,7 @@ export default async function AdminCouponsPage({
                   </td>
                   <td className="px-4 py-3 text-center">
                     <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                      coupon.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
+                      coupon.is_active ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'
                     }`}>
                       {coupon.is_active ? '활성' : '비활성'}
                     </span>
@@ -155,7 +155,7 @@ export default async function AdminCouponsPage({
             {Array.from({ length: Math.min(totalPages, 10) }, (_, i) => i + 1).map(p => (
               <a key={p} href={`/admin/coupons?page=${p}${params.type ? `&type=${params.type}` : ''}`}
                 className={`w-8 h-8 flex items-center justify-center rounded text-xs font-medium ${
-                  p === page ? 'bg-green-600 text-white' : 'text-gray-600 hover:bg-gray-100'
+                  p === page ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100'
                 }`}>
                 {p}
               </a>

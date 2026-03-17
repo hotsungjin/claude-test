@@ -26,7 +26,7 @@ export default function GoodsBulkActionBar({ selectedIds }: { selectedIds: strin
       <span className="text-sm font-medium">{selectedIds.length}개 선택됨</span>
       <div className="flex gap-2">
         <button onClick={() => bulkAction('status_change', 'active')} disabled={loading}
-          className="px-3 py-1.5 bg-green-600 rounded-lg text-xs font-medium hover:bg-green-500 disabled:opacity-50">
+          className="px-3 py-1.5 bg-blue-600 rounded-lg text-xs font-medium hover:bg-blue-500 disabled:opacity-50">
           판매중
         </button>
         <button onClick={() => bulkAction('status_change', 'inactive')} disabled={loading}

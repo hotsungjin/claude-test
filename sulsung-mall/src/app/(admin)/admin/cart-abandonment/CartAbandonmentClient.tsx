@@ -69,7 +69,7 @@ export default function CartAbandonmentClient({ members }: { members: AbandonedM
       <div className="px-6 py-3 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
         <span className="text-sm text-gray-500">최근 7일 이탈 회원</span>
         <button onClick={sendAll}
-          className="flex items-center gap-1.5 bg-green-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-green-800">
+          className="flex items-center gap-1.5 bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-800">
           <Send className="w-3.5 h-3.5" /> 미발송 전체 발송
         </button>
       </div>
@@ -87,7 +87,7 @@ export default function CartAbandonmentClient({ members }: { members: AbandonedM
                   <span className="font-medium text-gray-900">{m.member.name}</span>
                   <span className="text-xs text-gray-400">{m.member.phone}</span>
                   {isReminded && (
-                    <span className="flex items-center gap-0.5 text-xs text-green-600">
+                    <span className="flex items-center gap-0.5 text-xs text-blue-600">
                       <CheckCircle className="w-3 h-3" /> 발송완료
                     </span>
                   )}

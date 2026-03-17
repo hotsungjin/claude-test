@@ -85,14 +85,14 @@ export default function CurationListClient() {
     <div className="space-y-4">
       <div className="flex justify-end">
         <button onClick={openAdd}
-          className="flex items-center gap-1.5 bg-green-700 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-800">
-          <Plus className="w-4 h-4" /> 큐레이션 추가
+          className="flex items-center gap-1.5 bg-blue-700 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-800">
+          <Plus className="w-4 h-4" /> 기획전 추가
         </button>
       </div>
 
       {showForm && (
         <div className="bg-white rounded-xl shadow-sm p-6">
-          <h3 className="text-base font-semibold mb-3">{editId ? '큐레이션 수정' : '큐레이션 추가'}</h3>
+          <h3 className="text-base font-semibold mb-3">{editId ? '기획전 수정' : '기획전 추가'}</h3>
           {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
           <form onSubmit={handleSubmit} className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
@@ -114,7 +114,7 @@ export default function CurationListClient() {
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
             </div>
             <div className="flex gap-2">
-              <button type="submit" className="bg-green-700 text-white px-4 py-2 rounded-lg text-sm">
+              <button type="submit" className="bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">
                 {editId ? '수정' : '추가'}
               </button>
               <button type="button" onClick={() => setShowForm(false)}
@@ -145,7 +145,7 @@ export default function CurationListClient() {
                 </td>
                 <td className="px-4 py-3 text-center">
                   <button onClick={() => toggleActive(c)}
-                    className={`text-xs px-2 py-0.5 rounded-full ${c.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'}`}>
+                    className={`text-xs px-2 py-0.5 rounded-full ${c.is_active ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-400'}`}>
                     {c.is_active ? '활성' : '비활성'}
                   </button>
                 </td>
@@ -166,7 +166,7 @@ export default function CurationListClient() {
               </tr>
             ))}
             {curations.length === 0 && (
-              <tr><td colSpan={5} className="px-4 py-12 text-center text-gray-400">큐레이션이 없습니다.</td></tr>
+              <tr><td colSpan={5} className="px-4 py-12 text-center text-gray-400">기획전이 없습니다.</td></tr>
             )}
           </tbody>
         </table>

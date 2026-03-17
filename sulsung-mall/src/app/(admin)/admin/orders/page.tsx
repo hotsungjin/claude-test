@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/server'
 import { ORDER_STATUS_LABEL } from '@/utils/format'
 import OrdersTableClient from './OrdersTableClient'
 
@@ -8,7 +8,7 @@ export default async function AdminOrdersPage({
   searchParams: Promise<{ q?: string; status?: string; page?: string; date?: string }>
 }) {
   const params = await searchParams
-  const supabase = await createClient() as any
+  const supabase = await createAdminClient() as any
   const page = Number(params.page ?? 1)
   const PAGE_SIZE = 30
   const from = (page - 1) * PAGE_SIZE
@@ -41,7 +41,7 @@ export default async function AdminOrdersPage({
       <div className="bg-white rounded-xl p-4 shadow-sm mb-6">
         <form className="flex flex-wrap gap-3">
           <input name="q" defaultValue={params.q} placeholder="주문번호 / 수령인 / 연락처"
-            className="border border-gray-200 rounded-lg px-3 py-2 text-sm flex-1 min-w-40 focus:outline-none focus:border-green-500" />
+            className="border border-gray-200 rounded-lg px-3 py-2 text-sm flex-1 min-w-40 focus:outline-none focus:border-blue-500" />
           <select name="status" defaultValue={params.status}
             className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none">
             <option value="">전체 상태</option>
@@ -72,7 +72,7 @@ export default async function AdminOrdersPage({
           <a key={v} href={v ? `/admin/orders?status=${v}` : '/admin/orders'}
             className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border ${
               params.status === v || (!params.status && !v)
-                ? 'bg-green-700 text-white border-green-700'
+                ? 'bg-blue-700 text-white border-blue-700'
                 : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
             }`}>
             {l}
@@ -92,7 +92,7 @@ export default async function AdminOrdersPage({
             {Array.from({ length: Math.min(totalPages, 10) }, (_, i) => i + 1).map(p => (
               <a key={p} href={`/admin/orders?page=${p}${params.status ? `&status=${params.status}` : ''}`}
                 className={`w-8 h-8 flex items-center justify-center rounded text-xs font-medium ${
-                  p === page ? 'bg-green-600 text-white' : 'text-gray-600 hover:bg-gray-100'
+                  p === page ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100'
                 }`}>
                 {p}
               </a>
