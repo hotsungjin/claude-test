@@ -104,7 +104,6 @@ export async function POST(req: NextRequest) {
         goods_amount:   goodsAmount,
         shipping_amount: shippingAmount,
         mileage_used:   mileageUse,
-        deposit_used:   depositUse,
         total_amount:   totalAmount,
         recipient:      body.recipient,
         phone:          body.phone,
@@ -117,7 +116,10 @@ export async function POST(req: NextRequest) {
       .select()
       .single()
 
-    if (orderError || !order) throw new Error('주문 생성 실패')
+    if (orderError || !order) {
+      console.error('[orders/create] DB insert error:', orderError)
+      throw new Error(`주문 생성 실패: ${orderError?.message ?? 'unknown'}`)
+    }
 
     // 주문 상품 저장
     await supabase.from('order_items').insert(
@@ -140,7 +142,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ orderId: order.id, orderNo, totalAmount })
   } catch (err: any) {
-    console.error('[orders/create]', err)
+    console.error('[orders/create] error:', err?.message, err)
     return NextResponse.json({ error: err.message ?? '주문 생성 중 오류' }, { status: 500 })
   }
 }
